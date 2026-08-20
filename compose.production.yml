@@ -1,0 +1,53 @@
+name: open-notebook
+
+services:
+  surrealdb:
+    image: surrealdb/surrealdb:v2
+    command:
+      - start
+      - --log
+      - info
+      - --user
+      - ${SURREAL_USER:?Set SURREAL_USER in .env}
+      - --pass
+      - ${SURREAL_PASSWORD:?Set SURREAL_PASSWORD in .env}
+      - rocksdb:/mydata/mydatabase.db
+    user: root
+    environment:
+      SURREAL_EXPERIMENTAL_GRAPHQL: "true"
+    volumes:
+      - ./surreal-data:/mydata
+    restart: unless-stopped
+
+  open-notebook:
+    image: isding/open-notebook:1.14.0-source
+    build:
+      context: .
+      target: runtime
+    environment:
+      API_URL: https://notebook.isding.cn
+      INTERNAL_API_URL: http://localhost:5055
+      CORS_ORIGINS: https://notebook.isding.cn
+      OPEN_NOTEBOOK_ENCRYPTION_KEY: ${OPEN_NOTEBOOK_ENCRYPTION_KEY:?Set OPEN_NOTEBOOK_ENCRYPTION_KEY in .env}
+      OPEN_NOTEBOOK_PASSWORD: ${OPEN_NOTEBOOK_PASSWORD:?Set OPEN_NOTEBOOK_PASSWORD in .env}
+      OPEN_NOTEBOOK_WORKER_MAX_TASKS: ${OPEN_NOTEBOOK_WORKER_MAX_TASKS:-2}
+      SURREAL_URL: ws://surrealdb:8000/rpc
+      SURREAL_USER: ${SURREAL_USER:?Set SURREAL_USER in .env}
+      SURREAL_PASSWORD: ${SURREAL_PASSWORD:?Set SURREAL_PASSWORD in .env}
+      SURREAL_NAMESPACE: open_notebook
+      SURREAL_DATABASE: open_notebook
+    ports:
+      - 127.0.0.1:8502:8502
+    volumes:
+      - ./notebook_data:/app/data
+    depends_on:
+      - surrealdb
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - curl --fail --silent http://localhost:5055/health >/dev/null && curl --fail --silent http://localhost:8502/ >/dev/null
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+    restart: unless-stopped
