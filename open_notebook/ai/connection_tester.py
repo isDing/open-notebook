@@ -9,7 +9,7 @@ import io
 import json
 import os
 import struct
-from typing import Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 import httpx
 from esperanto import (
@@ -314,6 +314,30 @@ DEFAULT_TEST_VOICES = {
     "xai": "eve",
 }
 
+MOSS_TTSD_MODEL_PREFIX = "fnlp/moss-ttsd"
+MOSS_TTSD_TEST_SPEAKER = "alex"
+
+
+def _select_test_voice(model: Any, esp_model: TextToSpeechModel) -> str:
+    """Select a provider-compatible voice for a TTS connection test."""
+    model_name = str(getattr(model, "name", ""))
+    if (
+        model.provider == "openai_compatible"
+        and model_name.casefold().startswith(MOSS_TTSD_MODEL_PREFIX)
+    ):
+        return f"{model_name}:{MOSS_TTSD_TEST_SPEAKER}"
+
+    voice = DEFAULT_TEST_VOICES.get(model.provider)
+    if not voice and hasattr(esp_model, "available_voices"):
+        try:
+            voices = esp_model.available_voices
+            if voices:
+                voice = next(iter(voices.keys()))
+        except Exception:
+            pass
+
+    return voice or "alloy"
+
 
 def _generate_test_wav() -> io.BytesIO:
     """Generate a minimal 0.5s silence WAV file in memory (16kHz, 16-bit mono)."""
@@ -519,17 +543,7 @@ async def test_individual_model(model) -> Tuple[bool, str]:
         elif model.type == "text_to_speech":
             if not isinstance(esp_model, TextToSpeechModel):
                 return False, f"Model type mismatch: expected a text-to-speech model, got {type(esp_model).__name__}"
-            # For ElevenLabs, look up first available voice (API uses voice_id, not name)
-            voice = DEFAULT_TEST_VOICES.get(model.provider)
-            if not voice and hasattr(esp_model, "available_voices"):
-                try:
-                    voices = esp_model.available_voices
-                    if voices:
-                        voice = next(iter(voices.keys()))
-                except Exception:
-                    pass
-            if not voice:
-                voice = "alloy"  # fallback
+            voice = _select_test_voice(model, esp_model)
 
             audio = await esp_model.agenerate_speech(
                 text="Hello from Open Notebook", voice=voice
