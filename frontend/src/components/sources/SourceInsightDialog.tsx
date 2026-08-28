@@ -1,16 +1,27 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { FileText } from 'lucide-react'
+import { CheckboxList } from '@/components/ui/checkbox-list'
+import { FileText, NotebookTabs } from 'lucide-react'
 import {MarkdownRenderer} from '@/components/ui/markdown-renderer'
-import { useInsight } from '@/lib/hooks/use-insights'
+import { useInsight, useSaveInsightAsNote } from '@/lib/hooks/use-insights'
+import { useNotebooks } from '@/lib/hooks/use-notebooks'
 import { useModalManager } from '@/lib/hooks/use-modal-manager'
 import { useTranslation } from '@/lib/hooks/use-translation'
 import { ContentUnavailable } from '@/components/common/ContentUnavailable'
 import { isNotFoundError } from '@/lib/utils/error-handler'
+import { LoadingSpinner } from '@/components/common/LoadingSpinner'
+import { toast } from 'sonner'
 
 interface SourceInsightDialogProps {
   open: boolean
@@ -30,6 +41,7 @@ export function SourceInsightDialog({ open, onOpenChange, insight, onDelete }: S
   const { openModal } = useModalManager()
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [showNotebookPicker, setShowNotebookPicker] = useState(false)
 
   // Ensure insight ID has 'source_insight:' prefix for API calls
   const insightIdWithPrefix = insight?.id
@@ -51,6 +63,12 @@ export function SourceInsightDialog({ open, onOpenChange, insight, onDelete }: S
       openModal('source', sourceId)
     }
   }
+
+  useEffect(() => {
+    if (!open) {
+      setShowNotebookPicker(false)
+    }
+  }, [open])
 
   const handleDelete = async () => {
     if (!insight?.id || !onDelete) return
@@ -75,9 +93,9 @@ export function SourceInsightDialog({ open, onOpenChange, insight, onDelete }: S
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-3xl max-h-[90vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle className="flex items-center justify-between gap-2 pr-8">
+          <DialogTitle className="flex flex-wrap items-center justify-between gap-2 pr-8">
             <span>{t('sources.sourceInsight')}</span>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               {displayInsight?.insight_type && (
                 <Badge variant="outline" className="gap-1.5 text-xs uppercase">
                   <span className="h-1.5 w-1.5 rounded-full bg-teal" aria-hidden="true" />
@@ -93,6 +111,17 @@ export function SourceInsightDialog({ open, onOpenChange, insight, onDelete }: S
                 >
                   <FileText className="h-3 w-3" />
                   {t('sources.viewSource')}
+                </Button>
+              )}
+              {!isLoading && displayInsight && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowNotebookPicker(true)}
+                  className="gap-1"
+                >
+                  <NotebookTabs className="h-3 w-3" />
+                  {t('searchPage.saveToNotebook')}
                 </Button>
               )}
             </div>
@@ -142,6 +171,105 @@ export function SourceInsightDialog({ open, onOpenChange, insight, onDelete }: S
             )}
           </div>
         )}
+      </DialogContent>
+
+      {showNotebookPicker && displayInsight && (
+        <SaveInsightToNotebookDialog
+          open={showNotebookPicker}
+          onOpenChange={setShowNotebookPicker}
+          insightId={insightIdWithPrefix}
+        />
+      )}
+    </Dialog>
+  )
+}
+
+interface SaveInsightToNotebookDialogProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  insightId: string
+}
+
+function SaveInsightToNotebookDialog({
+  open,
+  onOpenChange,
+  insightId,
+}: SaveInsightToNotebookDialogProps) {
+  const { t } = useTranslation()
+  const [selectedNotebook, setSelectedNotebook] = useState<string | null>(null)
+  const { data: notebooks, isLoading } = useNotebooks(false)
+  const saveInsightAsNote = useSaveInsightAsNote()
+
+  useEffect(() => {
+    if (!open) {
+      setSelectedNotebook(null)
+    }
+  }, [open])
+
+  const handleSave = async () => {
+    if (!selectedNotebook) {
+      toast.error(t('searchPage.selectNotebook'))
+      return
+    }
+
+    try {
+      await saveInsightAsNote.mutateAsync({
+        insightId,
+        notebookId: selectedNotebook,
+      })
+      onOpenChange(false)
+    } catch {
+      // The mutation hook reports the translated error toast.
+    }
+  }
+
+  const notebookItems = (notebooks ?? []).map((notebook) => ({
+    id: notebook.id,
+    title: notebook.name,
+    description: notebook.description || undefined,
+  }))
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle>{t('searchPage.saveToNotebook')}</DialogTitle>
+          <DialogDescription>{t('searchPage.selectNotebook')}</DialogDescription>
+        </DialogHeader>
+
+        <div className="py-4">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <LoadingSpinner />
+            </div>
+          ) : (
+            <CheckboxList
+              items={notebookItems}
+              selectedIds={selectedNotebook ? [selectedNotebook] : []}
+              onToggle={(id) => setSelectedNotebook((current) => (current === id ? null : id))}
+              emptyMessage={t('sources.noNotebooksFound')}
+            />
+          )}
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            {t('common.cancel')}
+          </Button>
+          <Button
+            onClick={handleSave}
+            disabled={!selectedNotebook || saveInsightAsNote.isPending || isLoading}
+          >
+            {saveInsightAsNote.isPending ? (
+              <>
+                <LoadingSpinner size="sm" className="mr-2" />
+                {t('searchPage.saving')}
+              </>
+            ) : (
+              t('searchPage.saveToNotebook')
+            )}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   )
