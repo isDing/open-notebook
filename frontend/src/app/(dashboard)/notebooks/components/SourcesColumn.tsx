@@ -38,6 +38,7 @@ interface SourcesColumnProps {
   hasNextPage?: boolean
   isFetchingNextPage?: boolean
   fetchNextPage?: () => void
+  collapsible?: boolean
 }
 
 export function SourcesColumn({
@@ -51,8 +52,10 @@ export function SourcesColumn({
   hasNextPage,
   isFetchingNextPage,
   fetchNextPage,
+  collapsible = true,
 }: SourcesColumnProps) {
   const { t } = useTranslation()
+  const sourcesLabel = t('navigation.sources')
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [addDialogOpen, setAddDialogOpen] = useState(false)
   const [addExistingDialogOpen, setAddExistingDialogOpen] = useState(false)
@@ -69,8 +72,8 @@ export function SourcesColumn({
   // Collapsible column state
   const { sourcesCollapsed, toggleSources } = useNotebookColumnsStore()
   const collapseButton = useMemo(
-    () => createCollapseButton(toggleSources, t('navigation.sources')),
-    [toggleSources, t('navigation.sources')]
+    () => createCollapseButton(toggleSources, sourcesLabel),
+    [toggleSources, sourcesLabel]
   )
 
   // Scroll container ref for infinite scroll
@@ -151,23 +154,23 @@ export function SourcesColumn({
   return (
     <>
       <CollapsibleColumn
-        isCollapsed={sourcesCollapsed}
+        isCollapsed={collapsible && sourcesCollapsed}
         onToggle={toggleSources}
         collapsedIcon={FileText}
-        collapsedLabel={t('navigation.sources')}
+        collapsedLabel={sourcesLabel}
       >
         <Card className="h-full flex flex-col flex-1 overflow-hidden">
-          <CardHeader className="pb-3 flex-shrink-0">
-            <div className="flex items-center justify-between gap-2">
-              <CardTitle className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.13em] text-muted-foreground">
+          <CardHeader className="flex-shrink-0 pb-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <CardTitle className="flex min-w-0 items-center gap-2 text-xs font-semibold uppercase tracking-[0.13em] text-muted-foreground">
                 <span aria-hidden className="h-3.5 w-[3px] rounded-full bg-sage" />
-                {t('navigation.sources')}
+                {sourcesLabel}
               </CardTitle>
-              <div className="flex items-center gap-2">
+              <div className="flex w-full flex-wrap items-center justify-end gap-2 sm:w-auto">
                 {onBulkContextModeChange && sources && sources.length > 0 && (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="text-muted-foreground" title={t('sources.bulkContext')}>
+                      <Button variant="ghost" size="sm" className="h-10 w-10 p-0 text-muted-foreground sm:h-8 sm:w-8" title={t('sources.bulkContext')} aria-label={t('sources.bulkContext')}>
                         <ListChecks className="h-4 w-4" />
                         <ChevronDown className="h-4 w-4 ml-1" />
                       </Button>
@@ -187,7 +190,7 @@ export function SourcesColumn({
                 )}
                 <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
                   <DropdownMenuTrigger asChild>
-                    <Button size="sm">
+                    <Button size="sm" className="min-h-10 flex-1 sm:min-h-8 sm:flex-none">
                       <Plus className="h-4 w-4 mr-2" />
                       {t('sources.addSource')}
                       <ChevronDown className="h-4 w-4 ml-2" />

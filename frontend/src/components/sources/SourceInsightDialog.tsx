@@ -91,9 +91,9 @@ export function SourceInsightDialog({ open, onOpenChange, insight, onDelete }: S
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-3xl max-h-[90vh] flex flex-col">
+      <DialogContent className="sm:max-w-3xl max-h-[90dvh] flex flex-col">
         <DialogHeader>
-          <DialogTitle className="flex flex-wrap items-center justify-between gap-2 pr-8">
+          <DialogTitle className="flex min-w-0 flex-wrap items-center justify-between gap-2 pr-8">
             <span>{t('sources.sourceInsight')}</span>
             <div className="flex flex-wrap items-center gap-2">
               {displayInsight?.insight_type && (
@@ -107,7 +107,7 @@ export function SourceInsightDialog({ open, onOpenChange, insight, onDelete }: S
                   variant="outline"
                   size="sm"
                   onClick={handleViewSource}
-                  className="gap-1"
+                  className="min-h-10 gap-1 sm:min-h-8"
                 >
                   <FileText className="h-3 w-3" />
                   {t('sources.viewSource')}
@@ -118,7 +118,7 @@ export function SourceInsightDialog({ open, onOpenChange, insight, onDelete }: S
                   variant="outline"
                   size="sm"
                   onClick={() => setShowNotebookPicker(true)}
-                  className="gap-1"
+                  className="min-h-10 gap-1 sm:min-h-8"
                 >
                   <NotebookTabs className="h-3 w-3" />
                   {t('searchPage.saveToNotebook')}
@@ -134,11 +134,12 @@ export function SourceInsightDialog({ open, onOpenChange, insight, onDelete }: S
               {t('sources.deleteInsightConfirm').split(/[?？]/)[0]}?<br />
               <span className="text-sm">{t('sources.deleteInsightConfirm').split(/[?？]/)[1]?.trim() || t('common.deleteForever')}</span>
             </p>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap justify-center gap-2">
               <Button
                 variant="outline"
                 onClick={() => setShowDeleteConfirm(false)}
                 disabled={isDeleting}
+                className="min-h-10 sm:min-h-9"
               >
                 {t('common.cancel')}
               </Button>
@@ -146,6 +147,7 @@ export function SourceInsightDialog({ open, onOpenChange, insight, onDelete }: S
                 variant="destructive"
                 onClick={handleDelete}
                 disabled={isDeleting}
+                className="min-h-10 sm:min-h-9"
               >
                 {isDeleting ? t('common.deleting') : t('common.delete')}
               </Button>
@@ -163,9 +165,11 @@ export function SourceInsightDialog({ open, onOpenChange, insight, onDelete }: S
                 onClose={() => onOpenChange(false)}
               />
             ) : displayInsight ? (
-              <MarkdownRenderer>
+            <div className="min-w-0 px-1 pb-4">
+            <MarkdownRenderer>
                 {displayInsight.content}
-              </MarkdownRenderer>
+            </MarkdownRenderer>
+            </div>
             ) : (
               <p className="text-sm text-muted-foreground">{t('sources.noInsightSelected')}</p>
             )}
@@ -231,13 +235,13 @@ function SaveInsightToNotebookDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="max-h-[80dvh] sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>{t('searchPage.saveToNotebook')}</DialogTitle>
           <DialogDescription>{t('searchPage.selectNotebook')}</DialogDescription>
         </DialogHeader>
 
-        <div className="py-4">
+        <div className="min-h-0 max-h-[50dvh] overflow-y-auto py-4">
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
               <LoadingSpinner />

@@ -62,7 +62,6 @@ export function CreateMenu({
         <Button
           variant="default"
           size={iconOnly ? 'icon' : 'sm'}
-          onClick={() => setOpen(true)}
           aria-label={t('common.create')}
           className={cn(
             'font-display font-bold',

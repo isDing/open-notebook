@@ -37,7 +37,7 @@ export function ModelSelector({
     <div className="space-y-2">
       {label && <Label htmlFor={selectId}>{label}</Label>}
       <Select name={name} value={value} onValueChange={onChange} disabled={disabled || isLoading}>
-        <SelectTrigger id={selectId}>
+        <SelectTrigger id={selectId} className="w-full">
           <SelectValue placeholder={placeholder || t('settings.embeddingOptionPlaceholder')} />
         </SelectTrigger>
         <SelectContent>
@@ -53,8 +53,8 @@ export function ModelSelector({
             filteredModels.map((model) => (
               <SelectItem key={model.id} value={model.id}>
                 <div className="flex items-center justify-between w-full">
-                  <span>{model.name}</span>
-                  <span className="text-xs text-muted-foreground ml-2">{model.provider}</span>
+                  <span className="min-w-0 truncate">{model.name}</span>
+                  <span className="ml-2 shrink-0 text-xs text-muted-foreground">{model.provider}</span>
                 </div>
               </SelectItem>
             ))

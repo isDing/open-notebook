@@ -156,7 +156,7 @@ export function DiscoverModelsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg max-h-[85vh] grid-rows-[auto_1fr_auto]">
+      <DialogContent className="w-[calc(100%-1rem)] max-h-[calc(100dvh-1rem)] grid-rows-[auto_1fr_auto] p-4 sm:max-w-lg sm:max-h-[calc(100dvh-2rem)] sm:p-6">
         <DialogHeader>
           <DialogTitle>
             {t('models.discoverModels')} - {providerInfo?.display_name || credential.provider}
@@ -182,7 +182,7 @@ export function DiscoverModelsDialog({
             <div className="space-y-2">
               <Label>{t('models.modelType')}</Label>
               <Select value={selectedType} onValueChange={setSelectedType}>
-                <SelectTrigger>
+                <SelectTrigger className="min-h-11 sm:min-h-9">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -202,7 +202,7 @@ export function DiscoverModelsDialog({
             {/* Search input */}
             <input
               type="text"
-              className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm placeholder:text-muted-foreground"
+              className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-1 text-sm placeholder:text-muted-foreground sm:h-9"
               placeholder={t('models.searchOrAddModel')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -223,7 +223,7 @@ export function DiscoverModelsDialog({
               {filteredModels.map((model) => (
                 <label
                   key={model.name}
-                  className="flex items-center gap-2 p-1.5 rounded hover:bg-muted cursor-pointer text-sm"
+                  className="flex min-h-11 cursor-pointer items-center gap-2 rounded p-2 text-sm hover:bg-muted sm:min-h-8 sm:p-1.5"
                 >
                   <input
                     type="checkbox"
@@ -240,7 +240,7 @@ export function DiscoverModelsDialog({
 
               {/* Custom model option */}
               {showCustomOption && (
-                <label className={`flex items-center gap-2 p-1.5 rounded hover:bg-muted cursor-pointer text-sm${filteredModels.length > 0 ? ' border-t mt-1 pt-2' : ''}`}>
+                <label className={`flex min-h-11 cursor-pointer items-center gap-2 rounded p-2 text-sm hover:bg-muted sm:min-h-8 sm:p-1.5${filteredModels.length > 0 ? ' border-t mt-1 pt-2' : ''}`}>
                   <input
                     type="checkbox"
                     checked={customModelSelected}

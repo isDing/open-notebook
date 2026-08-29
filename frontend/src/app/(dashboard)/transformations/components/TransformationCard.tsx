@@ -36,33 +36,33 @@ export function TransformationCard({ transformation, onPlayground, onEdit }: Tra
           <CardHeader>
             <div className="flex flex-wrap items-start justify-between gap-3 sm:gap-4">
               <CollapsibleTrigger className="flex-1 text-left">
-                <div className={cn('flex items-center gap-3', isExpanded ? 'mb-2' : '')}>
+                  <div className={cn('flex min-w-0 items-start gap-3', isExpanded ? 'mb-2' : '')}>
                   {isExpanded ? (
                     <ChevronDown className="h-5 w-5" />
                   ) : (
                     <ChevronRight className="h-5 w-5" />
                   )}
-                  <div className="flex flex-col">
-                    <span className="font-semibold">{transformation.name}</span>
+                  <div className="min-w-0 flex flex-col">
+                    <span className="break-words font-semibold">{transformation.name}</span>
                     {!isExpanded && transformation.description && (
-                      <span className="text-sm text-muted-foreground">{transformation.description}</span>
+                      <span className="break-words text-sm text-muted-foreground">{transformation.description}</span>
                     )}
                   </div>
                   {transformation.apply_default && (
-                    <Badge variant="secondary">{t('common.default')}</Badge>
+                  <Badge variant="secondary" className="shrink-0">{t('common.default')}</Badge>
                   )}
                 </div>
               </CollapsibleTrigger>
 
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
                 {onPlayground && (
-                  <Button variant="outline" size="sm" onClick={onPlayground}>
+                  <Button variant="outline" size="sm" onClick={onPlayground} className="flex-1 sm:flex-none">
                     <Wand2 className="h-4 w-4 mr-2" />
                     {t('transformations.playground')}
                   </Button>
                 )}
                 {onEdit && (
-                  <Button variant="outline" size="sm" onClick={onEdit}>
+                  <Button variant="outline" size="sm" onClick={onEdit} className="flex-1 sm:flex-none">
                     <Edit className="h-4 w-4 mr-2" />
                     {t('common.edit')}
                   </Button>
@@ -70,8 +70,10 @@ export function TransformationCard({ transformation, onPlayground, onEdit }: Tra
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-destructive hover:text-destructive"
+                  className="min-h-11 min-w-11 text-destructive hover:text-destructive sm:min-h-8 sm:min-w-8"
                   onClick={() => setShowDeleteDialog(true)}
+                  aria-label={t('common.delete')}
+                  title={t('common.delete')}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>

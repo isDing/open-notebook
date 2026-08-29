@@ -51,9 +51,9 @@ export function ProviderSection({
   return (
     <Card className={hasCredentials ? 'border-l-2 border-l-fern' : undefined}>
       <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3 flex-wrap">
-            <CardTitle className={`text-lg capitalize ${hasCredentials ? '' : 'text-muted-foreground'}`}>{displayName}</CardTitle>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex min-w-0 flex-wrap items-center gap-3">
+            <CardTitle className={`min-w-0 break-words text-lg capitalize ${hasCredentials ? '' : 'text-muted-foreground'}`}>{displayName}</CardTitle>
             <div className="flex items-center gap-1">
               {modalities.map((type) => (
                 <Badge
@@ -67,7 +67,7 @@ export function ProviderSection({
               ))}
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 self-start sm:self-auto">
             {hasCredentials ? (
               <span className="inline-flex items-center gap-1.5 text-xs font-medium text-fern">
                 <Check className="h-3 w-3" />

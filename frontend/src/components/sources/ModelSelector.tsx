@@ -36,6 +36,7 @@ export function ModelSelector({
   disabled = false 
 }: ModelSelectorProps) {
   const { t } = useTranslation()
+  const defaultLabel = t('common.default')
   const [open, setOpen] = useState(false)
   const [selectedModel, setSelectedModel] = useState(currentModel || 'default')
   const { data: models, isLoading } = useModels()
@@ -67,8 +68,8 @@ export function ModelSelector({
     if (defaultModel) {
       return defaultModel.name
     }
-    return t('common.default')
-  }, [currentModel, languageModels, defaultModel, t('common.default')])
+    return defaultLabel
+  }, [currentModel, languageModels, defaultModel, defaultLabel])
 
   const handleSave = () => {
     onModelChange(selectedModel === 'default' ? undefined : selectedModel)
@@ -88,7 +89,7 @@ export function ModelSelector({
           variant="outline"
           size="sm"
           disabled={disabled}
-          className="gap-2 max-w-[180px] sm:max-w-[260px]"
+          className="h-10 max-w-[180px] gap-2 sm:h-8 sm:max-w-[260px]"
         >
           <Settings2 className="h-4 w-4" />
           <span className="min-w-0 truncate text-xs" title={currentModelName}>

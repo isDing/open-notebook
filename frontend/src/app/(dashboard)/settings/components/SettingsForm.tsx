@@ -136,7 +136,7 @@ export function SettingsForm() {
                     onValueChange={field.onChange}
                     disabled={field.disabled || isLoading}
                   >
-                      <SelectTrigger id="doc_engine" className="w-full">
+                      <SelectTrigger id="doc_engine" className="min-h-11 w-full sm:min-h-9">
                         <SelectValue placeholder={t('settings.docEnginePlaceholder')} />
                       </SelectTrigger>
                     <SelectContent>
@@ -231,7 +231,7 @@ export function SettingsForm() {
                   onValueChange={field.onChange}
                   disabled={field.disabled || isLoading}
                 >
-                  <SelectTrigger id="url_engine" className="w-full">
+                  <SelectTrigger id="url_engine" className="min-h-11 w-full sm:min-h-9">
                     <SelectValue placeholder={t('settings.urlEnginePlaceholder')} />
                   </SelectTrigger>
                   <SelectContent>
@@ -281,7 +281,7 @@ export function SettingsForm() {
                   onValueChange={field.onChange}
                   disabled={field.disabled || isLoading}
                 >
-                  <SelectTrigger id="embedding" className="w-full">
+                  <SelectTrigger id="embedding" className="min-h-11 w-full sm:min-h-9">
                     <SelectValue placeholder={t('settings.embeddingOptionPlaceholder')} />
                   </SelectTrigger>
                   <SelectContent>
@@ -326,7 +326,7 @@ export function SettingsForm() {
                   onValueChange={field.onChange}
                   disabled={field.disabled || isLoading}
                 >
-                  <SelectTrigger id="auto_delete" className="w-full">
+                  <SelectTrigger id="auto_delete" className="min-h-11 w-full sm:min-h-9">
                     <SelectValue placeholder={t('settings.autoDeletePlaceholder')} />
                   </SelectTrigger>
                    <SelectContent>
@@ -349,10 +349,11 @@ export function SettingsForm() {
         </CardContent>
       </Card>
 
-      <div className="flex justify-end">
+      <div className="flex justify-stretch sm:justify-end">
          <Button 
           type="submit" 
           disabled={!isDirty || updateSettings.isPending}
+          className="w-full sm:w-auto"
         >
           {updateSettings.isPending ? t('common.saving') : t('common.save')}
         </Button>

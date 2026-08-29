@@ -150,14 +150,14 @@ export default function NotesPage() {
     <AppShell>
       <div className="flex min-h-0 flex-1 flex-col">
         <header className="shrink-0 border-b border-border bg-background px-4 py-5 md:px-6">
-          <div className="flex items-start justify-between gap-4">
-            <div>
+          <div className="flex items-start justify-between gap-3 sm:gap-4">
+            <div className="min-w-0">
               <p className="mb-1 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 <BookOpen className="h-3.5 w-3.5 text-teal" />
                 {t('notes.reading')}
               </p>
-              <h1 className="font-display text-2xl font-bold tracking-tight">{t('notes.title')}</h1>
-              <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{t('notes.description')}</p>
+              <h1 className="break-words font-display text-2xl font-bold tracking-tight">{t('notes.title')}</h1>
+              <p className="mt-1 max-w-2xl break-words text-sm text-muted-foreground">{t('notes.description')}</p>
             </div>
             <Button
               variant="outline"
@@ -166,6 +166,7 @@ export default function NotesPage() {
               disabled={isLoading}
               aria-label={t('common.refresh')}
               title={t('common.refresh')}
+              className="h-11 w-11 shrink-0 sm:h-9 sm:w-9"
             >
               <RefreshCw className={cn('h-4 w-4', isLoading && 'animate-spin')} />
             </Button>
@@ -179,12 +180,12 @@ export default function NotesPage() {
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder={t('notes.searchPlaceholder')}
                 aria-label={t('notes.searchPlaceholder')}
-                className="h-9 pl-9"
+                className="h-11 pl-9 sm:h-9"
               />
             </div>
 
             <Select value={sort} onValueChange={(value) => setSort(value as NoteSort)}>
-              <SelectTrigger className="h-9 w-full lg:w-44" aria-label={t('notes.sortLabel')}>
+              <SelectTrigger className="h-11 w-full lg:h-9 lg:w-44" aria-label={t('notes.sortLabel')}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -226,7 +227,7 @@ export default function NotesPage() {
                     <section key={group.id} aria-labelledby={`notes-group-${group.id}`}>
                       <button
                         type="button"
-                        className="sticky top-0 z-10 flex h-10 w-full items-center justify-between border-b border-border bg-background/95 px-4 text-left backdrop-blur-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+                        className="sticky top-0 z-10 flex min-h-11 w-full items-center justify-between border-b border-border bg-background/95 px-4 text-left backdrop-blur-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:h-10 sm:min-h-0"
                         onClick={() => toggleGroup(group.id)}
                         aria-expanded={!collapsedGroups.has(group.id)}
                         aria-controls={`notes-group-items-${group.id}`}
@@ -251,7 +252,7 @@ export default function NotesPage() {
                                 onClick={() => setSelectedNoteId(note.id)}
                                 aria-current={isSelected ? 'true' : undefined}
                                 className={cn(
-                                  'group h-[116px] w-full overflow-hidden border-b border-border px-4 py-4 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
+                                  'group min-h-[116px] h-auto w-full overflow-hidden border-b border-border px-4 py-4 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
                                   isSelected ? 'border-l-2 border-l-teal bg-teal-tint/40 pl-[14px]' : 'border-l-2 border-l-transparent hover:bg-accent'
                                 )}
                               >
@@ -283,7 +284,7 @@ export default function NotesPage() {
             {selectedNote ? (
               <>
                 <div className="flex shrink-0 items-center gap-3 border-b border-border px-4 py-3 md:px-8">
-                  <Button variant="ghost" size="sm" className="lg:hidden" onClick={() => setSelectedNoteId(null)}>
+                  <Button variant="ghost" size="sm" className="min-h-11 touch-manipulation lg:hidden" onClick={() => setSelectedNoteId(null)}>
                     <ChevronLeft className="h-4 w-4" />
                     {t('common.back')}
                   </Button>
@@ -297,7 +298,7 @@ export default function NotesPage() {
 
                 <div className="min-h-0 flex-1 overflow-y-auto">
                   <div className="mx-auto w-full max-w-3xl px-5 py-8 md:px-10 md:py-12">
-                    <h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">{selectedNote.title || t('notebooks.untitledNote')}</h2>
+                    <h2 className="break-words font-display text-3xl font-bold tracking-tight md:text-4xl">{selectedNote.title || t('notebooks.untitledNote')}</h2>
                     <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
                       <span className="inline-flex items-center gap-1.5"><Clock3 className="h-3.5 w-3.5" />{t('notes.readingTime', { minutes: stats.minutes })}</span>
                       <span>{t('notes.wordCount', { count: stats.words })}</span>

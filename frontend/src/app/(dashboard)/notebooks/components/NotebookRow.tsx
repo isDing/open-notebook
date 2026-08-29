@@ -97,7 +97,7 @@ export function NotebookRow({ notebook }: NotebookRowProps) {
               aria-label={t('common.actions')}
               variant="ghost"
               size="sm"
-              className="touch-reveal group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 transition-opacity shrink-0"
+              className="h-10 w-10 p-0 touch-reveal group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 transition-opacity shrink-0 sm:h-8 sm:w-8"
               onClick={(e) => e.stopPropagation()}
             >
               <MoreHorizontal className="h-4 w-4" />

@@ -9,8 +9,8 @@ export default function AdvancedPage() {
   const { t } = useTranslation()
   return (
     <AppShell>
-      <div className="flex-1 overflow-y-auto">
-        <div className="p-6">
+      <div className="flex-1 min-h-0 overflow-y-auto">
+        <div className="p-4 sm:p-6">
           <div className="max-w-4xl mx-auto space-y-6">
             <div>
               <h1 className="font-display text-2xl font-bold tracking-tight">{t('advanced.title')}</h1>

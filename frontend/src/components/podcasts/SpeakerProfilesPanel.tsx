@@ -72,14 +72,14 @@ export function SpeakerProfilesPanel({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
           <h2 className="font-display text-lg font-semibold tracking-tight">{t('podcasts.speakerProfilesTitle')}</h2>
           <p className="text-sm text-muted-foreground">
             {t('podcasts.speakerProfilesDesc')}
           </p>
         </div>
-        <Button onClick={() => setCreateOpen(true)}>{t('podcasts.createSpeaker')}</Button>
+        <Button onClick={() => setCreateOpen(true)} className="w-full sm:w-auto">{t('podcasts.createSpeaker')}</Button>
       </div>
 
       {sortedProfiles.length === 0 ? (
@@ -96,10 +96,10 @@ export function SpeakerProfilesPanel({
             return (
               <Card key={profile.id}>
                 <CardHeader className="flex flex-col gap-2">
-                  <div className="flex items-center justify-between gap-2">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <CardTitle className="text-lg font-semibold">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <CardTitle className="break-words text-lg font-semibold">
                           {profile.name}
                         </CardTitle>
                         {unconfigured ? (
@@ -113,7 +113,7 @@ export function SpeakerProfilesPanel({
                         {profile.description || t('podcasts.noDescription')}
                       </CardDescription>
                     </div>
-                    <Badge variant="outline" className="text-xs">
+                    <Badge variant="outline" className="max-w-full shrink-0 whitespace-normal break-words text-xs sm:max-w-[45%] sm:text-right">
                       {profile.voice_model
                         ? (modelNameMap[profile.voice_model] ?? profile.voice_model)
                         : t('podcasts.notConfigured')}
@@ -138,19 +138,19 @@ export function SpeakerProfilesPanel({
                         key={speaker.name}
                         className="rounded-md border bg-muted/30 p-3"
                       >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-start justify-between gap-2">
+                          <div className="flex min-w-0 items-center gap-2">
                             <Volume2 className="h-4 w-4" />
                             <span className="font-medium text-foreground">
                               {speaker.name}
                             </span>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs text-muted-foreground">
+                          <div className="flex max-w-full flex-wrap items-center gap-2 sm:justify-end">
+                            <span className="break-all text-xs text-muted-foreground">
                               {t('podcasts.voiceId')}: {speaker.voice_id}
                             </span>
                             {speaker.voice_model ? (
-                              <Badge variant="secondary" className="text-xs">
+                              <Badge variant="secondary" className="max-w-full whitespace-normal break-words text-xs">
                                 {modelNameMap[speaker.voice_model] ?? speaker.voice_model}
                               </Badge>
                             ) : null}
@@ -171,6 +171,7 @@ export function SpeakerProfilesPanel({
                       variant="ghost"
                       size="sm"
                       onClick={() => setEditProfile(profile)}
+                      className="min-h-11 flex-1 sm:min-h-8 sm:flex-none"
                     >
                       <Edit3 className="mr-2 h-4 w-4" /> {t('podcasts.edit')}
                     </Button>
@@ -180,8 +181,10 @@ export function SpeakerProfilesPanel({
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8"
+                            className="min-h-11 min-w-11 sm:h-8 sm:min-h-8 sm:w-8 sm:min-w-8"
                             onClick={(e) => e.stopPropagation()}
+                            aria-label={t('common.actions')}
+                            title={t('common.actions')}
                           >
                             <MoreVertical className="h-4 w-4" />
                           </Button>

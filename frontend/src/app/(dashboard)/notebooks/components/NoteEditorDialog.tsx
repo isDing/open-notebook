@@ -131,7 +131,7 @@ export function NoteEditorDialog({ open, onOpenChange, notebookId, note }: NoteE
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className={cn(
-          "sm:max-w-3xl w-full h-[90vh] max-h-[90vh] overflow-hidden p-0 flex flex-col",
+        "w-full h-[90dvh] max-h-[90dvh] overflow-hidden p-0 flex flex-col sm:max-w-3xl",
           isEditorFullscreen && "border-none !inset-0 !translate-none !max-w-none"
       )}>
         <DialogTitle className="sr-only">
@@ -150,7 +150,7 @@ export function NoteEditorDialog({ open, onOpenChange, notebookId, note }: NoteE
             </div>
           ) : (
             <>
-              <div className="border-b px-6 py-4">
+              <div className="border-b px-4 py-3 sm:px-6 sm:py-4">
                 <InlineEdit
                   id="note-title"
                   name="title"
@@ -179,7 +179,7 @@ export function NoteEditorDialog({ open, onOpenChange, notebookId, note }: NoteE
                       height={420}
                       placeholder={t('sources.writeNotePlaceholder')}
                       className={cn(
-                          "w-full h-full min-h-[420px] overflow-hidden [&_.w-md-editor]:!static [&_.w-md-editor]:!w-full [&_.w-md-editor]:!h-full [&_.w-md-editor-content]:overflow-y-auto",
+                          "w-full h-full min-h-[min(420px,45dvh)] overflow-hidden [&_.w-md-editor]:!static [&_.w-md-editor]:!w-full [&_.w-md-editor]:!h-full [&_.w-md-editor-content]:overflow-y-auto",
                           !isEditorFullscreen && "rounded-md border"
                       )}
                     />
@@ -192,7 +192,7 @@ export function NoteEditorDialog({ open, onOpenChange, notebookId, note }: NoteE
             </>
           )}
 
-          <div className="border-t px-6 py-4 flex justify-end gap-2">
+          <div className="border-t px-4 py-3 flex flex-wrap justify-end gap-2 sm:px-6 sm:py-4">
             <Button type="button" variant="outline" onClick={handleClose}>
               {t('common.cancel')}
             </Button>

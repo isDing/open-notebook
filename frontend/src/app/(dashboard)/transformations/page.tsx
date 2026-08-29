@@ -26,11 +26,11 @@ export default function TransformationsPage() {
   return (
     <AppShell>
       <div className="flex-1 overflow-y-auto">
-        <div className="p-6 space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+        <div className="space-y-6 p-4 md:p-6">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex min-w-0 items-center gap-3">
               <h1 className="font-display text-2xl font-bold tracking-tight">{t('transformations.title')}</h1>
-              <Button variant="outline" size="sm" onClick={() => refetch()}>
+              <Button variant="outline" size="sm" onClick={() => refetch()} aria-label={t('common.refresh')} title={t('common.refresh')} className="min-h-11 min-w-11 sm:min-h-8 sm:min-w-8">
                 <RefreshCw className="h-4 w-4" />
             </Button>
           </div>

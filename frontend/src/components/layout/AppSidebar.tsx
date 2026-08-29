@@ -44,8 +44,16 @@ import {
   StickyNote,
   X,
 } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 
-const getNavigation = (t: TFunction) => [
+type NavigationItem = {
+  name: string
+  href: string
+  icon: LucideIcon
+  iconClass?: string
+}
+
+const getNavigation = (t: TFunction): Array<{ title: string; items: NavigationItem[] }> => [
   {
     title: t('navigation.collect'),
     items: [
@@ -75,7 +83,7 @@ const getNavigation = (t: TFunction) => [
       { name: t('navigation.advanced'), href: '/advanced', icon: Wrench, iconClass: undefined },
     ],
   },
-] as const
+]
 
 // The tri-hue mark recomposed in the owned palette: fern / gold / teal.
 export function LogoPebbles({ className }: { className?: string }) {
@@ -106,6 +114,22 @@ export function AppSidebar() {
   const [createMenuOpen, setCreateMenuOpen] = useState(false)
   const [isMac, setIsMac] = useState(true) // Default to Mac for SSR
 
+  // Keep the drawer's focus lifecycle local to the shell. The trigger lives
+  // in MobileTopBar, so restoration uses its stable DOM id rather than
+  // coupling the two components through another store field.
+  const drawerRef = useRef<HTMLDivElement>(null)
+  const drawerCloseRef = useRef<HTMLButtonElement>(null)
+  const wasDrawerOpenRef = useRef(false)
+
+  // Only the deepest matching route should be highlighted. A plain
+  // `startsWith('/settings')` would light both Settings and Models for
+  // `/settings/api-keys`.
+  const activeHref = navigation
+    .flatMap((section) => section.items)
+    .map((item) => item.href)
+    .filter((href) => pathname === href || pathname?.startsWith(`${href}/`))
+    .sort((a, b) => b.length - a.length)[0]
+
   // Detect platform for keyboard shortcut display
   useEffect(() => {
     setIsMac(navigator.platform.toLowerCase().includes('mac'))
@@ -118,20 +142,81 @@ export function AppSidebar() {
     if (isDrawer) setMobileOpen(false)
   }, [pathname, isDrawer, setMobileOpen])
 
-  // Close the drawer on Escape
+  // Close the drawer on Escape and keep keyboard focus inside it while open.
   useEffect(() => {
     if (!isDrawer || !mobileOpen) return
+
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') closeMobileSidebar()
+
+      if (event.key !== 'Tab' || !drawerRef.current) return
+
+      // A dropdown menu is rendered in a portal. Once focus leaves the
+      // drawer for that menu, let Radix manage its own roving focus.
+      if (!drawerRef.current.contains(event.target as Node)) return
+
+      const focusable = Array.from(
+        drawerRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+      ).filter((element) => !element.hasAttribute('aria-hidden'))
+
+      if (focusable.length === 0) {
+        event.preventDefault()
+        drawerCloseRef.current?.focus()
+        return
+      }
+
+      const currentIndex = focusable.indexOf(document.activeElement as HTMLElement)
+      if (currentIndex === -1) {
+        event.preventDefault()
+        focusable[event.shiftKey ? focusable.length - 1 : 0]?.focus()
+      } else if (event.shiftKey && currentIndex === 0) {
+        event.preventDefault()
+        focusable[focusable.length - 1]?.focus()
+      } else if (!event.shiftKey && currentIndex === focusable.length - 1) {
+        event.preventDefault()
+        focusable[0]?.focus()
+      }
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [isDrawer, mobileOpen, closeMobileSidebar])
 
-  // Move focus into the drawer when it opens
-  const drawerCloseRef = useRef<HTMLButtonElement>(null)
+  // Move focus into the drawer when it opens and return it to the trigger
+  // when the drawer closes (Escape, backdrop, route change, or close button).
   useEffect(() => {
-    if (isDrawer && mobileOpen) drawerCloseRef.current?.focus()
+    if (!isDrawer) {
+      wasDrawerOpenRef.current = false
+      return
+    }
+
+    if (mobileOpen) {
+      wasDrawerOpenRef.current = true
+      drawerCloseRef.current?.focus()
+      return
+    }
+
+    if (
+      wasDrawerOpenRef.current &&
+      drawerRef.current &&
+      drawerRef.current.contains(document.activeElement)
+    ) {
+      document.getElementById('mobile-menu-trigger')?.focus()
+    }
+    wasDrawerOpenRef.current = false
+  }, [isDrawer, mobileOpen])
+
+  // Prevent the page behind the overlay from scrolling on touch devices,
+  // while preserving any pre-existing body overflow style on cleanup.
+  useEffect(() => {
+    if (!isDrawer || !mobileOpen) return
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
   }, [isDrawer, mobileOpen])
 
   const handleCreateSelection = (target: CreateTarget) => {
@@ -153,7 +238,7 @@ export function AppSidebar() {
         <div
           data-testid="sidebar-backdrop"
           className={cn(
-            'fixed inset-0 z-40 bg-black/50 transition-opacity duration-300',
+            'fixed inset-0 z-40 bg-black/50 transition-opacity duration-200 motion-reduce:transition-none',
             mobileOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
           )}
           aria-hidden="true"
@@ -161,21 +246,31 @@ export function AppSidebar() {
         />
       )}
       <div
+        id="mobile-sidebar"
+        ref={drawerRef}
         className={cn(
-          'app-sidebar flex flex-col bg-sidebar border-sidebar-border transition-all duration-300',
+          'app-sidebar flex shrink-0 flex-col border-sidebar-border bg-sidebar',
           isDrawer
             ? cn(
-                'fixed inset-y-0 left-0 z-50 w-72 border-r',
-                mobileOpen ? 'translate-x-0' : 'pointer-events-none -translate-x-full invisible'
+                'fixed inset-y-0 left-0 z-50 w-[min(18rem,calc(100vw-1rem))] max-w-[calc(100vw-1rem)] transform-gpu border-r pb-[env(safe-area-inset-bottom)] transition-transform duration-200 ease-out motion-reduce:transition-none',
+                mobileOpen ? 'translate-x-0' : 'pointer-events-none -translate-x-full'
               )
-            : cn('h-full border-r', collapsed ? 'w-16' : 'w-64')
+            : cn(
+                'h-full border-r transition-[width] duration-200 ease-out motion-reduce:transition-none',
+                collapsed ? 'w-16' : 'w-64'
+              )
         )}
+        role={isDrawer ? 'dialog' : undefined}
+        aria-modal={isDrawer && mobileOpen ? true : undefined}
+        aria-label={isDrawer ? t('navigation.nav') : undefined}
         aria-hidden={isDrawer && !mobileOpen ? true : undefined}
+        inert={isDrawer && !mobileOpen ? true : undefined}
       >
         <div
           className={cn(
-            'flex h-16 flex-shrink-0 items-center group',
-            isDrawer || !collapsed ? 'justify-between px-4' : 'justify-center px-2'
+            'flex flex-shrink-0 items-center group',
+            isDrawer ? 'h-auto min-h-16 justify-between pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] pt-[env(safe-area-inset-top)]' :
+              !collapsed ? 'h-16 justify-between px-4' : 'h-16 justify-center px-2'
           )}
         >
           {isDrawer ? (
@@ -204,7 +299,8 @@ export function AppSidebar() {
                 variant="ghost"
                 size="sm"
                 onClick={toggleCollapse}
-                className="absolute text-sidebar-foreground hover:bg-sidebar-accent opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100 transition-opacity"
+                className="absolute text-sidebar-foreground opacity-0 transition-opacity hover:bg-sidebar-accent focus-visible:opacity-100 group-hover:opacity-100 pointer-coarse:opacity-100"
+                aria-label={t('navigation.openMenu')}
               >
                 <Menu className="h-4 w-4" />
               </Button>
@@ -222,6 +318,7 @@ export function AppSidebar() {
                 size="sm"
                 onClick={toggleCollapse}
                 className="text-sidebar-foreground hover:bg-sidebar-accent"
+                aria-label={t('common.close')}
                 data-testid="sidebar-toggle"
               >
                 <ChevronLeft className="h-4 w-4" />
@@ -232,9 +329,11 @@ export function AppSidebar() {
 
         <nav
           className={cn(
-            'flex-1 space-y-1 py-4',
-            collapsed ? 'px-2' : 'px-3'
+            'min-h-0 flex-1 space-y-1 overflow-y-auto overscroll-contain py-4',
+            collapsed ? 'px-2' : 'px-3',
+            isDrawer && 'pl-[max(0.75rem,env(safe-area-inset-left))]'
           )}
+          aria-label={t('navigation.nav')}
         >
           <div
             className={cn(
@@ -248,7 +347,6 @@ export function AppSidebar() {
                   <TooltipTrigger asChild>
                     <DropdownMenuTrigger asChild>
                       <Button
-                        onClick={() => setCreateMenuOpen(true)}
                         variant="default"
                         size="sm"
                         className="w-full justify-center px-2 font-display font-bold"
@@ -263,10 +361,12 @@ export function AppSidebar() {
               ) : (
                 <DropdownMenuTrigger asChild>
                   <Button
-                    onClick={() => setCreateMenuOpen(true)}
                     variant="default"
                     size="sm"
-                    className="w-full justify-start font-display font-bold"
+                    className={cn(
+                      'w-full justify-start font-display font-bold',
+                      isDrawer && 'min-h-11 touch-manipulation'
+                    )}
                    >
                     <Plus className="h-4 w-4 mr-2" />
                     {t('common.create')}
@@ -326,29 +426,35 @@ export function AppSidebar() {
                 )}
 
                 {section.items.map((item) => {
-                  const isActive = pathname?.startsWith(item.href) || false
+                  const isActive = activeHref === item.href
                   const button = (
                     <Button
+                      asChild
                       variant="ghost"
                       className={cn(
-                        'w-full gap-2.5 text-[13px] font-medium text-sidebar-foreground/80 sidebar-menu-item relative',
+                        'relative w-full min-w-0 gap-2.5 text-[13px] font-medium text-sidebar-foreground/80 sidebar-menu-item',
                         isActive &&
                           'bg-popover font-semibold text-sidebar-foreground ring-1 ring-inset ring-border before:absolute before:-left-1.5 before:top-[7px] before:bottom-[7px] before:w-[3px] before:rounded-[2px] before:bg-fern',
-                        collapsed ? 'justify-center px-2' : 'justify-start'
+                        collapsed ? 'justify-center px-2' : 'justify-start',
+                        isDrawer && 'min-h-11 touch-manipulation'
                       )}
                     >
-                      <item.icon className={cn('h-4 w-4 opacity-85', item.iconClass)} />
-                      {!collapsed && <span>{item.name}</span>}
+                      <Link
+                        href={item.href}
+                        aria-current={isActive ? 'page' : undefined}
+                        className="flex min-w-0 flex-1 items-center gap-2.5"
+                      >
+                        <item.icon className={cn('h-4 w-4 opacity-85', item.iconClass)} />
+                        {!collapsed && <span className="min-w-0 truncate">{item.name}</span>}
+                      </Link>
                     </Button>
                   )
 
                   if (collapsed) {
                     return (
-                      <Tooltip key={item.name}>
+                      <Tooltip key={item.href}>
                         <TooltipTrigger asChild>
-                          <Link href={item.href}>
-                            {button}
-                          </Link>
+                          {button}
                         </TooltipTrigger>
                         <TooltipContent side="right">{item.name}</TooltipContent>
                       </Tooltip>
@@ -356,9 +462,7 @@ export function AppSidebar() {
                   }
 
                   return (
-                    <Link key={item.name} href={item.href}>
-                      {button}
-                    </Link>
+                    <div key={item.href}>{button}</div>
                   )
                 })}
               </div>
@@ -368,12 +472,13 @@ export function AppSidebar() {
 
         <div
           className={cn(
-            'border-t border-sidebar-border p-3 space-y-2',
-            collapsed && 'px-2'
+            'shrink-0 space-y-2 border-t border-sidebar-border p-3',
+            collapsed && 'px-2',
+            isDrawer && 'pl-[max(0.75rem,env(safe-area-inset-left))] pr-[max(0.75rem,env(safe-area-inset-right))] [&_[data-slot=button]]:min-h-11 [&_[data-slot=button]]:touch-manipulation'
           )}
         >
           {/* Command Palette hint */}
-          {!collapsed && (
+          {!collapsed && !isDrawer && (
             <div className="px-3 py-1.5 text-xs text-sidebar-foreground/60">
               <div className="flex items-center justify-between">
                  <span className="flex items-center gap-1.5">

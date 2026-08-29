@@ -67,10 +67,11 @@ export function DefaultPromptEditor() {
                 disabled={isLoading}
               />
             </div>
-            <div className="flex justify-end">
+            <div className="flex justify-stretch sm:justify-end">
               <Button 
                 onClick={handleSave}
                 disabled={isLoading || updateDefaultPrompt.isPending}
+                className="w-full sm:w-auto"
               >
                 {t('common.save')}
               </Button>

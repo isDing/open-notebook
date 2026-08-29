@@ -61,7 +61,7 @@ export function TransformationPlayground({ transformations, selectedTransformati
             <div>
               <Label htmlFor="transformation">{t('navigation.transformation')}</Label>
               <Select name="transformation" value={selectedId} onValueChange={setSelectedId}>
-                <SelectTrigger id="transformation">
+                <SelectTrigger id="transformation" className="w-full">
                   <SelectValue placeholder={t('transformations.selectToStart')} />
                 </SelectTrigger>
                 <SelectContent>

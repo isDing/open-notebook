@@ -66,8 +66,8 @@ export function StreamingResponse({
         <Collapsible open={strategyOpen} onOpenChange={setStrategyOpen}>
           <Card>
             <CardHeader>
-              <CollapsibleTrigger className="flex items-center justify-between w-full hover:opacity-80">
-                <CardTitle className="text-base flex items-center gap-2">
+              <CollapsibleTrigger className="flex min-h-11 w-full items-center justify-between text-left hover:opacity-80">
+                <CardTitle className="flex min-w-0 items-center gap-2 break-words text-base">
                   <Sparkles className="h-4 w-4 text-teal" />
                   {t('common.strategy')}
                 </CardTitle>
@@ -78,7 +78,7 @@ export function StreamingResponse({
               <CardContent className="space-y-3 pt-0">
                 <div>
                   <p className="text-sm text-muted-foreground mb-2">{t('common.reasoning')}:</p>
-                  <p className="text-sm">{strategy.reasoning}</p>
+                  <p className="break-words text-sm">{strategy.reasoning}</p>
                 </div>
                 {strategy.searches.length > 0 && (
                   <div>
@@ -87,9 +87,9 @@ export function StreamingResponse({
                       {strategy.searches.map((search, i) => (
                         <div key={i} className="flex items-start gap-2">
                           <Badge variant="outline" className="mt-0.5 font-mono text-[11px]">{i + 1}</Badge>
-                          <div className="flex-1">
-                            <p className="text-sm font-medium">{search.term}</p>
-                            <p className="text-xs text-muted-foreground">{search.instructions}</p>
+                          <div className="min-w-0 flex-1">
+                            <p className="break-words text-sm font-medium">{search.term}</p>
+                            <p className="break-words text-xs text-muted-foreground">{search.instructions}</p>
                           </div>
                         </div>
                       ))}
@@ -107,8 +107,8 @@ export function StreamingResponse({
         <Collapsible open={answersOpen} onOpenChange={setAnswersOpen}>
           <Card>
             <CardHeader>
-              <CollapsibleTrigger className="flex items-center justify-between w-full hover:opacity-80">
-                <CardTitle className="text-base flex items-center gap-2">
+              <CollapsibleTrigger className="flex min-h-11 w-full items-center justify-between text-left hover:opacity-80">
+                <CardTitle className="flex min-w-0 items-center gap-2 break-words text-base">
                   <Lightbulb className="h-4 w-4 text-teal" />
                   {t('common.individualAnswers', { count: answers.length })}
                 </CardTitle>
@@ -119,7 +119,7 @@ export function StreamingResponse({
               <CardContent className="space-y-2 pt-0">
                 {answers.map((answer, i) => (
                   <div key={i} className="p-3 rounded-md bg-muted">
-                    <p className="text-sm">{answer}</p>
+                    <p className="break-words text-sm">{answer}</p>
                   </div>
                 ))}
               </CardContent>
@@ -132,7 +132,7 @@ export function StreamingResponse({
       {finalAnswer && (
         <Card className="border-teal">
           <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
+            <CardTitle className="flex min-w-0 items-center gap-2 break-words text-base">
               <CheckCircle className="h-4 w-4 text-teal" />
               {t('common.finalAnswer')}
             </CardTitle>

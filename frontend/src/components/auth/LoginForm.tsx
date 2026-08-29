@@ -71,7 +71,7 @@ export function LoginForm() {
   // Show loading while checking if auth is required
   if (!hasHydrated || isCheckingAuth) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-dvh flex items-center justify-center bg-background">
         <LoadingSpinner />
       </div>
     )
@@ -80,7 +80,7 @@ export function LoginForm() {
   // If we still don't know if auth is required (connection error), show error
   if (authRequired === null) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <div className="min-h-dvh flex items-center justify-center bg-background p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CardTitle>{t('common.connectionError')}</CardTitle>
@@ -138,7 +138,7 @@ export function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+    <div className="min-h-dvh flex items-center justify-center bg-background p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))]">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle>{t('auth.loginTitle')}</CardTitle>
@@ -150,8 +150,12 @@ export function LoginForm() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Input
+                id="password"
+                name="password"
                 type="password"
                 placeholder={t('auth.passwordPlaceholder')}
+                aria-label={t('auth.passwordPlaceholder')}
+                autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}

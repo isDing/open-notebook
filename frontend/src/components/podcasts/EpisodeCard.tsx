@@ -228,9 +228,9 @@ export function EpisodeCard({ episode, onDelete, deleting, onRetry, retrying }: 
     <Card>
       <CardContent className="space-y-4 p-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-1">
+          <div className="min-w-0 space-y-1">
             <div className="flex flex-wrap items-center gap-2">
-              <h3 className="text-base font-semibold text-foreground">
+              <h3 className="break-words text-base font-semibold text-foreground">
                 {episode.name}
               </h3>
               <StatusBadge status={episode.job_status} />
@@ -240,10 +240,10 @@ export function EpisodeCard({ episode, onDelete, deleting, onRetry, retrying }: 
               {createdLabel ? ` • ${createdLabel}` : ''}
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:flex-nowrap">
             <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
               <DialogTrigger asChild>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className="min-h-11 flex-1 sm:min-h-8 sm:flex-none">
                   <InfoIcon className="mr-2 h-4 w-4" /> {t('podcasts.details')}
                 </Button>
               </DialogTrigger>
@@ -279,7 +279,7 @@ export function EpisodeCard({ episode, onDelete, deleting, onRetry, retrying }: 
                             <div className="grid gap-2 text-sm md:grid-cols-2">
                               <div>
                                 <p className="text-muted-foreground">{t('podcasts.outlineModel')}</p>
-                                <p>
+                                <p className="break-words">
                                   {formatModelLabel(
                                     episode.episode_profile?.outline_model_provider,
                                     episode.episode_profile?.outline_model_name,
@@ -290,7 +290,7 @@ export function EpisodeCard({ episode, onDelete, deleting, onRetry, retrying }: 
                               </div>
                               <div>
                                 <p className="text-muted-foreground">{t('podcasts.transcriptModel')}</p>
-                                <p>
+                                <p className="break-words">
                                   {formatModelLabel(
                                     episode.episode_profile?.transcript_model_provider,
                                     episode.episode_profile?.transcript_model_name,
@@ -317,7 +317,7 @@ export function EpisodeCard({ episode, onDelete, deleting, onRetry, retrying }: 
 
                           <section className="space-y-2">
                             <h4 className="text-sm font-semibold text-foreground">{t('podcasts.speakerProfile')}</h4>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="break-words text-xs text-muted-foreground">
                               {formatModelLabel(
                                 episode.speaker_profile?.voice_model_provider,
                                 episode.speaker_profile?.voice_model_name,
@@ -331,7 +331,7 @@ export function EpisodeCard({ episode, onDelete, deleting, onRetry, retrying }: 
                                 className="rounded-md border bg-muted/20 p-3 text-xs"
                               >
                                 <p className="font-semibold text-foreground">{speaker.name}</p>
-                                <p className="text-muted-foreground">{t('podcasts.voiceId')}: {speaker.voice_id}</p>
+                                <p className="break-all text-muted-foreground">{t('podcasts.voiceId')}: {speaker.voice_id}</p>
                                 <p className="mt-2 whitespace-pre-wrap text-muted-foreground">
                                   <span className="font-semibold">{t('podcasts.backstory')}:</span> {speaker.backstory}
                                 </p>
@@ -400,6 +400,7 @@ export function EpisodeCard({ episode, onDelete, deleting, onRetry, retrying }: 
                 size="sm"
                 onClick={handleRetry}
                 disabled={retrying}
+                className="min-h-11 flex-1 sm:min-h-8 sm:flex-none"
               >
                 <RefreshCcw className={cn('mr-2 h-4 w-4', retrying && 'animate-spin')} />
                 {retrying ? t('podcasts.retrying') : t('podcasts.retry')}
@@ -407,7 +408,7 @@ export function EpisodeCard({ episode, onDelete, deleting, onRetry, retrying }: 
             ) : null}
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="sm" className="text-destructive">
+                <Button variant="ghost" size="sm" className="min-h-11 flex-1 text-destructive sm:min-h-8 sm:flex-none">
                   <Trash2 className="mr-2 h-4 w-4" />
                   {t('podcasts.delete')}
                 </Button>

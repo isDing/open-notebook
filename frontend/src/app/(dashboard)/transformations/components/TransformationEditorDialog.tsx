@@ -148,7 +148,7 @@ export function TransformationEditorDialog({ open, onOpenChange, transformation 
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-4xl w-full max-h-[90vh] overflow-hidden p-0">
+      <DialogContent className="w-[calc(100%-1rem)] max-h-[calc(100dvh-1rem)] overflow-hidden p-0 sm:max-w-4xl">
         <DialogTitle className="sr-only">
           {isEditing ? t('common.edit') : t('transformations.createNew')}
         </DialogTitle>
@@ -162,7 +162,7 @@ export function TransformationEditorDialog({ open, onOpenChange, transformation 
             </div>
           ) : (
             <>
-              <div className="border-b px-6 py-4 space-y-4">
+              <div className="space-y-4 border-b px-4 py-4 sm:px-6">
                 <div>
                   <Label htmlFor={nameId} className="text-sm font-medium">
                     {t('transformations.name')}
@@ -276,7 +276,7 @@ export function TransformationEditorDialog({ open, onOpenChange, transformation 
                 </div>
               </div>
 
-              <div className="flex-1 overflow-y-auto px-6 py-4">
+              <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-6">
                 <Label htmlFor={promptId} className="text-sm font-medium">{t('transformations.systemPrompt')}</Label>
                 <Controller
                   control={control}
@@ -304,7 +304,7 @@ export function TransformationEditorDialog({ open, onOpenChange, transformation 
             </>
           )}
 
-          <div className="border-t px-6 py-4 flex justify-end gap-2">
+          <div className="flex flex-col-reverse gap-2 border-t px-4 py-4 sm:flex-row sm:justify-end sm:px-6">
              <Button type="button" variant="outline" onClick={handleClose}>
                {t('common.cancel')}
              </Button>

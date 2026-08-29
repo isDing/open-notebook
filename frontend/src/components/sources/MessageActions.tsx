@@ -77,7 +77,7 @@ export function MessageActions({ content, notebookId }: MessageActionsProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 px-2"
+                className="h-10 min-w-10 px-2 sm:h-7 sm:min-w-0"
                 onClick={handleSaveToNote}
                 disabled={createNote.isPending}
               >
@@ -98,7 +98,7 @@ export function MessageActions({ content, notebookId }: MessageActionsProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="h-7 px-2"
+              className="h-10 min-w-10 px-2 sm:h-7 sm:min-w-0"
               onClick={handleCopyToClipboard}
               disabled={createNote.isPending}
             >

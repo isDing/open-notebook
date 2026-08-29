@@ -134,7 +134,7 @@ export default function NotebookPage() {
 
   if (notebookLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-dvh flex items-center justify-center">
         <LoadingSpinner size="lg" />
       </div>
     )
@@ -154,26 +154,26 @@ export default function NotebookPage() {
   return (
     <AppShell>
       <div className="flex flex-col flex-1 min-h-0">
-        <div className="flex-shrink-0 p-6 pb-0">
+        <div className="flex-shrink-0 p-4 pb-0 sm:p-6 sm:pb-0">
           <NotebookHeader notebook={notebook} />
         </div>
 
-        <div className="flex-1 p-6 pt-6 overflow-x-auto flex flex-col">
+        <div className="flex-1 min-h-0 overflow-x-hidden p-4 pt-4 sm:p-6 sm:pt-6 flex flex-col">
           {/* Mobile: Tabbed interface - only render on mobile to avoid double-mounting */}
           {!isDesktop && (
             <>
               <div className="lg:hidden mb-4">
                 <Tabs value={mobileActiveTab} onValueChange={(value) => setMobileActiveTab(value as 'sources' | 'notes' | 'chat')}>
-                  <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="sources" className="gap-2">
+                  <TabsList className="grid w-full grid-cols-1 gap-1 sm:grid-cols-3">
+                    <TabsTrigger value="sources" className="min-h-10 gap-2 sm:min-h-9">
                       <FileText className="h-4 w-4" />
                       {t('navigation.sources')}
                     </TabsTrigger>
-                    <TabsTrigger value="notes" className="gap-2">
+                    <TabsTrigger value="notes" className="min-h-10 gap-2 sm:min-h-9">
                       <StickyNote className="h-4 w-4" />
                       {t('common.notes')}
                     </TabsTrigger>
-                    <TabsTrigger value="chat" className="gap-2">
+                    <TabsTrigger value="chat" className="min-h-10 gap-2 sm:min-h-9">
                       <MessageSquare className="h-4 w-4" />
                       {t('common.chat')}
                     </TabsTrigger>
@@ -196,6 +196,7 @@ export default function NotebookPage() {
                     hasNextPage={hasNextPage}
                     isFetchingNextPage={isFetchingNextPage}
                     fetchNextPage={fetchNextPage}
+                    collapsible={false}
                   />
                 )}
                 {mobileActiveTab === 'notes' && (
@@ -206,6 +207,7 @@ export default function NotebookPage() {
                     contextSelections={contextSelections.notes}
                     onContextModeChange={handleNoteContextModeChange}
                     onBulkContextModeChange={handleBulkNoteContext}
+                    collapsible={false}
                   />
                 )}
                 {mobileActiveTab === 'chat' && (

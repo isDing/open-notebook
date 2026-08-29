@@ -105,8 +105,8 @@ export function SessionManager({
     <>
       <Card className="h-full flex flex-col">
         <CardHeader className="pb-3">
-          <CardTitle className="flex items-center justify-between">
-            <span className="flex items-center gap-2">
+          <CardTitle className="flex min-w-0 items-center justify-between gap-2">
+            <span className="flex min-w-0 items-center gap-2 truncate">
               <MessageSquare className="h-5 w-5" />
               {t('chat.sessions')}
             </span>
@@ -114,6 +114,7 @@ export function SessionManager({
               size="sm"
               variant="outline"
               onClick={() => setIsCreating(true)}
+              className="h-10 w-10 p-0 sm:h-8 sm:w-8"
             >
               <Plus className="h-4 w-4" />
             </Button>
@@ -133,13 +134,14 @@ export function SessionManager({
                     if (e.key === 'Enter') handleCreateSession()
                   }}
                 />
-                <div className="flex gap-2">
-                  <Button size="sm" onClick={handleCreateSession}>
+                <div className="flex flex-wrap gap-2">
+                  <Button size="sm" onClick={handleCreateSession} className="min-h-10 sm:min-h-8">
                     {t('common.create')}
                   </Button>
                   <Button
                     size="sm"
                     variant="outline"
+                    className="min-h-10 sm:min-h-8"
                     onClick={() => {
                       setIsCreating(false)
                       setNewSessionTitle('')
@@ -184,13 +186,14 @@ export function SessionManager({
                           }}
                           autoFocus
                         />
-                        <div className="flex gap-2">
-                          <Button size="sm" onClick={handleSaveEdit}>
+                        <div className="flex flex-wrap gap-2">
+                          <Button size="sm" onClick={handleSaveEdit} className="h-10 w-10 p-0 sm:h-8 sm:w-8">
                             <Check className="h-3 w-3" />
                           </Button>
                           <Button
                             size="sm"
                             variant="outline"
+                            className="h-10 w-10 p-0 sm:h-8 sm:w-8"
                             onClick={handleCancelEdit}
                           >
                             <X className="h-3 w-3" />
@@ -199,15 +202,16 @@ export function SessionManager({
                       </div>
                     ) : (
                       <>
-                        <div className="flex items-start justify-between mb-1">
-                          <h4 className="font-medium text-sm">
+                        <div className="flex min-w-0 items-start justify-between gap-2 mb-1">
+                          <h4 className="min-w-0 break-words font-medium text-sm">
                             {session.title}
                           </h4>
                           <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
                             <Button
                               size="sm"
                               variant="ghost"
-                              className="h-6 w-6 p-0"
+                              className="h-10 w-10 p-0 sm:h-7 sm:w-7"
+                              aria-label={t('common.edit')}
                               onClick={() => handleStartEdit(session)}
                             >
                               <Edit2 className="h-3 w-3" />
@@ -215,14 +219,15 @@ export function SessionManager({
                             <Button
                               size="sm"
                               variant="ghost"
-                              className="h-6 w-6 p-0"
+                              className="h-10 w-10 p-0 sm:h-7 sm:w-7"
+                              aria-label={t('common.delete')}
                               onClick={() => setDeleteConfirmId(session.id)}
                             >
                               <Trash2 className="h-3 w-3" />
                             </Button>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                           <Clock className="h-3 w-3" />
                           {formatDistanceToNow(new Date(session.created), {
                             addSuffix: true,

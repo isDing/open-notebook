@@ -233,9 +233,9 @@ function SourceCardImpl({
           <div className="flex-1 min-w-0">
             {/* Status badge - only show if not completed */}
             {!isCompleted && (
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex flex-wrap items-center gap-2 mb-2 pr-8">
                 <div className={cn(
-                  'flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium',
+                  'flex max-w-full items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium',
                   statusConfig.bgColor,
                   statusConfig.color
                 )}>
@@ -243,7 +243,7 @@ function SourceCardImpl({
                     'h-3 w-3',
                     isProcessing && 'animate-spin'
                   )} />
-                  {statusLoading && shouldFetchStatus ? t('sources.checking') : statusConfig.label}
+                  <span className="truncate">{statusLoading && shouldFetchStatus ? t('sources.checking') : statusConfig.label}</span>
                 </div>
 
                 {/* Source type indicator */}
@@ -257,7 +257,7 @@ function SourceCardImpl({
             {/* Title */}
             <div className={cn('mb-1.5', !isCompleted && 'mb-1')}>
               <h4
-                className="text-sm font-medium leading-tight line-clamp-2 break-all pr-6"
+                className="pr-6 text-sm font-medium leading-tight line-clamp-2 break-words"
                 title={title}
               >
                 {title}
@@ -297,7 +297,7 @@ function SourceCardImpl({
           </div>
 
           {/* Context toggle and actions */}
-          <div className="flex items-center gap-1">
+          <div className="flex min-w-0 items-center gap-1 pr-10 sm:pr-8">
             {/* Context toggle - only show if handler provided */}
             {onContextModeChange && contextMode && (
               <ContextToggle
@@ -313,7 +313,8 @@ function SourceCardImpl({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="absolute top-1.5 right-1.5 h-7 w-7 p-0 text-muted-foreground touch-reveal group-hover:opacity-100 transition-opacity"
+                  aria-label={t('common.actions')}
+                  className="absolute right-1.5 top-1.5 h-10 w-10 p-0 text-muted-foreground touch-reveal group-hover:opacity-100 transition-opacity sm:h-7 sm:w-7"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <MoreVertical className="h-4 w-4" />
@@ -385,7 +386,7 @@ function SourceCardImpl({
         {/* Prominent retry action surfaced directly on failed cards so it's
             discoverable without opening the dropdown menu (#726). */}
         {isFailed ? (
-          <div className="flex gap-2 pt-2 border-t">
+          <div className="flex flex-wrap gap-2 pt-2 border-t">
             <Button
               variant="default"
               size="sm"
@@ -394,7 +395,7 @@ function SourceCardImpl({
                 handleRetry()
               }}
               disabled={!onRetry}
-              className="h-7 text-xs"
+              className="h-10 text-xs sm:h-7"
             >
               <RefreshCw className="h-3 w-3 mr-1" />
               {t('sources.retryProcessing')}

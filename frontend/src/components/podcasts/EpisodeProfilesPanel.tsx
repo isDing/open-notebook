@@ -85,14 +85,14 @@ export function EpisodeProfilesPanel({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
           <h2 className="font-display text-lg font-semibold tracking-tight">{t('podcasts.episodeProfilesTitle')}</h2>
           <p className="text-sm text-muted-foreground">
             {t('podcasts.episodeProfilesDesc')}
           </p>
         </div>
-        <Button onClick={() => setCreateOpen(true)} disabled={disableCreate}>
+        <Button onClick={() => setCreateOpen(true)} disabled={disableCreate} className="w-full sm:w-auto">
           {t('podcasts.createProfile')}
         </Button>
       </div>
@@ -119,9 +119,9 @@ export function EpisodeProfilesPanel({
             return (
               <Card key={profile.id}>
                 <CardHeader className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <CardTitle className="text-lg font-semibold">
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                        <CardTitle className="break-words text-lg font-semibold">
                         {profile.name}
                       </CardTitle>
                       {unconfigured ? (
@@ -135,11 +135,12 @@ export function EpisodeProfilesPanel({
                       {profile.description || t('podcasts.noDescription')}
                     </CardDescription>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setEditProfile(profile)}
+                  <div className="flex w-full flex-wrap items-center gap-1 md:w-auto md:justify-end">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setEditProfile(profile)}
+                        className="min-h-11 flex-1 md:min-h-8 md:flex-none"
                     >
                       <Edit3 className="mr-2 h-4 w-4" /> {t('podcasts.edit')}
                     </Button>
@@ -149,8 +150,10 @@ export function EpisodeProfilesPanel({
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8"
+                            className="min-h-11 min-w-11 sm:h-8 sm:min-h-8 sm:w-8 sm:min-w-8"
                             onClick={(e) => e.stopPropagation()}
+                            aria-label={t('common.actions')}
+                            title={t('common.actions')}
                           >
                             <MoreVertical className="h-4 w-4" />
                           </Button>
@@ -203,7 +206,7 @@ export function EpisodeProfilesPanel({
                       <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                         {t('podcasts.outlineModel')}
                       </p>
-                      <p className="text-foreground">
+                      <p className="break-words text-foreground">
                         {profile.outline_llm
                           ? (modelNameMap[profile.outline_llm] ?? profile.outline_llm)
                           : t('podcasts.notConfigured')}
@@ -213,7 +216,7 @@ export function EpisodeProfilesPanel({
                       <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                         {t('podcasts.transcriptModel')}
                       </p>
-                      <p className="text-foreground">
+                      <p className="break-words text-foreground">
                         {profile.transcript_llm
                           ? (modelNameMap[profile.transcript_llm] ?? profile.transcript_llm)
                           : t('podcasts.notConfigured')}
@@ -237,15 +240,15 @@ export function EpisodeProfilesPanel({
                       <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                         {t('podcasts.speakerProfile')}
                       </p>
-                      <div className="flex items-center gap-2 text-foreground">
+                      <div className="flex min-w-0 flex-wrap items-center gap-2 text-foreground">
                         <Users className="h-4 w-4" />
-                        <span>
+                        <span className="min-w-0 break-words">
                           {profile.speaker_config_name ??
                             speakerSummary?.name ??
                             t('podcasts.notConfigured')}
                         </span>
                         {speakerSummary?.voice_model ? (
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="outline" className="max-w-full whitespace-normal break-words text-xs">
                             {modelNameMap[speakerSummary.voice_model] ?? speakerSummary.voice_model}
                           </Badge>
                         ) : null}

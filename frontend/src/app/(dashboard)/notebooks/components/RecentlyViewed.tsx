@@ -58,9 +58,9 @@ export function RecentlyViewed({ limit = 12 }: RecentlyViewedProps) {
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-4">
-      <div className="flex items-center gap-2">
+      <div className="flex min-w-0 items-center gap-2">
         <CollapsibleTrigger asChild>
-          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+          <Button variant="ghost" size="sm" className="h-10 w-10 p-0 sm:h-8 sm:w-8">
             {isOpen ? (
               <ChevronDown className="h-4 w-4" />
             ) : (
@@ -73,7 +73,7 @@ export function RecentlyViewed({ limit = 12 }: RecentlyViewedProps) {
             </span>
           </Button>
         </CollapsibleTrigger>
-        <h2 className="font-display text-lg font-semibold tracking-tight">
+        <h2 className="min-w-0 truncate font-display text-lg font-semibold tracking-tight">
           {t('notebooks.recentlyViewed', { defaultValue: 'Recently Viewed' })}
         </h2>
         <span className="text-sm text-muted-foreground">({items.length})</span>
@@ -106,7 +106,7 @@ export function RecentlyViewed({ limit = 12 }: RecentlyViewedProps) {
                   <Icon className="h-3.5 w-3.5" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="flex min-w-0 items-center gap-2">
+                  <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5">
                     <p className="truncate text-sm font-medium">{item.title}</p>
                     <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                       {typeLabel}

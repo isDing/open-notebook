@@ -103,10 +103,10 @@ export function ChatPanel({
 
   return (
     <>
-    <Card className="flex flex-col h-full flex-1 overflow-hidden">
+    <Card className="flex h-full min-w-0 flex-1 flex-col overflow-hidden">
       <CardHeader className="pb-3 flex-shrink-0">
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.13em] text-muted-foreground">
+        <div className="flex min-w-0 items-center justify-between gap-2">
+          <CardTitle className="flex min-w-0 items-center gap-2 truncate text-xs font-semibold uppercase tracking-[0.13em] text-muted-foreground">
             <span aria-hidden className="h-3.5 w-[3px] rounded-full bg-teal" />
             {title || (contextType === 'source' ? t('chat.chatWith', { name: t('navigation.sources') }) : t('chat.chatWith', { name: t('common.notebook') }))}
           </CardTitle>
@@ -115,7 +115,7 @@ export function ChatPanel({
               <Button
                 variant="ghost"
                 size="sm"
-                className="gap-2 text-muted-foreground"
+                className="min-h-10 shrink-0 gap-2 text-muted-foreground sm:min-h-8"
                 onClick={() => setSessionManagerOpen(true)}
                 disabled={loadingSessions}
               >
@@ -142,8 +142,8 @@ export function ChatPanel({
         </div>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col min-h-0 p-0">
-        <ScrollArea className="flex-1 min-h-0 px-4" ref={scrollAreaRef}>
-          <div className="space-y-4 py-4">
+        <ScrollArea className="min-h-0 flex-1 px-3 sm:px-4" ref={scrollAreaRef}>
+          <div className="min-w-0 space-y-4 py-4">
             {messages.length === 0 ? (
               <div className="text-center text-muted-foreground py-8">
                 <Bot className="h-12 w-12 mx-auto mb-4 opacity-50" />
@@ -271,10 +271,10 @@ function ChatComposer({
   const keyHint = isMac ? '⌘+Enter' : 'Ctrl+Enter'
 
   return (
-    <div className="flex-shrink-0 p-4 space-y-3 border-t">
+    <div className="flex-shrink-0 space-y-3 border-t p-3 sm:p-4">
       {/* Model selector */}
       {onModelChange && (
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <span className="text-xs text-muted-foreground">{t('chat.model')}</span>
           <ModelSelector
             currentModel={modelOverride}
@@ -294,14 +294,14 @@ function ChatComposer({
           onKeyDown={handleKeyDown}
           placeholder={`${t('chat.sendPlaceholder')} (${t('chat.pressToSend', { key: keyHint })})`}
           disabled={isStreaming}
-          className="flex-1 min-h-[40px] max-h-[100px] resize-none py-2 px-3 min-w-0"
+          className="min-h-11 max-h-[100px] min-w-0 flex-1 resize-none px-3 py-2"
           rows={1}
         />
         <Button
           onClick={handleSend}
           disabled={!input.trim() || isStreaming}
           size="icon"
-          className="h-[40px] w-[40px] flex-shrink-0"
+          className="h-11 w-11 flex-shrink-0"
         >
           {isStreaming ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -340,7 +340,7 @@ const ChatMessage = memo(function ChatMessage({
           </div>
         </div>
       )}
-      <div className="flex flex-col gap-2 max-w-[80%]">
+      <div className="flex min-w-0 max-w-[80%] flex-col gap-2">
         <div
           className={`rounded-lg px-4 py-2 border ${
             message.type === 'human'
@@ -354,7 +354,7 @@ const ChatMessage = memo(function ChatMessage({
               onReferenceClick={onReferenceClick}
             />
           ) : (
-            <p className="text-sm break-all">{message.content}</p>
+            <p className="break-all text-sm">{message.content}</p>
           )}
         </div>
         {message.type === 'ai' && (

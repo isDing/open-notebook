@@ -478,7 +478,7 @@ export function GeneratePodcastDialog({ open, onOpenChange }: GeneratePodcastDia
         resetState()
       }
     }}>
-      <DialogContent className="flex w-[80vw] max-w-[1080px] max-h-[90dvh] flex-col overflow-hidden md:grid">
+      <DialogContent className="flex w-[calc(100%-1rem)] max-w-[1080px] max-h-[calc(100dvh-1rem)] flex-col overflow-hidden p-4 sm:w-[80vw] sm:p-6 md:grid">
         <DialogHeader className="shrink-0">
           <DialogTitle>{t('podcasts.generateEpisode')}</DialogTitle>
           <DialogDescription>
@@ -583,7 +583,7 @@ export function GeneratePodcastDialog({ open, onOpenChange }: GeneratePodcastDia
               <Button
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className="w-full"
+                className="min-h-11 w-full sm:min-h-9"
               >
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isSubmitting ? t('podcasts.generating') : t('podcasts.generate')}
@@ -592,7 +592,7 @@ export function GeneratePodcastDialog({ open, onOpenChange }: GeneratePodcastDia
                 variant="outline"
                 onClick={() => onOpenChange(false)}
                 disabled={isSubmitting}
-                className="w-full"
+                className="min-h-11 w-full sm:min-h-9"
               >
                 {t('common.cancel')}
               </Button>

@@ -33,6 +33,7 @@ interface NotesColumnProps {
   contextSelections?: Record<string, NoteContextMode>
   onContextModeChange?: (noteId: string, mode: NoteContextMode) => void
   onBulkContextModeChange?: (action: NoteContextDefault) => void
+  collapsible?: boolean
 }
 
 export function NotesColumn({
@@ -41,7 +42,8 @@ export function NotesColumn({
   notebookId,
   contextSelections,
   onContextModeChange,
-  onBulkContextModeChange
+  onBulkContextModeChange,
+  collapsible = true,
 }: NotesColumnProps) {
   const { t, language } = useTranslation()
   const [showAddDialog, setShowAddDialog] = useState(false)
@@ -79,23 +81,23 @@ export function NotesColumn({
   return (
     <>
       <CollapsibleColumn
-        isCollapsed={notesCollapsed}
+        isCollapsed={collapsible && notesCollapsed}
         onToggle={toggleNotes}
         collapsedIcon={StickyNote}
         collapsedLabel={notesLabel}
       >
         <Card className="h-full flex flex-col flex-1 overflow-hidden">
-          <CardHeader className="pb-3 flex-shrink-0">
-            <div className="flex items-center justify-between gap-2">
-              <CardTitle className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.13em] text-muted-foreground">
+          <CardHeader className="flex-shrink-0 pb-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <CardTitle className="flex min-w-0 items-center gap-2 text-xs font-semibold uppercase tracking-[0.13em] text-muted-foreground">
                 <span aria-hidden className="h-3.5 w-[3px] rounded-full bg-gold" />
                 {notesLabel}
               </CardTitle>
-              <div className="flex items-center gap-2">
+              <div className="flex w-full flex-wrap items-center justify-end gap-2 sm:w-auto">
                 {onBulkContextModeChange && notes && notes.length > 0 && (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="text-muted-foreground" title={t('sources.bulkContext')}>
+                  <Button variant="ghost" size="sm" className="h-10 w-10 p-0 text-muted-foreground sm:h-8 sm:w-8" title={t('sources.bulkContext')} aria-label={t('sources.bulkContext')}>
                         <ListChecks className="h-4 w-4" />
                         <ChevronDown className="h-4 w-4 ml-1" />
                       </Button>
@@ -112,6 +114,7 @@ export function NotesColumn({
                 )}
                 <Button
                   size="sm"
+                  className="min-h-10 flex-1 sm:min-h-8 sm:flex-none"
                   onClick={() => {
                     setEditingNote(null)
                     setShowAddDialog(true)
@@ -181,7 +184,7 @@ export function NotesColumn({
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-8 w-8 p-0 touch-reveal group-hover:opacity-100 transition-opacity"
+                              className="h-10 w-10 p-0 touch-reveal group-hover:opacity-100 transition-opacity sm:h-8 sm:w-8"
                               onClick={(e) => e.stopPropagation()}
                             >
                               <MoreVertical className="h-4 w-4" />
@@ -204,11 +207,11 @@ export function NotesColumn({
                     </div>
 
                     {note.title && (
-                      <h4 className="text-sm font-medium mb-2 break-all">{note.title}</h4>
+                      <h4 className="mb-2 break-words text-sm font-medium">{note.title}</h4>
                     )}
 
                     {note.content && (
-                      <p className="text-sm text-muted-foreground line-clamp-3 break-all">
+                      <p className="break-words text-sm text-muted-foreground line-clamp-3">
                         {note.content}
                       </p>
                     )}

@@ -458,7 +458,7 @@ export function AddSourceDialog({
 
     return (
       <Dialog open={open} onOpenChange={handleClose}>
-        <DialogContent className="sm:max-w-[500px]" showCloseButton={true}>
+        <DialogContent className="sm:max-w-[500px] max-h-[90dvh]" showCloseButton={true}>
           <DialogHeader>
             <DialogTitle>
               {batchProgress ? t('sources.processingFiles') : t('sources.statusProcessing')}
@@ -534,7 +534,7 @@ export function AddSourceDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[700px] p-0">
+      <DialogContent className="sm:max-w-[700px] max-h-[90dvh] p-0 flex flex-col">
         <DialogHeader className="px-6 pt-6 pb-0">
           <DialogTitle>{t('sources.addNew')}</DialogTitle>
           <DialogDescription>
@@ -542,12 +542,12 @@ export function AddSourceDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="min-w-0">
+        <form onSubmit={handleSubmit(onSubmit)} className="min-h-0 min-w-0 flex-1 flex flex-col overflow-hidden">
           <WizardContainer
             currentStep={currentStep}
             steps={WIZARD_STEPS}
             onStepClick={handleStepClick}
-            className="border-0"
+            className="h-[min(420px,50dvh)] flex-shrink-0 border-0 sm:h-[min(500px,58dvh)]"
           >
             {currentStep === 1 && (
               <SourceTypeStep
@@ -585,20 +585,22 @@ export function AddSourceDialog({
           </WizardContainer>
 
           {/* Navigation */}
-          <div className="flex flex-wrap justify-between items-center gap-2 px-4 py-4 border-t border-border sm:px-6">
+          <div className="flex flex-shrink-0 flex-wrap justify-between items-center gap-2 px-4 py-3 border-t border-border sm:px-6 sm:py-4">
             <Button 
               type="button" 
               variant="outline" 
+              className="min-h-11 sm:min-h-9"
               onClick={handleClose}
             >
               {t('common.cancel')}
             </Button>
 
-            <div className="flex gap-2">
+            <div className="flex flex-wrap justify-end gap-2">
               {currentStep > 1 && (
                 <Button
                   type="button"
                   variant="outline"
+                  className="min-h-11 sm:min-h-9"
                   onClick={handlePrevStep}
                 >
                   {t('common.back')}
@@ -610,6 +612,7 @@ export function AddSourceDialog({
                 <Button
                   type="button"
                   variant="outline"
+                  className="min-h-11 sm:min-h-9"
                   onClick={(e) => handleNextStep(e)}
                   disabled={!currentStepValid}
                 >
@@ -621,7 +624,7 @@ export function AddSourceDialog({
               <Button
                 type="submit"
                 disabled={!currentStepValid || createSource.isPending}
-                className="sm:min-w-[120px]"
+                className="min-h-11 sm:min-h-9 sm:min-w-[120px]"
               >
                 {createSource.isPending ? t('common.adding') : t('common.done')}
               </Button>

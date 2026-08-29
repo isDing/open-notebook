@@ -53,20 +53,28 @@ export default function NotebooksPage() {
 
   return (
     <AppShell>
-      <div className="flex-1 overflow-y-auto">
-        <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <h1 className="font-display text-2xl font-bold tracking-tight">{t('notebooks.title')}</h1>
-            <Button variant="outline" size="sm" onClick={() => refetch()}>
+      <div className="flex-1 min-h-0 overflow-y-auto">
+        <div className="space-y-6 p-4 sm:p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex min-w-0 items-center justify-between gap-3 sm:justify-start sm:gap-4">
+            <h1 className="truncate font-display text-2xl font-bold tracking-tight">{t('notebooks.title')}</h1>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => refetch()}
+              aria-label={t('common.refresh')}
+              title={t('common.refresh')}
+              className="h-10 w-10 shrink-0 p-0 sm:h-8 sm:w-8"
+            >
               <RefreshCw className="h-4 w-4" />
             </Button>
           </div>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-            <div className="flex items-center rounded-md border p-0.5">
+          <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center sm:gap-4">
+            <div className="flex w-fit items-center rounded-md border p-0.5">
               <Button
                 variant={viewMode === 'tile' ? 'secondary' : 'ghost'}
                 size="sm"
+                className="h-10 w-10 p-0 sm:h-8 sm:w-8"
                 onClick={() => setViewMode('tile')}
                 aria-label={t('notebooks.tileView')}
                 aria-pressed={viewMode === 'tile'}
@@ -77,6 +85,7 @@ export default function NotebooksPage() {
               <Button
                 variant={viewMode === 'list' ? 'secondary' : 'ghost'}
                 size="sm"
+                className="h-10 w-10 p-0 sm:h-8 sm:w-8"
                 onClick={() => setViewMode('list')}
                 aria-label={t('notebooks.listView')}
                 aria-pressed={viewMode === 'list'}
@@ -92,10 +101,10 @@ export default function NotebooksPage() {
               onChange={(event) => setSearchTerm(event.target.value)}
               placeholder={t('notebooks.searchPlaceholder')}
               autoComplete="off"
-              aria-label={t('common.accessibility.searchNotebooks') || "Search notebooks"}
+              aria-label={t('common.accessibility.searchNotebooks')}
               className="w-full sm:w-64"
             />
-            <Button onClick={() => setCreateDialogOpen(true)}>
+            <Button onClick={() => setCreateDialogOpen(true)} className="w-full sm:w-auto">
               <Plus className="h-4 w-4 mr-2" />
               {t('notebooks.newNotebook')}
             </Button>

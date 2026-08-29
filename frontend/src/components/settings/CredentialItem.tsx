@@ -97,11 +97,11 @@ export function CredentialItem({
             {credential.has_api_key && (
               <Badge variant="outline" className="text-[10px]">
                 <Key className="h-2.5 w-2.5 mr-0.5" />
-                Key
+                {t('models.apiKey')}
               </Badge>
             )}
           </div>
-          <div className="flex items-center gap-1 shrink-0">
+          <div className="flex shrink-0 flex-wrap items-center justify-end gap-1">
             {testResult && (
               testResult.success
                 ? <Check className="h-4 w-4 text-fern" />
@@ -112,26 +112,28 @@ export function CredentialItem({
               onClick={() => testCredential(credential.id)}
               disabled={isTestPending || !!credential.decryption_error}
               title={t('apiKeys.testConnection')}
+              className="min-h-11 min-w-11 sm:min-h-8 sm:min-w-8"
             >
               {isTestPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plug className="h-4 w-4" />}
-              <span className="hidden sm:inline text-xs">Test</span>
+              <span className="hidden text-xs sm:inline">{t('apiKeys.testConnection')}</span>
             </Button>
             <Button
               variant="ghost" size="sm"
               onClick={() => setDiscoverOpen(true)}
               disabled={!!credential.decryption_error}
               title={t('apiKeys.syncModels')}
+              className="min-h-11 min-w-11 sm:min-h-8 sm:min-w-8"
             >
               <Bot className="h-4 w-4" />
-              <span className="hidden sm:inline text-xs">Models</span>
+              <span className="hidden text-xs sm:inline">{t('apiKeys.syncModels')}</span>
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => setEditOpen(true)} disabled={!!credential.decryption_error} title={t('common.edit')}>
+            <Button variant="ghost" size="sm" onClick={() => setEditOpen(true)} disabled={!!credential.decryption_error} title={t('common.edit')} className="min-h-11 min-w-11 sm:min-h-8 sm:min-w-8">
               <Edit className="h-4 w-4" />
             </Button>
             <Button
               variant="ghost" size="sm"
               onClick={() => setDeleteOpen(true)}
-              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+              className="min-h-11 min-w-11 text-destructive hover:bg-destructive/10 hover:text-destructive sm:min-h-8 sm:min-w-8"
               title={t('common.delete')}
             >
               <Trash2 className="h-4 w-4" />
@@ -176,10 +178,11 @@ export function CredentialItem({
                           {model.name}
                           {defaultSlot && <span className="ml-0.5 opacity-75">({defaultSlot})</span>}
                           <button
-                            className="ml-0.5 touch-reveal group-hover/model:opacity-60 hover:!opacity-100 transition-opacity"
+                            className="ml-0.5 min-h-7 min-w-7 touch-reveal group-hover/model:opacity-60 hover:!opacity-100 transition-opacity"
                             onClick={() => testModel(model.id, model.name)}
                             disabled={isModelTestPending && testingModelId === model.id}
                             title={t('models.testModel')}
+                            aria-label={t('models.testModel')}
                           >
                             {isModelTestPending && testingModelId === model.id
                               ? <Loader2 className="h-3 w-3 animate-spin" />
@@ -187,9 +190,10 @@ export function CredentialItem({
                             }
                           </button>
                           <button
-                            className="touch-reveal group-hover/model:opacity-60 hover:!opacity-100 hover:text-destructive transition-opacity"
+                            className="min-h-7 min-w-7 touch-reveal group-hover/model:opacity-60 hover:!opacity-100 hover:text-destructive transition-opacity"
                             onClick={() => deleteModel.mutate(model.id)}
                             title={t('models.deleteModel')}
+                            aria-label={t('models.deleteModel')}
                           >
                             <X className="h-3 w-3" />
                           </button>

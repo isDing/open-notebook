@@ -182,7 +182,7 @@ export function AddExistingSourceDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl sm:max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
+      <DialogContent className="max-w-2xl sm:max-w-2xl max-h-[80dvh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Link2 className="h-5 w-5" />
@@ -193,7 +193,7 @@ export function AddExistingSourceDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 flex-1 overflow-hidden flex flex-col">
+        <div className="min-h-0 flex-1 space-y-4 overflow-hidden flex flex-col">
           {/* Search Input */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -201,7 +201,7 @@ export function AddExistingSourceDialog({
               placeholder={t('sources.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
+              className="h-11 pl-10 sm:h-9"
             />
             {isSearching && (
               <LoaderIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
@@ -209,7 +209,7 @@ export function AddExistingSourceDialog({
           </div>
 
           {/* Source List */}
-          <ScrollArea className="h-[400px] border rounded-md">
+          <ScrollArea className="h-[min(400px,45dvh)] min-h-0 border rounded-md">
             {isSearching && filteredSources.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-[200px] text-muted-foreground">
                 <LoaderIcon className="h-12 w-12 mb-2 animate-spin" />
@@ -227,13 +227,15 @@ export function AddExistingSourceDialog({
                   const isSelected = selectedSourceIds.includes(source.id)
 
                   return (
-                    <div
+                    <label
                       key={source.id}
-                      className={`flex items-start gap-3 p-3 rounded-md transition-colors min-w-0 ${
+                      htmlFor={`existing-source-${source.id}`}
+                      className={`flex min-w-0 cursor-pointer select-none items-start gap-3 rounded-md p-3 transition-colors touch-manipulation ${
                         isSelected ? 'bg-accent' : 'hover:bg-accent/50'
                       }`}
                     >
                       <Checkbox
+                        id={`existing-source-${source.id}`}
                         checked={isSelected}
                         onCheckedChange={() => handleToggleSource(source.id)}
                         disabled={isAlreadyLinked}
@@ -257,7 +259,7 @@ export function AddExistingSourceDialog({
                           {t('sources.added', { date: formatDate(source.created) })}
                         </p>
                       </div>
-                    </div>
+                    </label>
                   )
                 })}
               </div>
@@ -282,6 +284,7 @@ export function AddExistingSourceDialog({
         <DialogFooter>
           <Button
             variant="outline"
+            className="min-h-10 sm:min-h-9"
             onClick={() => onOpenChange(false)}
             disabled={addSources.isPending}
           >
@@ -289,6 +292,7 @@ export function AddExistingSourceDialog({
           </Button>
           <Button
             onClick={handleAddSelected}
+            className="min-h-10 sm:min-h-9"
             disabled={selectedSourceIds.length === 0 || addSources.isPending}
           >
             {addSources.isPending ? (

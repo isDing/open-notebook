@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { NotebookResponse } from '@/lib/types/api'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -51,8 +52,14 @@ export function NotebookCard({ notebook }: NotebookCardProps) {
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">
                 <span aria-hidden className="mb-2 block h-2 w-2 rounded-[3px] bg-teal" />
-                <CardTitle className="text-base truncate">
-                  {notebook.name}
+                <CardTitle className="min-w-0 text-base truncate">
+                  <Link
+                    href={`/notebooks/${encodeURIComponent(notebook.id)}`}
+                    onClick={(event) => event.stopPropagation()}
+                    className="block truncate rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    {notebook.name}
+                  </Link>
                 </CardTitle>
                 {notebook.archived && (
                   <Badge variant="secondary" className="mt-1">
@@ -64,9 +71,10 @@ export function NotebookCard({ notebook }: NotebookCardProps) {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
+                    aria-label={t('common.actions')}
                     variant="ghost"
                     size="sm"
-                    className="touch-reveal group-hover:opacity-100 transition-opacity"
+                    className="h-10 w-10 p-0 touch-reveal group-hover:opacity-100 transition-opacity sm:h-8 sm:w-8"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <MoreHorizontal className="h-4 w-4" />

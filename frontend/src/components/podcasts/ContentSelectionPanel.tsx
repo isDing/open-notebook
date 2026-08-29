@@ -67,8 +67,8 @@ export function ContentSelectionPanel({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <div>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
           <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
             {t('podcasts.content')}
           </h3>
@@ -76,8 +76,8 @@ export function ContentSelectionPanel({
             {t('podcasts.contentDesc')}
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="outline">
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge variant="outline" className="shrink-0">
             {t('podcasts.itemsSelected', { count: selectedNotebookSummaries.reduce(
                 (acc: number, summary: NotebookSummary) => acc + summary.sources + summary.notes,
                 0
@@ -103,7 +103,7 @@ export function ContentSelectionPanel({
             {t('podcasts.noNotebooksFoundInPodcasts')}
           </div>
         ) : (
-          <ScrollArea className="h-[45vh] md:h-[60vh]">
+          <ScrollArea className="h-[45dvh] md:h-[60dvh]">
             <Accordion
               type="multiple"
               value={expandedNotebooks}
@@ -144,10 +144,10 @@ export function ContentSelectionPanel({
                       <AccordionTrigger className="flex-1 px-0 py-0 hover:no-underline">
                         <Label
                           htmlFor={`notebook-toggle-${notebook.id}`}
-                          className="flex w-full items-center justify-between gap-3 pointer-events-none"
+                          className="pointer-events-none flex w-full min-w-0 flex-col justify-between gap-2 sm:flex-row sm:items-center sm:gap-3"
                         >
-                          <div className="text-left">
-                            <p className="font-medium text-sm text-foreground">
+                          <div className="min-w-0 text-left">
+                            <p className="break-words text-sm font-medium text-foreground">
                               {notebook.name}
                             </p>
                             <p className="text-xs text-muted-foreground">
@@ -156,7 +156,7 @@ export function ContentSelectionPanel({
                                 : t('podcasts.noContentSelected')}
                             </p>
                           </div>
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="outline" className="max-w-full shrink-0 whitespace-normal text-left text-xs sm:max-w-[45%] sm:text-right">
                             {sources.length} {t('podcasts.sources')} · {notes.length} {t('podcasts.notes')}
                           </Badge>
                         </Label>
@@ -184,7 +184,7 @@ export function ContentSelectionPanel({
                                 return (
                                   <div
                                     key={source.id}
-                                    className="flex items-center gap-3 rounded border bg-background px-3 py-2"
+                                    className="flex flex-wrap items-start gap-3 rounded border bg-background px-3 py-2"
                                   >
                                     <Checkbox
                                       id={`source-selection-${source.id}`}
@@ -199,12 +199,12 @@ export function ContentSelectionPanel({
                                     />
                                     <Label
                                       htmlFor={`source-selection-${source.id}`}
-                                      className="flex flex-1 flex-col gap-1 cursor-pointer"
+                                      className="flex min-w-0 flex-1 cursor-pointer flex-col gap-1"
                                     >
-                                      <span className="text-sm font-medium text-foreground">
+                                      <span className="break-words text-sm font-medium text-foreground">
                                         {source.title || t('podcasts.untitledSource')}
                                       </span>
-                                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                      <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                                         <span>{source.asset?.url ? t('podcasts.link') : t('podcasts.file')}</span>
                                         <span>•</span>
                                         <span>{source.embedded ? t('podcasts.embedded') : t('podcasts.notEmbedded')}</span>
@@ -221,7 +221,7 @@ export function ContentSelectionPanel({
                                       }
                                       disabled={mode === 'off'}
                                     >
-                                      <SelectTrigger className="w-[140px]">
+                                      <SelectTrigger className="min-h-11 w-28 shrink-0 sm:min-h-9 sm:w-[140px]">
                                         <SelectValue placeholder={t('podcasts.selectMode')} />
                                       </SelectTrigger>
                                       <SelectContent>
@@ -263,7 +263,7 @@ export function ContentSelectionPanel({
                                 return (
                                   <div
                                     key={note.id}
-                                    className="flex items-center gap-3 rounded border bg-background px-3 py-2"
+                                    className="flex items-start gap-3 rounded border bg-background px-3 py-2"
                                   >
                                     <Checkbox
                                       id={`note-selection-${note.id}`}
@@ -278,9 +278,9 @@ export function ContentSelectionPanel({
                                     />
                                     <Label
                                       htmlFor={`note-selection-${note.id}`}
-                                      className="flex flex-1 flex-col cursor-pointer"
+                                      className="flex min-w-0 flex-1 cursor-pointer flex-col"
                                     >
-                                      <span className="text-sm font-medium text-foreground">
+                                      <span className="break-words text-sm font-medium text-foreground">
                                         {note.title || t('podcasts.untitledNote')}
                                       </span>
                                       <span className="text-xs text-muted-foreground">

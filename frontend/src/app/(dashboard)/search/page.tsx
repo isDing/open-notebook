@@ -217,7 +217,7 @@ export default function SearchPage() {
                 ) : (
                   <>
                     <div className="space-y-2">
-                      <div className="flex items-center justify-between">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
                         <Label className="text-xs text-muted-foreground">
                           {customModels ? t('searchPage.usingCustomModels') : t('searchPage.usingDefaultModels')}
                         </Label>
@@ -226,7 +226,7 @@ export default function SearchPage() {
                           size="sm"
                           onClick={() => setShowAdvancedModels(true)}
                           disabled={ask.isStreaming}
-                          className="h-auto py-1 px-2"
+                          className="min-h-11 px-2 py-1 sm:min-h-8"
                         >
                           <Settings className="h-3 w-3 mr-1" />
                           {t('searchPage.advanced')}
@@ -249,7 +249,7 @@ export default function SearchPage() {
                       <Button
                         onClick={handleAsk}
                         disabled={ask.isStreaming || !askQuestion.trim()}
-                        className="w-full"
+                        className="min-h-11 w-full sm:min-h-9"
                       >
                         {ask.isStreaming ? (
                           <>
@@ -265,7 +265,7 @@ export default function SearchPage() {
                         <Button
                           variant="outline"
                           onClick={() => setShowSaveDialog(true)}
-                          className="w-full"
+                          className="min-h-11 w-full sm:min-h-9"
                         >
                           <Save className="h-4 w-4 mr-2" />
                           {t('searchPage.saveToNotebooks')}
@@ -339,7 +339,7 @@ export default function SearchPage() {
                       onClick={handleSearch}
                       disabled={searchMutation.isPending || !searchQuery.trim()}
                       aria-label={t('common.accessibility.searchKBBtn')}
-                      className="w-full sm:w-auto"
+                      className="min-h-11 w-full sm:min-h-9 sm:w-auto"
                     >
                       {searchMutation.isPending ? (
                         <LoadingSpinner size="sm" />
@@ -369,13 +369,13 @@ export default function SearchPage() {
                       onValueChange={(value: 'text' | 'vector') => setSearchType(value)}
                       disabled={modelsLoading || searchMutation.isPending}
                     >
-                      <div className="flex items-center space-x-2">
+                      <div className="flex min-h-11 items-center space-x-2">
                         <RadioGroupItem value="text" id="text" />
                         <Label htmlFor="text" className="font-normal cursor-pointer">
                           {t('searchPage.textSearch')}
                         </Label>
                       </div>
-                      <div className="flex items-center space-x-2">
+                      <div className="flex min-h-11 items-center space-x-2">
                         <RadioGroupItem
                           value="vector"
                           id="vector"
@@ -395,7 +395,7 @@ export default function SearchPage() {
                   <div className="space-y-2" role="group" aria-labelledby="search-in-label">
                     <span id="search-in-label" className="text-sm font-medium leading-none">{t('searchPage.searchIn')}</span>
                     <div className="space-y-2">
-                      <div className="flex items-center space-x-2">
+                      <div className="flex min-h-11 items-center space-x-2">
                         <Checkbox
                           id="sources"
                           name="sources"
@@ -407,7 +407,7 @@ export default function SearchPage() {
                           {t('searchPage.searchSources')}
                         </Label>
                       </div>
-                      <div className="flex items-center space-x-2">
+                      <div className="flex min-h-11 items-center space-x-2">
                         <Checkbox
                           id="notes"
                           name="notes"
@@ -426,7 +426,7 @@ export default function SearchPage() {
                 {/* Search Results */}
                 {searchMutation.data && (
                   <div className="mt-6 space-y-3">
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
                       <h3 className="text-sm font-medium">
                         {t('searchPage.resultsFound', { count: searchMutation.data.total_count })}
                       </h3>
@@ -455,22 +455,22 @@ export default function SearchPage() {
                           <Card key={index} className="transition-shadow hover:shadow-lift">
                             <CardContent className="pt-4">
                               <div className="flex items-start justify-between gap-4">
-                                <div className="flex-1">
-                                  <button
-                                    onClick={() => openModal(modalType, id)}
-                                    className="text-primary hover:underline font-medium"
-                                  >
-                                    {result.title}
-                                  </button>
-                                  <Badge variant="secondary" className="ml-2 font-mono text-[11px]">
-                                    {result.final_score.toFixed(2)}
-                                  </Badge>
+                              <div className="flex min-w-0 flex-1 flex-wrap items-start gap-2">
+                                <button
+                                  onClick={() => openModal(modalType, id)}
+                                  className="min-h-11 max-w-full break-words text-left font-medium text-primary hover:underline"
+                                >
+                                  {result.title}
+                                </button>
+                                <Badge variant="secondary" className="shrink-0 font-mono text-[11px]">
+                                  {result.final_score.toFixed(2)}
+                                </Badge>
                                 </div>
                               </div>
 
                               {result.matches && result.matches.length > 0 && (
                                 <Collapsible className="mt-3">
-                                  <CollapsibleTrigger className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+                                  <CollapsibleTrigger className="flex min-h-11 items-center gap-2 text-left text-sm text-muted-foreground hover:text-foreground">
                                     <ChevronDown className="h-4 w-4" />
                                     {t('searchPage.matches', { count: result.matches.length })}
                                   </CollapsibleTrigger>

@@ -102,6 +102,7 @@ export default function SourcesPage() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (sources.length === 0) return
+      if (document.activeElement !== tableRef.current) return
 
       switch (e.key) {
         case 'ArrowDown':
@@ -229,14 +230,18 @@ export default function SourcesPage() {
         variant="ghost"
         size="sm"
         onClick={() => toggleSort(field)}
+        aria-label={label}
+        title={label}
         className={cn(
-          "h-8 px-2 hover:bg-muted",
+          "h-11 min-w-0 max-w-full px-1 hover:bg-muted sm:h-8 sm:px-2",
           align === 'center' && "mx-auto"
         )}
       >
-        {label}
+        <span className={cn('min-w-0 truncate', field === 'type' && 'sr-only sm:not-sr-only')}>
+          {label}
+        </span>
         <SortIcon className={cn(
-          "ml-2 h-3 w-3",
+          "h-3 w-3 shrink-0 sm:ml-2",
           active ? 'opacity-100' : 'opacity-30'
         )} />
       </Button>
@@ -316,7 +321,7 @@ export default function SourcesPage() {
     }
 
     return (<>
-      <div className="flex flex-col h-full w-full max-w-none px-6 py-6">
+      <div className="flex min-h-0 flex-1 w-full max-w-none flex-col px-4 py-4 sm:px-6 sm:py-6">
         <div className="mb-6 flex-shrink-0">
           <h1 className="font-display text-2xl font-bold tracking-tight">{t('sources.allSources')}</h1>
           <p className="mt-2 text-muted-foreground">
@@ -324,27 +329,28 @@ export default function SourcesPage() {
           </p>
         </div>
 
-        <div ref={scrollContainerRef} className="flex-1 rounded-md border overflow-auto">
+        <div ref={scrollContainerRef} className="min-h-0 flex-1 overflow-auto rounded-md border overscroll-contain">
           <table
             ref={tableRef}
             tabIndex={0}
+            aria-label={t('sources.allSources')}
             className="w-full sm:min-w-[920px] outline-none table-fixed"
           >
             <colgroup>
-              <col className="w-[120px]" />
+              <col className="w-[80px] sm:w-[120px]" />
               <col className="w-auto" />
               <col className="hidden w-[140px] sm:table-column" />
               <col className="hidden w-[140px] sm:table-column" />
               <col className="hidden w-[100px] md:table-column" />
               <col className="hidden w-[100px] lg:table-column" />
-              <col className="w-[100px]" />
+              <col className="w-[52px] sm:w-[100px]" />
             </colgroup>
             <thead className="sticky top-0 bg-background z-10">
               <tr className="border-b">
-                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                <th className="h-12 px-2 text-left align-middle font-medium text-muted-foreground sm:px-4">
                   {renderSortableHeader('type', t('common.type'))}
                 </th>
-                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                <th className="h-12 px-2 text-left align-middle font-medium text-muted-foreground sm:px-4">
                   {renderSortableHeader('title', t('common.title'))}
                 </th>
                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground hidden sm:table-cell">
@@ -359,8 +365,8 @@ export default function SourcesPage() {
                 <th className="h-12 px-4 text-center align-middle font-medium text-muted-foreground hidden lg:table-cell">
                   {renderSortableHeader('embedded', t('sources.embedded'), 'center')}
                 </th>
-                <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground">
-                  {t('common.actions')}
+                <th className="h-12 px-1 text-right align-middle font-medium text-muted-foreground sm:px-4">
+                  <span className="sr-only sm:not-sr-only">{t('common.actions')}</span>
                 </th>
               </tr>
             </thead>
@@ -377,18 +383,18 @@ export default function SourcesPage() {
                       : "hover:bg-[var(--surface-raised)]"
                   )}
                 >
-                  <td className="h-12 px-4">
-                    <div className="flex items-center gap-2">
+                  <td className="h-12 px-2 sm:px-4">
+                    <div className="flex min-w-0 items-center gap-2">
                       <span
                         aria-hidden
                         className={cn('h-2 w-2 shrink-0 rounded-full', getSourceTypeDotClass(source))}
                       />
-                      <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      <span className="min-w-0 truncate text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                         {getSourceType(source)}
                       </span>
                     </div>
                   </td>
-                  <td className="h-12 px-4">
+                  <td className="h-12 px-2 sm:px-4">
                     <div className="flex flex-col overflow-hidden">
                       <span className="font-medium truncate">
                         {source.title || t('sources.untitledSource')}
@@ -427,12 +433,14 @@ export default function SourcesPage() {
                       {source.embedded ? t('sources.yes') : t('sources.no')}
                     </span>
                   </td>
-                  <td className="h-12 px-4 text-right">
+                  <td className="h-12 px-1 text-right sm:px-4">
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={(e) => handleDeleteClick(e, source)}
-                      className="text-destructive hover:text-destructive"
+                      className="h-11 w-11 text-destructive hover:text-destructive sm:h-9 sm:w-9"
+                      aria-label={t('sources.delete')}
+                      title={t('sources.delete')}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>

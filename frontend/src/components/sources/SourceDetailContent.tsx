@@ -408,24 +408,24 @@ function SourceDetailContentInner({
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex h-full min-w-0 flex-col">
       {/* Header */}
-      <div className="pb-5 pr-10">
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
+      <div className="min-w-0 pb-5 pr-10">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0 flex-1">
             <InlineEdit
               value={source.title || ''}
               onSave={handleUpdateTitle}
-              className="text-2xl font-bold"
-              inputClassName="text-2xl font-bold"
+              className="min-w-0 text-xl font-bold sm:text-2xl"
+              inputClassName="text-xl font-bold sm:text-2xl"
               placeholder={t('sources.titlePlaceholder')}
               emptyText={t('sources.untitledSource')}
             />
-            <p className="mt-1 font-mono text-xs text-muted-foreground">
+            <p className="mt-1 break-all font-mono text-xs text-muted-foreground">
               {t('sources.id')}: {source.id}
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex max-w-full flex-wrap items-center justify-end gap-2">
             {getSourceIcon()}
             <Badge variant="secondary" className="text-sm">
               {getSourceType()}
@@ -433,7 +433,7 @@ function SourceDetailContentInner({
 
             {/* Chat with source button - only in modal */}
             {showChatButton && onChatClick && (
-              <Button variant="outline" size="sm" onClick={onChatClick}>
+              <Button variant="outline" size="sm" onClick={onChatClick} className="min-h-10 sm:min-h-8">
                 <MessageSquare className="h-4 w-4 mr-2" />
                 {t('chat.chatWith', { name: t('navigation.sources') })}
               </Button>
@@ -441,7 +441,7 @@ function SourceDetailContentInner({
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" className="size-10 sm:size-9" aria-label={t('common.actions')}>
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -484,17 +484,17 @@ function SourceDetailContentInner({
       </div>
 
       {/* Tabs Content */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="min-h-0 min-w-0 flex-1 overflow-y-auto">
         <Tabs defaultValue="content" className="w-full">
-          <TabsList className="w-full sticky top-0 z-10 bg-card">
-            <TabsTrigger value="content">{t('sources.content')}</TabsTrigger>
-            <TabsTrigger value="insights">
+          <TabsList className="sticky top-0 z-10 grid w-full grid-cols-1 gap-1 bg-card sm:grid-cols-3">
+            <TabsTrigger value="content" className="min-h-10 sm:min-h-9">{t('sources.content')}</TabsTrigger>
+            <TabsTrigger value="insights" className="min-h-10 sm:min-h-9">
               {t('common.insights')} {insights.length > 0 && `(${insights.length})`}
             </TabsTrigger>
-            <TabsTrigger value="details">{t('sources.details')}</TabsTrigger>
+            <TabsTrigger value="details" className="min-h-10 sm:min-h-9">{t('sources.details')}</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="content" className="mt-5">
+          <TabsContent value="content" className="mt-5 min-w-0">
             <section>
               {externalHref && !isYouTubeUrl && (
                 <p className="mb-4 flex items-center gap-2 text-xs text-muted-foreground">
@@ -541,7 +541,7 @@ function SourceDetailContentInner({
             </section>
           </TabsContent>
 
-          <TabsContent value="insights" className="mt-5">
+          <TabsContent value="insights" className="mt-5 min-w-0">
             <section>
               <div className="flex items-center justify-between">
                 <h3 className="flex items-center gap-2 text-[15.5px] font-medium">
@@ -563,14 +563,14 @@ function SourceDetailContentInner({
                   <Sparkles className="h-4 w-4 text-teal" />
                   {t('sources.generateNewInsight')}
                 </Label>
-                <div className="flex gap-2">
+                <div className="flex flex-col gap-2 sm:flex-row">
                   <Select
                     name="transformation"
                     value={selectedTransformation}
                     onValueChange={setSelectedTransformation}
                     disabled={creatingInsight}
                   >
-                    <SelectTrigger id="transformation-select" className="flex-1">
+                    <SelectTrigger id="transformation-select" className="min-w-0 flex-1">
                       <SelectValue placeholder={t('sources.selectTransformation')} />
                     </SelectTrigger>
                     <SelectContent>
@@ -583,6 +583,7 @@ function SourceDetailContentInner({
                   </Select>
                   <Button
                     size="sm"
+                    className="min-h-10 sm:min-h-8"
                     onClick={createInsight}
                     disabled={!selectedTransformation || creatingInsight}
                   >
@@ -625,15 +626,15 @@ function SourceDetailContentInner({
                       <p className="mt-2 text-sm text-muted-foreground">
                         {insight.content.slice(0, 180)}{insight.content.length > 180 ? '…' : ''}
                       </p>
-                      <div className="mt-3 flex justify-end gap-2">
-                        <Button size="sm" variant="outline" onClick={() => setSelectedInsight(insight)}>
+                      <div className="mt-3 flex flex-wrap justify-end gap-2">
+                        <Button size="sm" variant="outline" className="min-h-10 sm:min-h-8" onClick={() => setSelectedInsight(insight)}>
                           {t('sources.viewInsight')}
                         </Button>
                         <Button
                           size="sm"
                           variant="outline"
                           onClick={() => setInsightToDelete(insight.id)}
-                          className="text-destructive hover:text-destructive"
+                          className="min-h-10 text-destructive hover:text-destructive sm:min-h-8"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -645,7 +646,7 @@ function SourceDetailContentInner({
             </section>
           </TabsContent>
 
-          <TabsContent value="details" className="mt-5">
+          <TabsContent value="details" className="mt-5 min-w-0">
             <section className="space-y-5">
               <h3 className="text-[15.5px] font-medium">{t('sources.details')}</h3>
               <div className="space-y-5">
@@ -678,12 +679,13 @@ function SourceDetailContentInner({
                     <div>
                       <h3 className="mb-2 text-sm font-medium">{t('common.url')}</h3>
                       <div className="flex items-center gap-2">
-                        <code className="flex-1 rounded bg-muted px-2 py-1 text-sm">
+                        <code className="min-w-0 flex-1 break-all rounded bg-muted px-2 py-1 text-sm">
                           {source.asset.url}
                         </code>
                         <Button
                           size="sm"
                           variant="outline"
+                          className="h-10 w-10 p-0 sm:h-9 sm:w-9"
                           onClick={handleCopyUrl}
                         >
                           {copied ? (
@@ -695,6 +697,7 @@ function SourceDetailContentInner({
                         <Button
                           size="sm"
                           variant="outline"
+                          className="h-10 w-10 p-0 sm:h-9 sm:w-9"
                           onClick={handleOpenExternal}
                           disabled={!externalHref}
                         >
@@ -708,7 +711,7 @@ function SourceDetailContentInner({
                     <div className="space-y-2">
                       <h3 className="text-sm font-medium">{t('sources.uploadedFile')}</h3>
                       <div className="flex flex-wrap items-center gap-2">
-                        <code className="rounded bg-muted px-2 py-1 text-sm">
+                        <code className="max-w-full break-all rounded bg-muted px-2 py-1 text-sm">
                           {source.asset.file_path}
                         </code>
                         <Button
@@ -749,7 +752,7 @@ function SourceDetailContentInner({
 
                 {/* Metadata */}
                 <div className="border-t border-border pt-5">
-                  <div className="flex items-center justify-between mb-3">
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                     <h3 className="text-sm font-medium">{t('sources.metadata')}</h3>
                     <div className="flex items-center gap-2">
                       <Database className="h-3.5 w-3.5 text-muted-foreground" />

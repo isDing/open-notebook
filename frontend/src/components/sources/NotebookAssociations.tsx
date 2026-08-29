@@ -154,13 +154,15 @@ export function NotebookAssociations({
                 const isCurrentlyLinked = currentNotebookIds.includes(notebook.id)
 
                 return (
-                  <div
+                  <label
                     key={notebook.id}
-                    className={`flex items-start gap-3 p-3 rounded-md transition-colors ${
+                    htmlFor={`association-${sourceId}-${notebook.id}`}
+                    className={`flex cursor-pointer select-none items-start gap-3 rounded-md p-3 transition-colors touch-manipulation ${
                       isSelected ? 'bg-accent' : 'hover:bg-accent/50'
                     }`}
                   >
                     <Checkbox
+                      id={`association-${sourceId}-${notebook.id}`}
                       checked={isSelected}
                       onCheckedChange={() => handleToggleNotebook(notebook.id)}
                       className="mt-0.5"
@@ -180,17 +182,18 @@ export function NotebookAssociations({
                         </p>
                       )}
                     </div>
-                  </div>
+                  </label>
                 )
               })}
           </div>
         </ScrollArea>
 
         {hasChanges && (
-          <div className="flex items-center justify-end gap-2 pt-2 border-t">
+          <div className="flex flex-wrap items-center justify-end gap-2 pt-2 border-t">
             <Button
               variant="outline"
               size="sm"
+              className="min-h-10 sm:min-h-8"
               onClick={handleCancel}
               disabled={isSaving}
             >
@@ -198,6 +201,7 @@ export function NotebookAssociations({
             </Button>
             <Button
               size="sm"
+              className="min-h-10 sm:min-h-8"
               onClick={handleSave}
               disabled={isSaving}
             >

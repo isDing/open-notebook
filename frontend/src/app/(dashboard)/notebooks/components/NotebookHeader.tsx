@@ -52,14 +52,14 @@ export function NotebookHeader({ notebook }: NotebookHeaderProps) {
     <>
       <div className="border-b pb-6">
         <div className="space-y-2">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="flex flex-1 items-center gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="flex min-w-0 flex-1 items-center gap-3">
               <InlineEdit
                 id="notebook-name"
                 name="notebook-name"
                 value={notebook.name}
                 onSave={handleUpdateName}
-                className="font-display text-2xl font-bold tracking-tight"
+                className="min-w-0 font-display text-2xl font-bold tracking-tight"
                 inputClassName="font-display text-2xl font-bold tracking-tight"
                 placeholder={t('notebooks.namePlaceholder')}
               />
@@ -67,11 +67,12 @@ export function NotebookHeader({ notebook }: NotebookHeaderProps) {
                 <Badge variant="secondary">{t('notebooks.archived')}</Badge>
               )}
             </div>
-            <div className="flex gap-2">
+            <div className="flex w-full flex-wrap gap-2 sm:w-auto sm:shrink-0">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleArchiveToggle}
+                className="min-h-10 flex-1 sm:min-h-8 sm:flex-none"
               >
                 {notebook.archived ? (
                   <>
@@ -89,7 +90,7 @@ export function NotebookHeader({ notebook }: NotebookHeaderProps) {
                 variant="outline"
                 size="sm"
                 onClick={() => setShowDeleteDialog(true)}
-                className="text-destructive hover:text-destructive"
+                className="min-h-10 flex-1 text-destructive hover:text-destructive sm:min-h-8 sm:flex-none"
               >
                 <Trash2 className="h-4 w-4 mr-2" />
                 {t('common.delete')}

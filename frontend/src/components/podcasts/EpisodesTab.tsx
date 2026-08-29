@@ -89,8 +89,8 @@ export function EpisodesTab() {
             {t('podcasts.overviewDesc')}
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button onClick={() => setShowGenerateDialog(true)}>
+        <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:flex-nowrap">
+          <Button onClick={() => setShowGenerateDialog(true)} className="flex-1 sm:flex-none">
             {t('podcasts.generateBtn')}
           </Button>
           <Button

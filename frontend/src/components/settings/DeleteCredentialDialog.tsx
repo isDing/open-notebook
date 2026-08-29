@@ -63,7 +63,7 @@ export function DeleteCredentialDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="w-[calc(100%-1rem)]">
         <DialogHeader>
           <DialogTitle>{t('apiKeys.deleteConfig')}</DialogTitle>
           <DialogDescription>

@@ -76,7 +76,7 @@ function DefaultModelSelect({
         >
           <SelectTrigger
             id={config.id}
-            className={`h-8 text-xs ${config.required && !isValid && available.length > 0 ? 'border-destructive' : ''}`}
+            className={`h-11 text-xs sm:h-8 ${config.required && !isValid && available.length > 0 ? 'border-destructive' : ''}`}
           >
             <SelectValue placeholder={
               config.required && !isValid && available.length > 0
@@ -103,7 +103,7 @@ function DefaultModelSelect({
           </SelectContent>
         </Select>
         {!config.required && currentValue && (
-          <Button variant="ghost" size="icon" onClick={() => onChange(config.key, "")} className="h-8 w-8 shrink-0">
+          <Button variant="ghost" size="icon" onClick={() => onChange(config.key, "")} className="h-11 w-11 shrink-0 sm:h-8 sm:w-8">
             <X className="h-3 w-3" />
           </Button>
         )}
@@ -203,13 +203,13 @@ export function DefaultModelSelectors({
         {missingRequired.length > 0 && (
           <Alert>
             <AlertCircle className="h-4 w-4" />
-            <AlertDescription className="flex items-center justify-between gap-4">
-              <span>{t('models.missingRequiredModels', { models: missingRequired.join(', ') })}</span>
+            <AlertDescription className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <span className="min-w-0 break-words">{t('models.missingRequiredModels', { models: missingRequired.join(', ') })}</span>
               <Button
                 variant="outline" size="sm"
                 onClick={() => autoAssign.mutate()}
                 disabled={autoAssign.isPending}
-                className="shrink-0 gap-1.5"
+                className="w-full shrink-0 gap-1.5 sm:w-auto"
               >
                 {autoAssign.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Wand2 className="h-3.5 w-3.5" />}
                 {autoAssign.isPending ? t('models.autoAssigning') : t('models.autoAssign')}

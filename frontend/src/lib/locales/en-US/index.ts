@@ -809,7 +809,7 @@ export const enUS = {
     loadFailed: "Failed to load settings",
   },
   advanced: {
-    title: "AdvancedTools",
+    title: "Advanced Tools",
     desc: "Advanced tools and utilities for power users",
     systemInfo: "System Info",
     rebuildEmbeddings: "Rebuild Embeddings",

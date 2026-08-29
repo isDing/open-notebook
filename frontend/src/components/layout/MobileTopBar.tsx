@@ -12,16 +12,19 @@ import { useTranslation } from '@/lib/hooks/use-translation'
  *  actions without a permanent sidebar eating the viewport. */
 export function MobileTopBar() {
   const { t } = useTranslation()
-  const { setMobileOpen } = useSidebarStore()
+  const { mobileOpen, setMobileOpen } = useSidebarStore()
 
   return (
-    <div className="flex min-h-12 flex-shrink-0 items-center justify-between gap-2 border-b border-sidebar-border bg-sidebar px-3 pt-[env(safe-area-inset-top)] lg:hidden">
+    <header className="flex h-[calc(3rem+env(safe-area-inset-top))] min-h-12 flex-shrink-0 items-center justify-between gap-2 border-b border-sidebar-border bg-sidebar pl-[max(0.75rem,env(safe-area-inset-left))] pr-[max(0.75rem,env(safe-area-inset-right))] pt-[env(safe-area-inset-top)] lg:hidden">
       <div className="flex min-w-0 items-center gap-2.5">
         <Button
+          id="mobile-menu-trigger"
           variant="ghost"
           size="sm"
           className="h-11 w-11 shrink-0 touch-manipulation p-0 text-sidebar-foreground hover:bg-sidebar-accent"
           aria-label={t('navigation.openMenu')}
+          aria-controls="mobile-sidebar"
+          aria-expanded={mobileOpen}
           onClick={() => setMobileOpen(true)}
         >
           <Menu className="h-5 w-5" />
@@ -32,6 +35,6 @@ export function MobileTopBar() {
         </span>
       </div>
       <CreateMenu iconOnly />
-    </div>
+    </header>
   )
 }
