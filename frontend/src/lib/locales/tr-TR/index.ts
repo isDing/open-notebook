@@ -218,6 +218,7 @@ export const trTR = {
     sources: "Kaynaklar",
     notebooks: "Defterler",
     askAndSearch: "Sor ve Ara",
+    openMenu: "Menüyü aç",
     podcasts: "Podcastler",
     models: "Modeller",
     transformations: "Dönüşümler",

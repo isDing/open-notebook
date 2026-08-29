@@ -218,6 +218,7 @@ export const frFR = {
     sources: "Sources",
     notebooks: "Carnets",
     askAndSearch: "Demander et rechercher",
+    openMenu: "Ouvrir le menu",
     podcasts: "Podcasts",
     models: "Modèles",
     transformations: "Transformations",

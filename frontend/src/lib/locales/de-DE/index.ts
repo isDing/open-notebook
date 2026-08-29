@@ -221,6 +221,7 @@ export const deDE = {
     sources: "Quellen",
     notebooks: "Notebooks",
     askAndSearch: "Fragen und Suchen",
+    openMenu: "Menü öffnen",
     podcasts: "Podcasts",
     models: "Modelle",
     transformations: "Transformationen",

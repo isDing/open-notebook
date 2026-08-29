@@ -51,7 +51,9 @@ vi.mock('@/lib/hooks/use-auth', () => ({
 vi.mock('@/lib/stores/sidebar-store', () => ({
   useSidebarStore: vi.fn(() => ({
     isCollapsed: false,
+    mobileOpen: false,
     toggleCollapse: vi.fn(),
+    setMobileOpen: vi.fn(),
   })),
 }))
 

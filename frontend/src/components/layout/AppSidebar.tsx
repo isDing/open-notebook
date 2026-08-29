@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/lib/hooks/use-auth'
 import { useSidebarStore } from '@/lib/stores/sidebar-store'
+import { useIsDesktop } from '@/lib/hooks/use-media-query'
 import { useCreateDialogs } from '@/lib/hooks/use-create-dialogs'
 import {
   Tooltip,
@@ -41,6 +42,7 @@ import {
   Wrench,
   Command,
   StickyNote,
+  X,
 } from 'lucide-react'
 
 const getNavigation = (t: TFunction) => [
@@ -76,7 +78,7 @@ const getNavigation = (t: TFunction) => [
 ] as const
 
 // The tri-hue mark recomposed in the owned palette: fern / gold / teal.
-function LogoPebbles({ className }: { className?: string }) {
+export function LogoPebbles({ className }: { className?: string }) {
   return (
     <span className={cn('flex items-center gap-[3px]', className)} aria-hidden="true">
       <span className="size-[9px] rounded-[3px] bg-fern" />
@@ -93,8 +95,13 @@ export function AppSidebar() {
   const navigation = getNavigation(t)
   const pathname = usePathname()
   const { logout } = useAuth()
-  const { isCollapsed, toggleCollapse } = useSidebarStore()
+  const { isCollapsed, toggleCollapse, mobileOpen, setMobileOpen } = useSidebarStore()
   const { openSourceDialog, openNotebookDialog, openPodcastDialog } = useCreateDialogs()
+  const isDesktop = useIsDesktop()
+  const isDrawer = !isDesktop
+
+  // The drawer is always shown expanded; collapse only applies to desktop.
+  const collapsed = isCollapsed && !isDrawer
 
   const [createMenuOpen, setCreateMenuOpen] = useState(false)
   const [isMac, setIsMac] = useState(true) // Default to Mac for SSR
@@ -104,40 +111,100 @@ export function AppSidebar() {
     setIsMac(navigator.platform.toLowerCase().includes('mac'))
   }, [])
 
+  const closeMobileSidebar = useCallback(() => setMobileOpen(false), [setMobileOpen])
+
+  // Close the drawer whenever the route changes (e.g. after tapping a nav link)
+  useEffect(() => {
+    if (isDrawer) setMobileOpen(false)
+  }, [pathname, isDrawer, setMobileOpen])
+
+  // Close the drawer on Escape
+  useEffect(() => {
+    if (!isDrawer || !mobileOpen) return
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') closeMobileSidebar()
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [isDrawer, mobileOpen, closeMobileSidebar])
+
+  // Move focus into the drawer when it opens
+  const drawerCloseRef = useRef<HTMLButtonElement>(null)
+  useEffect(() => {
+    if (isDrawer && mobileOpen) drawerCloseRef.current?.focus()
+  }, [isDrawer, mobileOpen])
+
   const handleCreateSelection = (target: CreateTarget) => {
     setCreateMenuOpen(false)
+    closeMobileSidebar()
 
     if (target === 'source') {
       openSourceDialog()
     } else if (target === 'notebook') {
       openNotebookDialog()
-    } else if (target === 'podcast') {
+    } else {
       openPodcastDialog()
     }
   }
 
   return (
     <TooltipProvider delayDuration={0}>
+      {isDrawer && (
+        <div
+          data-testid="sidebar-backdrop"
+          className={cn(
+            'fixed inset-0 z-40 bg-black/50 transition-opacity duration-300',
+            mobileOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
+          )}
+          aria-hidden="true"
+          onClick={closeMobileSidebar}
+        />
+      )}
       <div
         className={cn(
-          'app-sidebar flex h-full flex-col bg-sidebar border-sidebar-border border-r transition-all duration-300',
-          isCollapsed ? 'w-16' : 'w-64'
+          'app-sidebar flex flex-col bg-sidebar border-sidebar-border transition-all duration-300',
+          isDrawer
+            ? cn(
+                'fixed inset-y-0 left-0 z-50 w-72 border-r',
+                mobileOpen ? 'translate-x-0' : 'pointer-events-none -translate-x-full invisible'
+              )
+            : cn('h-full border-r', collapsed ? 'w-16' : 'w-64')
         )}
+        aria-hidden={isDrawer && !mobileOpen ? true : undefined}
       >
         <div
           className={cn(
-            'flex h-16 items-center group',
-            isCollapsed ? 'justify-center px-2' : 'justify-between px-4'
+            'flex h-16 flex-shrink-0 items-center group',
+            isDrawer || !collapsed ? 'justify-between px-4' : 'justify-center px-2'
           )}
         >
-          {isCollapsed ? (
+          {isDrawer ? (
+            <>
+              <div className="flex min-w-0 items-center gap-2.5">
+                <LogoPebbles />
+                <span className="truncate font-display text-[15px] font-bold tracking-tight text-sidebar-foreground">
+                  {t('common.appName')}
+                </span>
+              </div>
+              <Button
+                ref={drawerCloseRef}
+                variant="ghost"
+                size="sm"
+                onClick={closeMobileSidebar}
+                className="shrink-0 text-sidebar-foreground hover:bg-sidebar-accent"
+                aria-label={t('common.close')}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </>
+          ) : collapsed ? (
             <div className="relative flex items-center justify-center w-full">
-              <LogoPebbles className="flex-col gap-[3px] transition-opacity group-hover:opacity-0" />
+              <LogoPebbles className="flex-col gap-[3px] transition-opacity group-hover:opacity-0 pointer-coarse:hidden" />
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={toggleCollapse}
-                className="absolute text-sidebar-foreground hover:bg-sidebar-accent opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute text-sidebar-foreground hover:bg-sidebar-accent opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100 transition-opacity"
               >
                 <Menu className="h-4 w-4" />
               </Button>
@@ -166,17 +233,17 @@ export function AppSidebar() {
         <nav
           className={cn(
             'flex-1 space-y-1 py-4',
-            isCollapsed ? 'px-2' : 'px-3'
+            collapsed ? 'px-2' : 'px-3'
           )}
         >
           <div
             className={cn(
               'mb-4',
-              isCollapsed ? 'px-0' : 'px-3'
+              collapsed ? 'px-0' : 'px-3'
             )}
           >
             <DropdownMenu open={createMenuOpen} onOpenChange={setCreateMenuOpen}>
-              {isCollapsed ? (
+              {collapsed ? (
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <DropdownMenuTrigger asChild>
@@ -208,8 +275,8 @@ export function AppSidebar() {
               )}
 
               <DropdownMenuContent
-                align={isCollapsed ? 'end' : 'start'}
-                side={isCollapsed ? 'right' : 'bottom'}
+                align={collapsed ? 'end' : 'start'}
+                side={collapsed ? 'right' : 'bottom'}
                 className="w-48"
               >
                 <DropdownMenuItem
@@ -252,7 +319,7 @@ export function AppSidebar() {
                 <Separator className="my-3" />
               )}
               <div className="space-y-1">
-                {!isCollapsed && (
+                {!collapsed && (
                   <h3 className="mb-1.5 px-3 text-[10.5px] font-bold uppercase tracking-[0.14em] text-sidebar-foreground/40">
                     {section.title}
                   </h3>
@@ -267,15 +334,15 @@ export function AppSidebar() {
                         'w-full gap-2.5 text-[13px] font-medium text-sidebar-foreground/80 sidebar-menu-item relative',
                         isActive &&
                           'bg-popover font-semibold text-sidebar-foreground ring-1 ring-inset ring-border before:absolute before:-left-1.5 before:top-[7px] before:bottom-[7px] before:w-[3px] before:rounded-[2px] before:bg-fern',
-                        isCollapsed ? 'justify-center px-2' : 'justify-start'
+                        collapsed ? 'justify-center px-2' : 'justify-start'
                       )}
                     >
                       <item.icon className={cn('h-4 w-4 opacity-85', item.iconClass)} />
-                      {!isCollapsed && <span>{item.name}</span>}
+                      {!collapsed && <span>{item.name}</span>}
                     </Button>
                   )
 
-                  if (isCollapsed) {
+                  if (collapsed) {
                     return (
                       <Tooltip key={item.name}>
                         <TooltipTrigger asChild>
@@ -302,11 +369,11 @@ export function AppSidebar() {
         <div
           className={cn(
             'border-t border-sidebar-border p-3 space-y-2',
-            isCollapsed && 'px-2'
+            collapsed && 'px-2'
           )}
         >
           {/* Command Palette hint */}
-          {!isCollapsed && (
+          {!collapsed && (
             <div className="px-3 py-1.5 text-xs text-sidebar-foreground/60">
               <div className="flex items-center justify-between">
                  <span className="flex items-center gap-1.5">
@@ -323,13 +390,13 @@ export function AppSidebar() {
             </div>
           )}
 
-           <div
-            className={cn(
-              'flex flex-col gap-2',
-              isCollapsed ? 'items-center' : 'items-stretch'
-            )}
-          >
-            {isCollapsed ? (
+            <div
+             className={cn(
+               'flex flex-col gap-2',
+               collapsed ? 'items-center' : 'items-stretch'
+             )}
+           >
+             {collapsed ? (
               <>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -356,7 +423,7 @@ export function AppSidebar() {
             )}
           </div>
 
-          {isCollapsed ? (
+          {collapsed ? (
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button

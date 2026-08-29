@@ -218,6 +218,7 @@ export const ruRU = {
     sources: "Источники",
     notebooks: "Блокноты",
     askAndSearch: "Запрос и поиск",
+    openMenu: "Открыть меню",
     podcasts: "Подкасты",
     models: "Модели",
     transformations: "Трансформации",

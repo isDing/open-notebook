@@ -218,6 +218,7 @@ export const itIT = {
     sources: "Fonti",
     notebooks: "Quaderni",
     askAndSearch: "Chiedi e cerca",
+    openMenu: "Apri il menu",
     podcasts: "Podcast",
     models: "Modelli",
     transformations: "Trasformazioni",

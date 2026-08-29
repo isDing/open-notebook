@@ -218,6 +218,7 @@ export const bnIN = {
     sources: "উৎসগুলি",
     notebooks: "নোটবুকগুলি",
     askAndSearch: "জিজ্ঞাসা ও অনুসন্ধান",
+    openMenu: "মেনু খুলুন",
     podcasts: "পডকাস্ট",
     models: "মডেলগুলি",
     transformations: "ট্রান্সফরমেশনস",

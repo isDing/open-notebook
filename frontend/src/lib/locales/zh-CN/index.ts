@@ -218,6 +218,7 @@ export const zhCN = {
     sources: "来源",
     notebooks: "笔记本",
     askAndSearch: "询问与搜索",
+    openMenu: "打开菜单",
     podcasts: "播客",
     models: "模型",
     transformations: "转换",

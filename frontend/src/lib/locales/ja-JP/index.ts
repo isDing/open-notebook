@@ -218,6 +218,7 @@ export const jaJP = {
     sources: "ソース",
     notebooks: "ノートブック",
     askAndSearch: "質問と検索",
+    openMenu: "メニューを開く",
     podcasts: "ポッドキャスト",
     models: "モデル",
     transformations: "変換",

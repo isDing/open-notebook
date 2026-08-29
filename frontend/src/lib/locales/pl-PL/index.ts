@@ -218,6 +218,7 @@ export const plPL = {
     sources: "Źródła",
     notebooks: "Notatniki",
     askAndSearch: "Pytaj i szukaj",
+    openMenu: "Otwórz menu",
     podcasts: "Podcasty",
     models: "Modele",
     transformations: "Transformacje",

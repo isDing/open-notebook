@@ -218,6 +218,7 @@ export const esES = {
     sources: "Fuentes",
     notebooks: "Cuadernos",
     askAndSearch: "Preguntar y buscar",
+    openMenu: "Abrir menú",
     podcasts: "Podcasts",
     models: "Modelos",
     transformations: "Transformaciones",

@@ -12,8 +12,40 @@ vi.mock('@/components/ui/tooltip', () => ({
   TooltipContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }))
 
+const DESKTOP_QUERY = '(min-width: 1024px)'
+
+// The global setup mock always reports "no match"; steer the desktop query
+// per test to cover both the desktop sidebar and the mobile drawer.
+function mockViewport(isDesktop: boolean) {
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: vi.fn().mockImplementation((query: string) => ({
+      matches: isDesktop && query === DESKTOP_QUERY,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(), // Deprecated
+      removeListener: vi.fn(), // Deprecated
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  })
+}
+
+function storeMock(overrides: Record<string, unknown> = {}) {
+  vi.mocked(useSidebarStore).mockReturnValue({
+    isCollapsed: false,
+    mobileOpen: false,
+    toggleCollapse: vi.fn(),
+    setMobileOpen: vi.fn(),
+    ...overrides,
+  } as any)
+}
+
 describe('AppSidebar', () => {
   it('renders correctly when expanded', () => {
+    mockViewport(true)
+    storeMock()
     render(<AppSidebar />)
 
     // With mocked t() returning keys, check for translation key strings
@@ -23,11 +55,9 @@ describe('AppSidebar', () => {
   })
 
   it('toggles collapse state when clicking handle', () => {
+    mockViewport(true)
     const toggleCollapse = vi.fn()
-    vi.mocked(useSidebarStore).mockReturnValue({
-      isCollapsed: false,
-      toggleCollapse,
-    } as any)
+    storeMock({ isCollapsed: false, toggleCollapse })
 
     render(<AppSidebar />)
 
@@ -37,14 +67,59 @@ describe('AppSidebar', () => {
   })
 
   it('shows collapsed view when isCollapsed is true', () => {
-    vi.mocked(useSidebarStore).mockReturnValue({
-      isCollapsed: true,
-      toggleCollapse: vi.fn(),
-    } as any)
+    mockViewport(true)
+    storeMock({ isCollapsed: true, toggleCollapse: vi.fn() })
 
     render(<AppSidebar />)
 
     // In collapsed mode, app name shouldn't be visible (as text)
     expect(screen.queryByText('common.appName')).toBeNull()
+  })
+
+  describe('mobile drawer', () => {
+    it('renders the close button when the drawer is open', () => {
+      mockViewport(false)
+      storeMock({ mobileOpen: true })
+
+      render(<AppSidebar />)
+
+      expect(screen.getByLabelText('common.close')).toBeDefined()
+    })
+
+    it('closes the drawer when the close button is clicked', () => {
+      mockViewport(false)
+      const setMobileOpen = vi.fn()
+      storeMock({ mobileOpen: true, setMobileOpen })
+
+      render(<AppSidebar />)
+
+      fireEvent.click(screen.getByLabelText('common.close'))
+
+      expect(setMobileOpen).toHaveBeenCalledWith(false)
+    })
+
+    it('closes the drawer when the backdrop is clicked', () => {
+      mockViewport(false)
+      const setMobileOpen = vi.fn()
+      storeMock({ mobileOpen: true, setMobileOpen })
+
+      render(<AppSidebar />)
+
+      fireEvent.click(screen.getByTestId('sidebar-backdrop'))
+
+      expect(setMobileOpen).toHaveBeenCalledWith(false)
+    })
+
+    it('closes the drawer on Escape', () => {
+      mockViewport(false)
+      const setMobileOpen = vi.fn()
+      storeMock({ mobileOpen: true, setMobileOpen })
+
+      render(<AppSidebar />)
+
+      fireEvent.keyDown(window, { key: 'Escape' })
+
+      expect(setMobileOpen).toHaveBeenCalledWith(false)
+    })
   })
 })
