@@ -300,6 +300,19 @@ Follow TypeScript best practices:
 - Log errors appropriately
 - Don't suppress errors silently
 
+### Responsive & Mobile (frontend)
+
+The product is mobile-capable; desktop is the reference experience. Conventions:
+
+- **Breakpoints**: desktop starts at `lg` (1024px) — keep UI breakpoints consistent with `useIsDesktop()` (`@/lib/hooks/use-media-query`). Below `lg` is the mobile/tablet experience; don't introduce a different "desktop" threshold.
+- **Viewport heights**: use `dvh` (`h-dvh`, `max-h-[90dvh]`, …), never `vh` or `h-screen` for full-height surfaces — mobile URL bars resize the viewport.
+- **No hover-only affordances**: anything revealed only on `hover:` must also work on touch — use the `.touch-reveal` class (globals.css) or `pointer-coarse:` variants.
+- **Overflow**: long text gets `min-w-0` + `truncate` (or a responsive `max-w-*`); button rows get `flex-wrap`; tables hide non-essential columns on small screens and hide the matching `<col>`, `th`, `td` at the same breakpoint (e.g. `hidden sm:table-column`).
+- **Dialogs**: bound with `max-h-*` and scroll the *content* (`min-h-0` + `overflow-y-auto` on an inner element) so headers/footers stay usable; fixed-height panels become shorter or stack on small screens.
+- **Tabs with long localized labels**: stack on mobile (`grid-cols-1 sm:grid-cols-3`) rather than shrinking to overflow.
+
+See [PDR-003](decisions/PDR-003-mobile-layout.md) for the rationale and scope.
+
 ## Code Quality Tools
 
 We use these tools to maintain code quality:

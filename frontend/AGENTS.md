@@ -16,6 +16,7 @@ Normative rules for working on the Next.js frontend. Architecture and flow walkt
 - Data fetching uses TanStack Query hooks in `src/lib/hooks/` with `QUERY_KEYS`; mutations invalidate caches and show toasts (sonner). Follow the existing hook shape.
 - FormData requests: nested objects/arrays must be `JSON.stringify`-ed before appending; the interceptor strips Content-Type so the browser sets the multipart boundary — don't re-add it.
 - No automatic request retry — handle failures in the consuming code (podcast retry is an explicit endpoint/hook, not a client retry).
+- **Responsive is mandatory**: usable at 320–430px without horizontal scroll, without hover, without clipped footers. Desktop threshold is `lg` (keep it in sync with `useIsDesktop()`); use `dvh` not `vh`; follow the conventions in [code-standards.md](../docs/7-DEVELOPMENT/code-standards.md) (Responsive & Mobile) and [PDR-003](../docs/7-DEVELOPMENT/decisions/PDR-003-mobile-layout.md).
 
 ## Gotchas
 
