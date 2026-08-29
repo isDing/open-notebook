@@ -202,6 +202,13 @@ class NoteUpdate(BaseModel):
     note_type: Optional[str] = Field(None, description="Type of note (human, ai)")
 
 
+class NoteNotebookResponse(BaseModel):
+    """Notebook membership displayed alongside a note in the reading index."""
+
+    id: str
+    name: str
+
+
 class NoteResponse(BaseModel):
     id: str
     title: Optional[str]
@@ -210,6 +217,7 @@ class NoteResponse(BaseModel):
     created: str
     updated: str
     command_id: Optional[str] = None
+    notebooks: List[NoteNotebookResponse] = Field(default_factory=list)
 
 
 # Embedding API models

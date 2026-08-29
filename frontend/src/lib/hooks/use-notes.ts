@@ -14,6 +14,14 @@ export function useNotes(notebookId?: string) {
   })
 }
 
+/** Fetch the reading index containing notes from every notebook. */
+export function useAllNotes() {
+  return useQuery({
+    queryKey: QUERY_KEYS.notes(),
+    queryFn: () => notesApi.list(),
+  })
+}
+
 export function useNote(id?: string, options?: { enabled?: boolean }) {
   const noteId = id ?? ''
   return useQuery({

@@ -3,7 +3,8 @@ from typing import List, Literal, Optional
 from fastapi import APIRouter, HTTPException, Query
 from loguru import logger
 
-from api.models import NoteCreate, NoteResponse, NoteUpdate
+from api.models import NoteCreate, NoteNotebookResponse, NoteResponse, NoteUpdate
+from open_notebook.database.repository import repo_query
 from open_notebook.domain.notebook import Note
 from open_notebook.exceptions import (
     InvalidInputError,
@@ -12,6 +13,63 @@ from open_notebook.exceptions import (
 )
 
 router = APIRouter()
+
+
+async def _get_note_notebooks(
+    note_ids: List[str],
+) -> dict[str, List[NoteNotebookResponse]]:
+    """Load notebook memberships for notes in one relation query."""
+    normalized_ids = {note_id for note_id in note_ids if note_id}
+    memberships: dict[str, List[NoteNotebookResponse]] = {
+        note_id: [] for note_id in normalized_ids
+    }
+    if not normalized_ids:
+        return memberships
+
+    try:
+        rows = await repo_query(
+            """
+            SELECT in AS note_id, out AS notebook
+            FROM artifact
+            FETCH notebook
+            """
+        )
+    except Exception as e:
+        # Membership is display metadata. A transient relation query failure
+        # should not hide otherwise readable notes.
+        logger.warning(f"Failed to load notebook memberships for notes: {e}")
+        return memberships
+
+    for row in rows:
+        note_id = str(row.get("note_id", ""))
+        notebook = row.get("notebook")
+        if note_id not in normalized_ids or not isinstance(notebook, dict):
+            continue
+        notebook_id = str(notebook.get("id", ""))
+        notebook_name = notebook.get("name")
+        if notebook_id and isinstance(notebook_name, str):
+            memberships[note_id].append(
+                NoteNotebookResponse(id=notebook_id, name=notebook_name)
+            )
+
+    return memberships
+
+
+def _note_response(
+    note: Note,
+    notebooks: Optional[List[NoteNotebookResponse]] = None,
+    command_id: Optional[str] = None,
+) -> NoteResponse:
+    return NoteResponse(
+        id=note.id or "",
+        title=note.title,
+        content=note.content,
+        note_type=note.note_type,
+        created=str(note.created),
+        updated=str(note.updated),
+        command_id=command_id,
+        notebooks=notebooks or [],
+    )
 
 
 @router.get("/notes", response_model=List[NoteResponse])
@@ -30,16 +88,9 @@ async def get_notes(
             # Get all notes
             notes = await Note.get_all(order_by="updated desc")
 
+        memberships = await _get_note_notebooks([note.id or "" for note in notes])
         return [
-            NoteResponse(
-                id=note.id or "",
-                title=note.title,
-                content=note.content,
-                note_type=note.note_type,
-                created=str(note.created),
-                updated=str(note.updated),
-            )
-            for note in notes
+            _note_response(note, memberships.get(note.id or "", [])) for note in notes
         ]
     except HTTPException:
         raise
@@ -96,13 +147,8 @@ async def create_note(note_data: NoteCreate):
             await Notebook.get(note_data.notebook_id)
             await new_note.add_to_notebook(note_data.notebook_id)
 
-        return NoteResponse(
-            id=new_note.id or "",
-            title=new_note.title,
-            content=new_note.content,
-            note_type=new_note.note_type,
-            created=str(new_note.created),
-            updated=str(new_note.updated),
+        return _note_response(
+            new_note,
             command_id=str(command_id) if command_id else None,
         )
     except HTTPException:
@@ -124,14 +170,8 @@ async def get_note(note_id: str):
     try:
         note = await Note.get(note_id)
 
-        return NoteResponse(
-            id=note.id or "",
-            title=note.title,
-            content=note.content,
-            note_type=note.note_type,
-            created=str(note.created),
-            updated=str(note.updated),
-        )
+        memberships = await _get_note_notebooks([note.id or ""])
+        return _note_response(note, memberships.get(note.id or "", []))
     except HTTPException:
         raise
     except NotFoundError:
@@ -164,13 +204,8 @@ async def update_note(note_id: str, note_update: NoteUpdate):
 
         command_id = await note.save()
 
-        return NoteResponse(
-            id=note.id or "",
-            title=note.title,
-            content=note.content,
-            note_type=note.note_type,
-            created=str(note.created),
-            updated=str(note.updated),
+        return _note_response(
+            note,
             command_id=str(command_id) if command_id else None,
         )
     except HTTPException:

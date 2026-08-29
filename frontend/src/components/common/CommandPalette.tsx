@@ -28,6 +28,7 @@ import {
   Moon,
   Monitor,
   Loader2,
+  StickyNote,
 } from 'lucide-react'
 import { useTranslation } from '@/lib/hooks/use-translation'
 import type { TFunction } from 'i18next'
@@ -35,6 +36,7 @@ import type { TFunction } from 'i18next'
 const getNavigationItems = (t: TFunction) => [
   { name: t('navigation.sources'), href: '/sources', icon: FileText, keywords: ['files', 'documents', 'upload'] },
   { name: t('navigation.notebooks'), href: '/notebooks', icon: Book, keywords: ['notes', 'research', 'projects'] },
+  { name: t('notes.reading'), href: '/notes', icon: StickyNote, keywords: ['reading', 'notes', 'saved'] },
   { name: t('navigation.askAndSearch'), href: '/search', icon: Search, keywords: ['find', 'query'] },
   { name: t('navigation.podcasts'), href: '/podcasts', icon: Mic, keywords: ['audio', 'episodes', 'generate'] },
   { name: t('navigation.models'), href: '/settings/api-keys', icon: Bot, keywords: ['ai', 'llm', 'providers', 'openai', 'anthropic'] },

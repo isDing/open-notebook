@@ -16,6 +16,12 @@ export interface NoteResponse {
   note_type: string | null
   created: string
   updated: string
+  notebooks?: NoteNotebookResponse[]
+}
+
+export interface NoteNotebookResponse {
+  id: string
+  name: string
 }
 
 export interface SourceListResponse {
