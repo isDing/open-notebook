@@ -79,8 +79,8 @@ export function CredentialItem({
   return (
     <>
       <div className="border rounded-lg p-3 space-y-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 min-w-0">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center gap-2 min-w-0">
             <span className="font-medium truncate">{credential.name}</span>
             <div className="flex gap-1">
               {credential.modalities.map(mod => (

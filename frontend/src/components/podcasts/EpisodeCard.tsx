@@ -247,7 +247,7 @@ export function EpisodeCard({ episode, onDelete, deleting, onRetry, retrying }: 
                   <InfoIcon className="mr-2 h-4 w-4" /> {t('podcasts.details')}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="w-[min(90vw,720px)] max-h-[85vh] overflow-hidden">
+              <DialogContent className="w-[min(90vw,720px)] max-h-[85dvh] overflow-hidden">
                 <DialogHeader>
                   <DialogTitle>{episode.name}</DialogTitle>
                   <DialogDescription>
@@ -264,8 +264,8 @@ export function EpisodeCard({ episode, onDelete, deleting, onRetry, retrying }: 
                     <p className="text-sm text-destructive">{audioError}</p>
                   ) : null}
 
-                  <Tabs defaultValue="summary" className="h-[60vh] flex flex-col">
-                    <TabsList className="grid w-full grid-cols-3">
+                  <Tabs defaultValue="summary" className="flex h-[55dvh] flex-col">
+                    <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3">
                       <TabsTrigger value="summary">{t('podcasts.summaryTab')}</TabsTrigger>
                       <TabsTrigger value="outline">{t('podcasts.outlineTab')}</TabsTrigger>
                       <TabsTrigger value="transcript">{t('podcasts.transcriptTab')}</TabsTrigger>

@@ -168,7 +168,7 @@ export function SourceTypeStep({ control, register, setValue, errors, urlValidat
               onValueChange={(value) => field.onChange(value as 'link' | 'upload' | 'text')}
               className="w-full"
             >
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3">
                 {getSourceTypes(t).map((type) => {
                   const Icon = type.icon
                   return (

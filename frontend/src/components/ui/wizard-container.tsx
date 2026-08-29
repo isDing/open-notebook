@@ -23,7 +23,7 @@ function StepIndicator({ currentStep, steps, onStepClick }: {
   onStepClick?: (step: number) => void
 }) {
   return (
-    <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-muted">
+    <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-muted sm:px-6 sm:py-4">
       {steps.map((step, index) => {
         const isCompleted = currentStep > step.number
         const isCurrent = currentStep === step.number
@@ -49,13 +49,13 @@ function StepIndicator({ currentStep, steps, onStepClick }: {
               </div>
               <div className="ml-3 min-w-0">
                 <p className={cn(
-                  'text-sm font-medium',
+                  'truncate text-sm font-medium',
                   isCurrent ? 'text-foreground' : 'text-muted-foreground'
                 )}>
                   {step.title}
                 </p>
                 <p className={cn(
-                  'text-xs',
+                  'hidden text-xs sm:block',
                   isCurrent ? 'text-muted-foreground' : 'text-muted-foreground/80'
                 )}>
                   {step.description}
@@ -63,11 +63,11 @@ function StepIndicator({ currentStep, steps, onStepClick }: {
               </div>
             </div>
             {index < steps.length - 1 && (
-              <div 
+              <div
                 className={cn(
-                  'flex-1 border-t-2 mx-4 transition-colors',
+                  'mx-2 flex-1 border-t-2 transition-colors sm:mx-4',
                   isCompleted ? 'border-primary' : 'border-border/60'
-                )} 
+                )}
               />
             )}
           </div>
@@ -85,7 +85,7 @@ export function WizardContainer({
   className
 }: WizardContainerProps) {
   return (
-    <div className={cn('flex flex-col h-[500px] min-w-0 overflow-hidden bg-card rounded-lg border border-border', className)}>
+    <div className={cn('flex flex-col h-[min(500px,58dvh)] min-w-0 overflow-hidden bg-card rounded-lg border border-border', className)}>
       <StepIndicator
         currentStep={currentStep}
         steps={steps}

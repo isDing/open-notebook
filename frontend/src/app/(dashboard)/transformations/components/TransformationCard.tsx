@@ -34,7 +34,7 @@ export function TransformationCard({ transformation, onPlayground, onEdit }: Tra
       <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
         <Card>
           <CardHeader>
-            <div className="flex items-start justify-between gap-4">
+            <div className="flex flex-wrap items-start justify-between gap-3 sm:gap-4">
               <CollapsibleTrigger className="flex-1 text-left">
                 <div className={cn('flex items-center gap-3', isExpanded ? 'mb-2' : '')}>
                   {isExpanded ? (
@@ -54,7 +54,7 @@ export function TransformationCard({ transformation, onPlayground, onEdit }: Tra
                 </div>
               </CollapsibleTrigger>
 
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 {onPlayground && (
                   <Button variant="outline" size="sm" onClick={onPlayground}>
                     <Wand2 className="h-4 w-4 mr-2" />

@@ -478,15 +478,15 @@ export function GeneratePodcastDialog({ open, onOpenChange }: GeneratePodcastDia
         resetState()
       }
     }}>
-      <DialogContent className="w-[80vw] max-w-[1080px] max-h-[90vh] overflow-hidden">
-        <DialogHeader>
+      <DialogContent className="flex w-[80vw] max-w-[1080px] max-h-[90dvh] flex-col overflow-hidden md:grid">
+        <DialogHeader className="shrink-0">
           <DialogTitle>{t('podcasts.generateEpisode')}</DialogTitle>
           <DialogDescription>
             {t('podcasts.generateEpisodeDesc')}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-6 md:grid-cols-[2fr_1fr] xl:grid-cols-[3fr_1fr]">
+        <div className="grid min-h-0 flex-1 gap-6 overflow-y-auto md:grid-cols-[2fr_1fr] md:overflow-visible xl:grid-cols-[3fr_1fr]">
           <ContentSelectionPanel
             notebooks={notebooks}
             isLoading={notebooksQuery.isLoading}

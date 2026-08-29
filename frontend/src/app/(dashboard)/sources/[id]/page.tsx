@@ -40,7 +40,7 @@ export default function SourceDetailPage() {
       </div>
 
       {/* Main content: Source detail + Chat */}
-      <div className="flex-1 grid gap-6 lg:grid-cols-[2fr_1fr] overflow-hidden px-6">
+      <div className="flex-1 grid min-h-0 gap-6 grid-rows-[1fr_1fr] overflow-hidden px-6 lg:grid-cols-[2fr_1fr] lg:grid-rows-1">
         {/* Left column - Source detail */}
         <div className="overflow-y-auto px-4 pb-6">
           <SourceDetailContent

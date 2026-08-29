@@ -585,7 +585,7 @@ export function AddSourceDialog({
           </WizardContainer>
 
           {/* Navigation */}
-          <div className="flex justify-between items-center px-6 py-4 border-t border-border">
+          <div className="flex flex-wrap justify-between items-center gap-2 px-4 py-4 border-t border-border sm:px-6">
             <Button 
               type="button" 
               variant="outline" 
@@ -621,7 +621,7 @@ export function AddSourceDialog({
               <Button
                 type="submit"
                 disabled={!currentStepValid || createSource.isPending}
-                className="min-w-[120px]"
+                className="sm:min-w-[120px]"
               >
                 {createSource.isPending ? t('common.adding') : t('common.done')}
               </Button>

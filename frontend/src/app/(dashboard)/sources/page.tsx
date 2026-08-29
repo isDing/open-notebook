@@ -328,15 +328,15 @@ export default function SourcesPage() {
           <table
             ref={tableRef}
             tabIndex={0}
-            className="w-full min-w-[920px] outline-none table-fixed"
+            className="w-full sm:min-w-[920px] outline-none table-fixed"
           >
             <colgroup>
               <col className="w-[120px]" />
               <col className="w-auto" />
-              <col className="w-[140px]" />
-              <col className="w-[140px]" />
-              <col className="w-[100px]" />
-              <col className="w-[100px]" />
+              <col className="hidden w-[140px] sm:table-column" />
+              <col className="hidden w-[140px] sm:table-column" />
+              <col className="hidden w-[100px] md:table-column" />
+              <col className="hidden w-[100px] lg:table-column" />
               <col className="w-[100px]" />
             </colgroup>
             <thead className="sticky top-0 bg-background z-10">
