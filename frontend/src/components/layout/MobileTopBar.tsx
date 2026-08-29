@@ -15,7 +15,7 @@ export function MobileTopBar() {
   const { setMobileOpen } = useSidebarStore()
 
   return (
-    <div className="flex h-12 flex-shrink-0 items-center justify-between gap-2 border-b border-sidebar-border bg-sidebar px-3 lg:hidden">
+    <div className="flex min-h-12 flex-shrink-0 items-center justify-between gap-2 border-b border-sidebar-border bg-sidebar px-3 pt-[env(safe-area-inset-top)] lg:hidden">
       <div className="flex min-w-0 items-center gap-2.5">
         <Button
           variant="ghost"

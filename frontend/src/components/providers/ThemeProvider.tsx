@@ -7,6 +7,18 @@ interface ThemeProviderProps {
   children: React.ReactNode
 }
 
+// iOS Safari colors the status bar / bottom bar with theme-color, so keep the
+// meta tags in sync with the app's background (single source of truth: --bg).
+function syncThemeColor() {
+  const bg = getComputedStyle(window.document.documentElement)
+    .getPropertyValue('--bg')
+    .trim()
+  if (!bg) return
+  window.document
+    .querySelectorAll('meta[name="theme-color"]')
+    .forEach((meta) => meta.setAttribute('content', bg))
+}
+
 export function ThemeProvider({ children }: ThemeProviderProps) {
   const { theme, getSystemTheme, getEffectiveTheme } = useThemeStore()
 
@@ -14,25 +26,28 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     // Initialize theme on mount
     const root = window.document.documentElement
     const effectiveTheme = getEffectiveTheme()
-    
+
     // Remove all possible theme classes first
     root.classList.remove('light', 'dark')
-    
+
     // Add the effective theme class
     root.classList.add(effectiveTheme)
-    
+
     // Set the data attribute as well for better component compatibility
     root.setAttribute('data-theme', effectiveTheme)
+
+    syncThemeColor()
 
     // Listen for system theme changes when using system preference
     if (theme === 'system') {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-      
+
       const handleChange = () => {
         const newSystemTheme = getSystemTheme()
         root.classList.remove('light', 'dark')
         root.classList.add(newSystemTheme)
         root.setAttribute('data-theme', newSystemTheme)
+        syncThemeColor()
       }
 
       mediaQuery.addEventListener('change', handleChange)
