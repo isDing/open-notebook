@@ -132,7 +132,7 @@ export function NoteEditorDialog({ open, onOpenChange, notebookId, note }: NoteE
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className={cn(
           "sm:max-w-3xl w-full h-[90vh] max-h-[90vh] overflow-hidden p-0 flex flex-col",
-          isEditorFullscreen && "!max-w-screen !max-h-screen border-none w-screen h-screen"
+          isEditorFullscreen && "border-none !inset-0 !translate-none !max-w-none"
       )}>
         <DialogTitle className="sr-only">
           {isEditing ? t('sources.editNote') : t('sources.createNote')}

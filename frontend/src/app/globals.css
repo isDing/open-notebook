@@ -408,6 +408,27 @@
     @apply transition-colors duration-150 ease-out;
   }
 
+  /* Action affordances (kebab menus, inline test/delete, rail expand):
+     always visible on touch devices; on hover-capable devices they stay
+     hidden until the parent `.group` is hovered or the control is focused.
+     Pair with the existing group-hover utilities, which win in the
+     utilities layer. */
+  .touch-reveal {
+    opacity: 1;
+  }
+
+  @media (hover: hover) {
+    .touch-reveal {
+      opacity: 0;
+    }
+
+    .group:hover .touch-reveal,
+    .group\/model:hover .touch-reveal,
+    .touch-reveal:focus-visible {
+      opacity: 1;
+    }
+  }
+
   .sidebar-menu-item:hover {
     background-color: var(--sidebar-accent) !important;
   }

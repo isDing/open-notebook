@@ -233,13 +233,13 @@ export default function SearchPage() {
                         </Button>
                       </div>
                       <div className="flex gap-2 text-xs flex-wrap">
-                        <Badge variant="secondary" className="font-mono text-[11px]">
+                        <Badge variant="secondary" className="max-w-[180px] truncate sm:max-w-[240px] lg:max-w-none font-mono text-[11px]">
                           {t('searchPage.strategy')}: {resolveModelName(customModels?.strategy || modelDefaults?.default_chat_model)}
                         </Badge>
-                        <Badge variant="secondary" className="font-mono text-[11px]">
+                        <Badge variant="secondary" className="max-w-[180px] truncate sm:max-w-[240px] lg:max-w-none font-mono text-[11px]">
                           {t('searchPage.answer')}: {resolveModelName(customModels?.answer || modelDefaults?.default_chat_model)}
                         </Badge>
-                        <Badge variant="secondary" className="font-mono text-[11px]">
+                        <Badge variant="secondary" className="max-w-[180px] truncate sm:max-w-[240px] lg:max-w-none font-mono text-[11px]">
                           {t('searchPage.final')}: {resolveModelName(customModels?.finalAnswer || modelDefaults?.default_chat_model)}
                         </Badge>
                       </div>
