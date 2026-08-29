@@ -191,10 +191,10 @@ export function AppSidebar() {
                 variant="ghost"
                 size="sm"
                 onClick={closeMobileSidebar}
-                className="shrink-0 text-sidebar-foreground hover:bg-sidebar-accent"
+                className="h-11 w-11 shrink-0 touch-manipulation p-0 text-sidebar-foreground hover:bg-sidebar-accent"
                 aria-label={t('common.close')}
               >
-                <X className="h-4 w-4" />
+                <X className="h-5 w-5" />
               </Button>
             </>
           ) : collapsed ? (

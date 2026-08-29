@@ -20,11 +20,11 @@ export function MobileTopBar() {
         <Button
           variant="ghost"
           size="sm"
-          className="h-8 w-8 shrink-0 p-0 text-sidebar-foreground hover:bg-sidebar-accent"
+          className="h-11 w-11 shrink-0 touch-manipulation p-0 text-sidebar-foreground hover:bg-sidebar-accent"
           aria-label={t('navigation.openMenu')}
           onClick={() => setMobileOpen(true)}
         >
-          <Menu className="h-4 w-4" />
+          <Menu className="h-5 w-5" />
         </Button>
         <LogoPebbles />
         <span className="truncate font-display text-[15px] font-bold tracking-tight text-sidebar-foreground">

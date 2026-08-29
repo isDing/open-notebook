@@ -66,11 +66,11 @@ export function CreateMenu({
           aria-label={t('common.create')}
           className={cn(
             'font-display font-bold',
-            iconOnly ? 'h-8 w-8 shrink-0 p-0' : 'w-full justify-start',
+            iconOnly ? 'h-11 w-11 shrink-0 touch-manipulation p-0' : 'w-full justify-start',
             className
           )}
         >
-          <Plus className="h-4 w-4" />
+          <Plus className={iconOnly ? 'h-5 w-5' : 'h-4 w-4'} />
           {!iconOnly && t('common.create')}
         </Button>
       </DropdownMenuTrigger>
