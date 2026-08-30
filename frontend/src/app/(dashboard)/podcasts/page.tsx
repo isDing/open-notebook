@@ -28,13 +28,6 @@ export default function PodcastsPage() {
     <AppShell>
       <div className="flex-1 overflow-y-auto">
         <div className="space-y-6 px-4 py-4 md:px-6 md:py-6">
-          <header className="space-y-1">
-            <h1 className="font-display text-2xl font-bold tracking-tight">{t('podcasts.listTitle')}</h1>
-            <p className="text-muted-foreground">
-              {t('podcasts.listDesc')}
-            </p>
-          </header>
-
           {hasUnconfiguredProfiles ? (
             <Alert className="bg-warn-tint text-warn border-warn/30">
               <AlertTriangle className="h-4 w-4" />

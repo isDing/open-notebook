@@ -233,8 +233,6 @@ export const itIT = {
   notes: {
     reading: "Reading",
     unfiled: "Unfiled",
-    title: "Reading notes",
-    description: "A focused space for the ideas you've saved.",
     searchPlaceholder: "Search notes by title or content...",
     sortLabel: "Sort notes",
     sortRecent: "Recently updated",
@@ -487,7 +485,6 @@ export const itIT = {
     sessionDeleted: "Sessione eliminata",
   },
   searchPage: {
-    askAndSearch: "Chiedi e cerca",
     chooseAMode: "Scegli una modalità",
     askBeta: "Chiedi (beta)",
     search: "Cerca",
@@ -585,8 +582,6 @@ export const itIT = {
     podcastTaskStarted: "Attività podcast avviata",
     loadingProfiles: "Caricamento profili episodio...",
     noProfilesFound: "Nessun profilo episodio trovato. Crea un profilo episodio prima di generare un podcast.",
-    listTitle: "Podcast",
-    listDesc: "Tieni traccia degli episodi generati e gestisci i profili riutilizzabili.",
     chooseAView: "Scegli una vista",
     episodesTab: "Episodi",
     templatesTab: "Profili",
@@ -810,8 +805,6 @@ export const itIT = {
     loadFailed: "Impossibile caricare le impostazioni",
   },
   advanced: {
-    title: "Strumenti avanzati",
-    desc: "Strumenti e utilità avanzate per utenti esperti",
     systemInfo: "Informazioni sistema",
     rebuildEmbeddings: "Ricostruisci indicizzazioni",
     rebuildEmbeddingsDesc: "Ricostruisci l'indice di ricerca vettoriale per tutte le fonti",
@@ -948,8 +941,6 @@ export const itIT = {
     addCustomModel: "Aggiungi \"{{name}}\"",
   },
   apiKeys: {
-    title: "Configura la tua IA con le tue chiavi API",
-    description: "Salva le chiavi API in modo sicuro nel database per abilitare i provider IA in Open Notebook.",
     encryptionRequired: "Chiave di crittografia non configurata",
     encryptionRequiredDescription: "Imposta la variabile d'ambiente OPEN_NOTEBOOK_ENCRYPTION_KEY su una stringa segreta qualsiasi per abilitare il salvataggio delle chiavi API nel database.",
     configured: "Configurato",

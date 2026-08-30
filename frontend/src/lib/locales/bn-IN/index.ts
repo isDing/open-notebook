@@ -233,8 +233,6 @@ export const bnIN = {
   notes: {
     reading: "Reading",
     unfiled: "Unfiled",
-    title: "Reading notes",
-    description: "A focused space for the ideas you've saved.",
     searchPlaceholder: "Search notes by title or content...",
     sortLabel: "Sort notes",
     sortRecent: "Recently updated",
@@ -487,7 +485,6 @@ export const bnIN = {
     sessionDeleted: "সেশন মুছে ফেলা হয়েছে",
   },
   searchPage: {
-    askAndSearch: "জিজ্ঞাসা ও অনুসন্ধান",
     chooseAMode: "একটি মোড বেছে নিন",
     askBeta: "জিজ্ঞাসা (বেটা)",
     search: "অনুসন্ধান",
@@ -585,8 +582,6 @@ export const bnIN = {
     podcastTaskStarted: "পডকাস্ট কাজ শুরু হয়েছে",
     loadingProfiles: "এপিসোড প্রোফাইল লোড হচ্ছে...",
     noProfilesFound: "কোন এপিসোড প্রোফাইল পাওয়া যায়নি। পডকাস্ট তৈরির আগে একটি এপিসোড প্রোফাইল তৈরি করুন।",
-    listTitle: "পডকাস্ট",
-    listDesc: "তৈরি করা এপিসোড ট্র্যাক করুন এবং পুনঃব্যবহারযোগ্য প্রোফাইল পরিচালনা করুন।",
     chooseAView: "একটি ভিউ বেছে নিন",
     episodesTab: "এপিসোড",
     templatesTab: "প্রোফাইল",
@@ -811,8 +806,6 @@ export const bnIN = {
     loadFailed: "সেটিংস লোড করতে ব্যর্থ",
   },
   advanced: {
-    title: "উন্নত টুলস",
-    desc: "পাওয়ার ব্যবহারকারীদের জন্য উন্নত টুল এবং ইউটিলিটি",
     systemInfo: "সিস্টেম তথ্য",
     rebuildEmbeddings: "এমবেডিং পুনর্নির্মাণ",
     rebuildEmbeddingsDesc: "সব উৎসের জন্য ভেক্টর সার্চ ইনডেক্স পুনর্নির্মাণ",
@@ -949,8 +942,6 @@ export const bnIN = {
     addCustomModel: "\"{{name}}\" যোগ করুন",
   },
   apiKeys: {
-    title: "আপনার নিজের API কী দিয়ে আপনার AI কনফিগার করুন",
-    description: "Open Notebook এ AI প্রোভাইডার সক্ষম করতে ডেটাবেসে নিরাপদভাবে API কী সংরক্ষণ করুন।",
     encryptionRequired: "এনক্রিপশন কী কনফিগার করা হয়নি",
     encryptionRequiredDescription: "ডেটাবেসে API কী সংরক্ষণ করতে OPEN_NOTEBOOK_ENCRYPTION_KEY environment variable যেকোন গোপন স্ট্রিংয়ে সেট করুন।",
     configured: "কনফিগার করা",

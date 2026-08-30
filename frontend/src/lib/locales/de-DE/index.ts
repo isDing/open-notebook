@@ -236,8 +236,6 @@ export const deDE = {
   notes: {
     reading: "Reading",
     unfiled: "Unfiled",
-    title: "Reading notes",
-    description: "A focused space for the ideas you've saved.",
     searchPlaceholder: "Search notes by title or content...",
     sortLabel: "Sort notes",
     sortRecent: "Recently updated",
@@ -490,7 +488,6 @@ export const deDE = {
     sessionDeleted: "Sitzung gelöscht",
   },
   searchPage: {
-    askAndSearch: "Fragen und Suchen",
     chooseAMode: "Modus wählen",
     askBeta: "Fragen (Beta)",
     search: "Suchen",
@@ -588,8 +585,6 @@ export const deDE = {
     podcastTaskStarted: "Podcast-Aufgabe gestartet",
     loadingProfiles: "Episodenprofile werden geladen...",
     noProfilesFound: "Keine Episodenprofile gefunden. Erstelle ein Episodenprofil, bevor du einen Podcast erzeugst.",
-    listTitle: "Podcasts",
-    listDesc: "Behalte erzeugte Episoden im Blick und verwalte wiederverwendbare Profile.",
     chooseAView: "Ansicht auswählen",
     episodesTab: "Episoden",
     templatesTab: "Profile",
@@ -813,8 +808,6 @@ export const deDE = {
     loadFailed: "Einstellungen konnten nicht geladen werden",
   },
   advanced: {
-    title: "Erweiterte Werkzeuge",
-    desc: "Erweiterte Werkzeuge und Hilfsfunktionen für erfahrene Nutzer",
     systemInfo: "Systeminformationen",
     rebuildEmbeddings: "Embeddings neu aufbauen",
     rebuildEmbeddingsDesc: "Vektorsuchindex für alle Quellen neu aufbauen",
@@ -951,8 +944,6 @@ export const deDE = {
     addCustomModel: "\"{{name}}\" hinzufügen",
   },
   apiKeys: {
-    title: "KI mit eigenen API-Schlüsseln konfigurieren",
-    description: "Speichere API-Schlüssel sicher in der Datenbank, um KI-Anbieter in Open Notebook zu aktivieren.",
     encryptionRequired: "Verschlüsselungsschlüssel nicht konfiguriert",
     encryptionRequiredDescription: "Setze die Umgebungsvariable OPEN_NOTEBOOK_ENCRYPTION_KEY auf eine beliebige geheime Zeichenkette, um API-Schlüssel in der Datenbank speichern zu können.",
     configured: "Konfiguriert",

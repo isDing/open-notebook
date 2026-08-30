@@ -10,7 +10,6 @@ import {
   ChevronDown,
   ChevronRight,
   Clock3,
-  RefreshCw,
   Search,
   Sparkles,
   StickyNote,
@@ -27,6 +26,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useAllNotes, useNote } from '@/lib/hooks/use-notes'
+import { useIsDesktop } from '@/lib/hooks/use-media-query'
 import { useTranslation } from '@/lib/hooks/use-translation'
 import { getDateLocale } from '@/lib/utils/date-locale'
 import { cn } from '@/lib/utils'
@@ -66,6 +66,7 @@ export default function NotesPage() {
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set())
 
   const { data: notes = [], isLoading, isError, refetch } = useAllNotes()
+  const isDesktop = useIsDesktop()
   const normalizedQuery = query.trim().toLowerCase()
 
   const filteredNotes = useMemo(() => {
@@ -128,10 +129,18 @@ export default function NotesPage() {
       setSelectedNoteId(null)
       return
     }
-    if (!selectedNoteId || !filteredNotes.some((note) => note.id === selectedNoteId)) {
+
+    const isValid = Boolean(selectedNoteId) && filteredNotes.some((note) => note.id === selectedNoteId)
+
+    // Desktop keeps a note selected so the reading pane is never empty.
+    // Mobile leads with the list: a note only opens on an explicit tap, so
+    // auto-selecting here would hide the list and undo the back button.
+    if (isDesktop && !isValid) {
       setSelectedNoteId(filteredNotes[0].id)
+    } else if (!isDesktop && selectedNoteId !== null && !isValid) {
+      setSelectedNoteId(null)
     }
-  }, [filteredNotes, selectedNoteId])
+  }, [filteredNotes, selectedNoteId, isDesktop])
 
   const selectedSummary = filteredNotes.find((note) => note.id === selectedNoteId) ?? null
   const normalizedSelectedId = selectedNoteId ? normalizeNoteId(selectedNoteId) : ''
@@ -149,30 +158,8 @@ export default function NotesPage() {
   return (
     <AppShell>
       <div className="flex min-h-0 flex-1 flex-col">
-        <header className="shrink-0 border-b border-border bg-background px-4 py-5 md:px-6">
-          <div className="flex items-start justify-between gap-3 sm:gap-4">
-            <div className="min-w-0">
-              <p className="mb-1 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                <BookOpen className="h-3.5 w-3.5 text-teal" />
-                {t('notes.reading')}
-              </p>
-              <h1 className="break-words font-display text-2xl font-bold tracking-tight">{t('notes.title')}</h1>
-              <p className="mt-1 max-w-2xl break-words text-sm text-muted-foreground">{t('notes.description')}</p>
-            </div>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => refetch()}
-              disabled={isLoading}
-              aria-label={t('common.refresh')}
-              title={t('common.refresh')}
-              className="h-11 w-11 shrink-0 sm:h-9 sm:w-9"
-            >
-              <RefreshCw className={cn('h-4 w-4', isLoading && 'animate-spin')} />
-            </Button>
-          </div>
-
-          <div className="mt-5 flex flex-col gap-3 lg:flex-row lg:items-center">
+        <header className="shrink-0 border-b border-border bg-background px-4 py-4 md:px-6">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
             <div className="relative min-w-0 flex-1 lg:max-w-xl">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
@@ -200,7 +187,7 @@ export default function NotesPage() {
           </div>
         </header>
 
-        <div className="grid min-h-0 flex-1 lg:grid-cols-[minmax(280px,340px)_minmax(0,1fr)]">
+        <div className="grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)] lg:grid-cols-[minmax(280px,340px)_minmax(0,1fr)]">
           <section className={cn('min-h-0 flex-col border-border lg:flex lg:border-r', listVisibleOnMobile ? 'flex' : 'hidden')}>
             <div className="flex h-11 shrink-0 items-center justify-between border-b border-border px-4">
               <span className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">{t('notes.reading')}</span>

@@ -4,7 +4,7 @@ import { useMemo } from 'react'
 import { AppShell } from '@/components/layout/AppShell'
 import { LoadingSpinner } from '@/components/common/LoadingSpinner'
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
-import { Key, ShieldAlert, AlertCircle } from 'lucide-react'
+import { ShieldAlert, AlertCircle } from 'lucide-react'
 import { useTranslation } from '@/lib/hooks/use-translation'
 import { useModels, useModelDefaults } from '@/lib/hooks/use-models'
 import {
@@ -89,15 +89,6 @@ export default function ApiKeysPage() {
     <AppShell>
       <div className="flex-1 min-h-0 overflow-y-auto">
         <div className="space-y-6 p-4 md:p-6">
-          {/* Header */}
-          <div>
-            <h1 className="flex min-w-0 items-start gap-2 break-words font-display text-2xl font-bold tracking-tight">
-              <Key className="h-5 w-5 text-muted-foreground" />
-              <span>{t('apiKeys.title')}</span>
-            </h1>
-            <p className="mt-1 break-words text-muted-foreground">{t('apiKeys.description')}</p>
-          </div>
-
           {/* Encryption warning */}
           {!encryptionReady && (
             <Alert className="border-destructive/30 bg-destructive-tint">

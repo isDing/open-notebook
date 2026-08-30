@@ -164,7 +164,7 @@ export default function NotebookPage() {
             <>
               <div className="lg:hidden mb-4">
                 <Tabs value={mobileActiveTab} onValueChange={(value) => setMobileActiveTab(value as 'sources' | 'notes' | 'chat')}>
-                  <TabsList className="grid w-full grid-cols-1 gap-1 sm:grid-cols-3">
+                  <TabsList className="grid w-full grid-cols-3 gap-1">
                     <TabsTrigger value="sources" className="min-h-10 gap-2 sm:min-h-9">
                       <FileText className="h-4 w-4" />
                       {t('navigation.sources')}

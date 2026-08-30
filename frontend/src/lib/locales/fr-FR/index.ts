@@ -233,8 +233,6 @@ export const frFR = {
   notes: {
     reading: "Reading",
     unfiled: "Unfiled",
-    title: "Reading notes",
-    description: "A focused space for the ideas you've saved.",
     searchPlaceholder: "Search notes by title or content...",
     sortLabel: "Sort notes",
     sortRecent: "Recently updated",
@@ -487,7 +485,6 @@ export const frFR = {
     sessionDeleted: "Session supprimée",
   },
   searchPage: {
-    askAndSearch: "Poser une question et Rechercher",
     chooseAMode: "Choisir un mode",
     askBeta: "Demander (bêta)",
     search: "Recherche",
@@ -585,8 +582,6 @@ export const frFR = {
     podcastTaskStarted: "Tâche de podcast démarrée",
     loadingProfiles: "Chargement des profils d'épisode...",
     noProfilesFound: "Aucun profil d'épisode trouvé. Créez un profil d'épisode avant de générer un podcast.",
-    listTitle: "Podcasts",
-    listDesc: "Suivez les épisodes générés et gérez les profils réutilisables.",
     chooseAView: "Choisir une vue",
     episodesTab: "Épisodes",
     templatesTab: "Profils",
@@ -810,8 +805,6 @@ export const frFR = {
     loadFailed: "Échec du chargement des paramètres",
   },
   advanced: {
-    title: "Outils Avancés",
-    desc: "Outils et utilitaires avancés pour les utilisateurs expérimentés",
     systemInfo: "Infos Système",
     rebuildEmbeddings: "Reconstruire les index (Embeddings)",
     rebuildEmbeddingsDesc: "Reconstruire l'index de recherche vectorielle pour toutes les sources",
@@ -948,8 +941,6 @@ export const frFR = {
     addCustomModel: "Ajouter \"{{name}}\"",
   },
   apiKeys: {
-    title: "Configurez votre IA avec vos propres clés API",
-    description: "Stockez les clés API de manière sécurisée dans la base de données pour activer les fournisseurs d'IA dans Open Notebook.",
     encryptionRequired: "Clé de chiffrement non configurée",
     encryptionRequiredDescription: "Définissez la variable d'environnement OPEN_NOTEBOOK_ENCRYPTION_KEY avec une chaîne secrète pour activer le stockage des clés API dans la base de données.",
     configured: "Configuré",

@@ -2,21 +2,20 @@
 
 import { useState } from 'react'
 import { AppShell } from '@/components/layout/AppShell'
-import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { DefaultPromptEditor } from './components/DefaultPromptEditor'
 import { TransformationsList } from './components/TransformationsList'
 import { TransformationPlayground } from './components/TransformationPlayground'
 import { useTransformations } from '@/lib/hooks/use-transformations'
 import { Transformation } from '@/lib/types/transformations'
-import { Wand2, Play, RefreshCw } from 'lucide-react'
+import { Wand2, Play } from 'lucide-react'
 import { useTranslation } from '@/lib/hooks/use-translation'
 
 export default function TransformationsPage() {
   const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState('transformations')
   const [selectedTransformation, setSelectedTransformation] = useState<Transformation | undefined>()
-  const { data: transformations, isLoading, refetch } = useTransformations()
+  const { data: transformations, isLoading } = useTransformations()
 
   const handlePlayground = (transformation: Transformation) => {
     setSelectedTransformation(transformation)
@@ -27,21 +26,6 @@ export default function TransformationsPage() {
     <AppShell>
       <div className="flex-1 overflow-y-auto">
         <div className="space-y-6 p-4 md:p-6">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex min-w-0 items-center gap-3">
-              <h1 className="font-display text-2xl font-bold tracking-tight">{t('transformations.title')}</h1>
-              <Button variant="outline" size="sm" onClick={() => refetch()} aria-label={t('common.refresh')} title={t('common.refresh')} className="min-h-11 min-w-11 sm:min-h-8 sm:min-w-8">
-                <RefreshCw className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-
-        <div className="max-w-5xl">
-          <p className="text-muted-foreground">
-            {t('transformations.desc')}
-          </p>
-        </div>
-
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <div className="space-y-2">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t('transformations.workspace')}</p>

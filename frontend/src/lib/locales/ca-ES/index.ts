@@ -233,8 +233,6 @@ export const caES = {
   notes: {
     reading: "Reading",
     unfiled: "Unfiled",
-    title: "Reading notes",
-    description: "A focused space for the ideas you've saved.",
     searchPlaceholder: "Search notes by title or content...",
     sortLabel: "Sort notes",
     sortRecent: "Recently updated",
@@ -487,7 +485,6 @@ export const caES = {
     sessionDeleted: "S'ha suprimit la sessió",
   },
   searchPage: {
-    askAndSearch: "Pregunta i cerca",
     chooseAMode: "Tria un mode",
     askBeta: "Pregunta (beta)",
     search: "Cerca",
@@ -585,8 +582,6 @@ export const caES = {
     podcastTaskStarted: "S'ha iniciat la tasca del podcast",
     loadingProfiles: "S'estan carregant els perfils d'episodi...",
     noProfilesFound: "No s'ha trobat cap perfil d'episodi. Crea un perfil d'episodi abans de generar un podcast.",
-    listTitle: "Podcasts",
-    listDesc: "Fes un seguiment dels episodis generats i gestiona els perfils reutilitzables.",
     chooseAView: "Tria una vista",
     episodesTab: "Episodis",
     templatesTab: "Perfils",
@@ -810,8 +805,6 @@ export const caES = {
     loadFailed: "Ha fallat la càrrega de la configuració",
   },
   advanced: {
-    title: "Eines avançades",
-    desc: "Eines i utilitats avançades per a usuaris experimentats",
     systemInfo: "Informació del sistema",
     rebuildEmbeddings: "Reconstrueix les incrustacions",
     rebuildEmbeddingsDesc: "Reconstrueix l'índex de cerca vectorial per a totes les fonts",
@@ -948,8 +941,6 @@ export const caES = {
     addCustomModel: "Afegeix «{{name}}»",
   },
   apiKeys: {
-    title: "Configura la teva IA amb les teves pròpies claus de l'API",
-    description: "Emmagatzema les claus de l'API de manera segura a la base de dades per habilitar els proveïdors d'IA a Open Notebook.",
     encryptionRequired: "Clau de xifratge no configurada",
     encryptionRequiredDescription: "Estableix la variable d'entorn OPEN_NOTEBOOK_ENCRYPTION_KEY a qualsevol cadena secreta per habilitar l'emmagatzematge de claus de l'API a la base de dades.",
     configured: "Configurat",

@@ -486,7 +486,7 @@ function SourceDetailContentInner({
       {/* Tabs Content */}
       <div className="min-h-0 min-w-0 flex-1 overflow-y-auto">
         <Tabs defaultValue="content" className="w-full">
-          <TabsList className="sticky top-0 z-10 grid w-full grid-cols-1 gap-1 bg-card sm:grid-cols-3">
+          <TabsList className="sticky top-0 z-10 grid w-full grid-cols-3 gap-1 bg-card">
             <TabsTrigger value="content" className="min-h-10 sm:min-h-9">{t('sources.content')}</TabsTrigger>
             <TabsTrigger value="insights" className="min-h-10 sm:min-h-9">
               {t('common.insights')} {insights.length > 0 && `(${insights.length})`}

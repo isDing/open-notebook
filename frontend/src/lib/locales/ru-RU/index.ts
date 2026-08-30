@@ -233,8 +233,6 @@ export const ruRU = {
   notes: {
     reading: "Reading",
     unfiled: "Unfiled",
-    title: "Reading notes",
-    description: "A focused space for the ideas you've saved.",
     searchPlaceholder: "Search notes by title or content...",
     sortLabel: "Sort notes",
     sortRecent: "Recently updated",
@@ -487,7 +485,6 @@ export const ruRU = {
     sessionDeleted: "Сессия удалена",
   },
   searchPage: {
-    askAndSearch: "Запрос и поиск",
     chooseAMode: "Выберите режим",
     askBeta: "Запрос (бета)",
     search: "Поиск",
@@ -585,8 +582,6 @@ export const ruRU = {
     podcastTaskStarted: "Задача подкаста запущена",
     loadingProfiles: "Загрузка профилей эпизодов...",
     noProfilesFound: "Профили эпизодов не найдены. Создайте профиль перед генерацией подкаста.",
-    listTitle: "Подкасты",
-    listDesc: "Отслеживайте сгенерированные эпизоды и управляйте профилями.",
     chooseAView: "Выберите представление",
     episodesTab: "Эпизоды",
     templatesTab: "Профили",
@@ -810,8 +805,6 @@ export const ruRU = {
     loadFailed: "Не удалось загрузить настройки",
   },
   advanced: {
-    title: "Дополнительные инструменты",
-    desc: "Расширенные инструменты и утилиты для опытных пользователей",
     systemInfo: "Информация о системе",
     rebuildEmbeddings: "Пересоздать эмбеддинги",
     rebuildEmbeddingsDesc: "Пересоздать индекс векторного поиска для всех источников",
@@ -948,8 +941,6 @@ export const ruRU = {
     addCustomModel: "Добавить \"{{name}}\"",
   },
   apiKeys: {
-    title: "Настройте ИИ с помощью собственных API-ключей",
-    description: "Храните API-ключи в базе данных для безопасного подключения провайдеров ИИ в Open Notebook.",
     encryptionRequired: "Ключ шифрования не настроен",
     encryptionRequiredDescription: "Установите переменную окружения OPEN_NOTEBOOK_ENCRYPTION_KEY в любую секретную строку для хранения API-ключей в базе данных.",
     configured: "Настроено",

@@ -233,8 +233,6 @@ export const plPL = {
   notes: {
     reading: "Reading",
     unfiled: "Unfiled",
-    title: "Reading notes",
-    description: "A focused space for the ideas you've saved.",
     searchPlaceholder: "Search notes by title or content...",
     sortLabel: "Sort notes",
     sortRecent: "Recently updated",
@@ -487,7 +485,6 @@ export const plPL = {
     sessionDeleted: "Usunięto sesję",
   },
   searchPage: {
-    askAndSearch: "Pytaj i szukaj",
     chooseAMode: "Wybierz tryb",
     askBeta: "Pytaj (beta)",
     search: "Szukaj",
@@ -585,8 +582,6 @@ export const plPL = {
     podcastTaskStarted: "Zadanie podcastu rozpoczęte",
     loadingProfiles: "Ładowanie profili odcinków...",
     noProfilesFound: "Nie znaleziono profili odcinków. Utwórz profil odcinka przed wygenerowaniem podcastu.",
-    listTitle: "Podcasty",
-    listDesc: "Śledź wygenerowane odcinki i zarządzaj wielokrotnego użytku profilami.",
     chooseAView: "Wybierz widok",
     episodesTab: "Odcinki",
     templatesTab: "Profile",
@@ -810,8 +805,6 @@ export const plPL = {
     loadFailed: "Nie udało się załadować ustawień",
   },
   advanced: {
-    title: "Narzędzia zaawansowane",
-    desc: "Zaawansowane narzędzia i funkcje dla zaawansowanych użytkowników",
     systemInfo: "Informacje o systemie",
     rebuildEmbeddings: "Przebuduj osadzenia",
     rebuildEmbeddingsDesc: "Przebuduj indeks wyszukiwania wektorowego dla wszystkich źródeł",
@@ -948,8 +941,6 @@ export const plPL = {
     addCustomModel: "Dodaj „{{name}}”",
   },
   apiKeys: {
-    title: "Skonfiguruj swoje AI za pomocą własnych kluczy API",
-    description: "Przechowuj klucze API bezpiecznie w bazie danych, aby włączyć dostawców AI w Open Notebook.",
     encryptionRequired: "Klucz szyfrowania nie został skonfigurowany",
     encryptionRequiredDescription: "Ustaw zmienną środowiskową OPEN_NOTEBOOK_ENCRYPTION_KEY na dowolny tajny ciąg, aby umożliwić przechowywanie kluczy API w bazie danych.",
     configured: "Skonfigurowano",

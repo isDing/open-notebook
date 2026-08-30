@@ -231,8 +231,6 @@ export const enUS = {
   notes: {
     reading: "Reading",
     unfiled: "Unfiled",
-    title: "Reading notes",
-    description: "A focused space for the ideas you've saved.",
     searchPlaceholder: "Search notes by title or content...",
     sortLabel: "Sort notes",
     sortRecent: "Recently updated",
@@ -485,7 +483,6 @@ export const enUS = {
     sessionDeleted: "Session deleted",
   },
   searchPage: {
-    askAndSearch: "Ask and Search",
     chooseAMode: "Choose a mode",
     askBeta: "Ask (beta)",
     search: "Search",
@@ -583,8 +580,6 @@ export const enUS = {
     podcastTaskStarted: "Podcast task started",
     loadingProfiles: "Loading episode profiles...",
     noProfilesFound: "No episode profiles found. Create an episode profile before generating a podcast.",
-    listTitle: "Podcasts",
-    listDesc: "Keep track of generated episodes and manage reusable profiles.",
     chooseAView: "Choose a view",
     episodesTab: "Episodes",
     templatesTab: "Profiles",
@@ -809,8 +804,6 @@ export const enUS = {
     loadFailed: "Failed to load settings",
   },
   advanced: {
-    title: "Advanced Tools",
-    desc: "Advanced tools and utilities for power users",
     systemInfo: "System Info",
     rebuildEmbeddings: "Rebuild Embeddings",
     rebuildEmbeddingsDesc: "Rebuild vector search index for all sources",
@@ -947,8 +940,6 @@ export const enUS = {
     addCustomModel: "Add \"{{name}}\"",
   },
   apiKeys: {
-    title: "Configure your AI with your own API keys",
-    description: "Store API keys securely in the database to enable AI providers in Open Notebook.",
     encryptionRequired: "Encryption key not configured",
     encryptionRequiredDescription: "Set the OPEN_NOTEBOOK_ENCRYPTION_KEY environment variable to any secret string to enable storing API keys in the database.",
     configured: "Configured",

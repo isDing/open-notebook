@@ -233,8 +233,6 @@ export const ptBR = {
   notes: {
     reading: "Reading",
     unfiled: "Unfiled",
-    title: "Reading notes",
-    description: "A focused space for the ideas you've saved.",
     searchPlaceholder: "Search notes by title or content...",
     sortLabel: "Sort notes",
     sortRecent: "Recently updated",
@@ -487,7 +485,6 @@ export const ptBR = {
     sessionDeleted: "Sessão excluída",
   },
   searchPage: {
-    askAndSearch: "Perguntar e Buscar",
     chooseAMode: "Escolha um modo",
     askBeta: "Perguntar (beta)",
     search: "Buscar",
@@ -585,8 +582,6 @@ export const ptBR = {
     podcastTaskStarted: "Tarefa de podcast iniciada",
     loadingProfiles: "Carregando perfis de episódio...",
     noProfilesFound: "Nenhum perfil de episódio encontrado. Crie um perfil de episódio antes de gerar um podcast.",
-    listTitle: "Podcasts",
-    listDesc: "Acompanhe episódios gerados e gerencie perfis reutilizáveis.",
     chooseAView: "Escolha uma visualização",
     episodesTab: "Episódios",
     templatesTab: "Perfis",
@@ -810,8 +805,6 @@ export const ptBR = {
     loadFailed: "Falha ao carregar configurações",
   },
   advanced: {
-    title: "Ferramentas Avançadas",
-    desc: "Ferramentas e utilitários avançados para usuários avançados",
     systemInfo: "Informações do Sistema",
     rebuildEmbeddings: "Reconstruir Embeddings",
     rebuildEmbeddingsDesc: "Reconstruir índice de busca vetorial para todas as fontes",
@@ -948,8 +941,6 @@ export const ptBR = {
     addCustomModel: "Adicionar \"{{name}}\"",
   },
   apiKeys: {
-    title: "Configure sua IA com suas próprias chaves de API",
-    description: "Armazene chaves de API com segurança no banco de dados para habilitar provedores de IA no Open Notebook.",
     encryptionRequired: "Chave de criptografia não configurada",
     encryptionRequiredDescription: "Configure a variável de ambiente OPEN_NOTEBOOK_ENCRYPTION_KEY com qualquer string secreta para armazenar chaves de API no banco de dados.",
     configured: "Configurado",

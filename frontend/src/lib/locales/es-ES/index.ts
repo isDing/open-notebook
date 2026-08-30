@@ -233,8 +233,6 @@ export const esES = {
   notes: {
     reading: "Reading",
     unfiled: "Unfiled",
-    title: "Reading notes",
-    description: "A focused space for the ideas you've saved.",
     searchPlaceholder: "Search notes by title or content...",
     sortLabel: "Sort notes",
     sortRecent: "Recently updated",
@@ -487,7 +485,6 @@ export const esES = {
     sessionDeleted: "Sesión eliminada",
   },
   searchPage: {
-    askAndSearch: "Preguntar y buscar",
     chooseAMode: "Elige un modo",
     askBeta: "Preguntar (beta)",
     search: "Buscar",
@@ -585,8 +582,6 @@ export const esES = {
     podcastTaskStarted: "Tarea de podcast iniciada",
     loadingProfiles: "Cargando perfiles de episodio...",
     noProfilesFound: "No se encontraron perfiles de episodio. Crea un perfil de episodio antes de generar un podcast.",
-    listTitle: "Podcasts",
-    listDesc: "Lleva un registro de los episodios generados y gestiona perfiles reutilizables.",
     chooseAView: "Elige una vista",
     episodesTab: "Episodios",
     templatesTab: "Perfiles",
@@ -811,8 +806,6 @@ export const esES = {
     loadFailed: "Error al cargar la configuración",
   },
   advanced: {
-    title: "Herramientas avanzadas",
-    desc: "Herramientas avanzadas y utilidades para usuarios expertos",
     systemInfo: "Información del sistema",
     rebuildEmbeddings: "Reconstruir embeddings",
     rebuildEmbeddingsDesc: "Reconstruir el índice de búsqueda vectorial para todas las fuentes",
@@ -949,8 +942,6 @@ export const esES = {
     addCustomModel: "Agregar \"{{name}}\"",
   },
   apiKeys: {
-    title: "Configura tu IA con tus propias claves API",
-    description: "Almacena claves API de forma segura en la base de datos para habilitar proveedores de IA en Open Notebook.",
     encryptionRequired: "Clave de encriptación no configurada",
     encryptionRequiredDescription: "Establece la variable de entorno OPEN_NOTEBOOK_ENCRYPTION_KEY con cualquier cadena secreta para habilitar el almacenamiento de claves API en la base de datos.",
     configured: "Configurado",

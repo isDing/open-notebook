@@ -233,8 +233,6 @@ export const trTR = {
   notes: {
     reading: "Reading",
     unfiled: "Unfiled",
-    title: "Reading notes",
-    description: "A focused space for the ideas you've saved.",
     searchPlaceholder: "Search notes by title or content...",
     sortLabel: "Sort notes",
     sortRecent: "Recently updated",
@@ -487,7 +485,6 @@ export const trTR = {
     sessionDeleted: "Oturum silindi",
   },
   searchPage: {
-    askAndSearch: "Sor ve Ara",
     chooseAMode: "Bir mod seçin",
     askBeta: "Sor (beta)",
     search: "Ara",
@@ -585,8 +582,6 @@ export const trTR = {
     podcastTaskStarted: "Podcast görevi başlatıldı",
     loadingProfiles: "Bölüm profilleri yükleniyor...",
     noProfilesFound: "Bölüm profili bulunamadı. Podcast oluşturmadan önce bir bölüm profili oluşturun.",
-    listTitle: "Podcastler",
-    listDesc: "Oluşturulan bölümleri takip edin ve yeniden kullanılabilir profilleri yönetin.",
     chooseAView: "Bir görünüm seçin",
     episodesTab: "Bölümler",
     templatesTab: "Profiller",
@@ -810,8 +805,6 @@ export const trTR = {
     loadFailed: "Ayarlar yüklenemedi",
   },
   advanced: {
-    title: "Gelişmiş Araçlar",
-    desc: "Uzman kullanıcılar için gelişmiş araçlar ve yardımcı programlar",
     systemInfo: "Sistem Bilgisi",
     rebuildEmbeddings: "Gömmeleri Yeniden Oluştur",
     rebuildEmbeddingsDesc: "Tüm kaynaklar için vektör arama indeksini yeniden oluştur",
@@ -948,8 +941,6 @@ export const trTR = {
     addCustomModel: "\"{{name}}\" Ekle",
   },
   apiKeys: {
-    title: "Yapay zekanızı kendi API anahtarlarınızla yapılandırın",
-    description: "Open Notebook'ta yapay zeka sağlayıcılarını etkinleştirmek için API anahtarlarını güvenli şekilde veritabanında saklayın.",
     encryptionRequired: "Şifreleme anahtarı yapılandırılmadı",
     encryptionRequiredDescription: "Veritabanında API anahtarlarının saklanmasını etkinleştirmek için OPEN_NOTEBOOK_ENCRYPTION_KEY ortam değişkenini herhangi bir gizli dize olarak ayarlayın.",
     configured: "Yapılandırıldı",

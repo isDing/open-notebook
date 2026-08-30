@@ -322,13 +322,6 @@ export default function SourcesPage() {
 
     return (<>
       <div className="flex min-h-0 flex-1 w-full max-w-none flex-col px-4 py-4 sm:px-6 sm:py-6">
-        <div className="mb-6 flex-shrink-0">
-          <h1 className="font-display text-2xl font-bold tracking-tight">{t('sources.allSources')}</h1>
-          <p className="mt-2 text-muted-foreground">
-            {t('sources.allSourcesDesc')}
-          </p>
-        </div>
-
         <div ref={scrollContainerRef} className="min-h-0 flex-1 overflow-auto rounded-md border overscroll-contain">
           <table
             ref={tableRef}

@@ -233,8 +233,6 @@ export const zhTW = {
   notes: {
     reading: "閱讀",
     unfiled: "未分類",
-    title: "閱讀筆記",
-    description: "專注閱讀你儲存的想法。",
     searchPlaceholder: "按標題或內容搜尋筆記...",
     sortLabel: "筆記排序",
     sortRecent: "最近更新",
@@ -487,7 +485,6 @@ export const zhTW = {
     sessionDeleted: "會話已刪除",
   },
   searchPage: {
-    askAndSearch: "提問與搜尋",
     chooseAMode: "選擇模式",
     askBeta: "提問 (beta)",
     search: "搜尋",
@@ -585,8 +582,6 @@ export const zhTW = {
     podcastTaskStarted: "播客生成任務已開始",
     loadingProfiles: "正在載入單集簡介...",
     noProfilesFound: "未找到單集簡介。在生成播客之前，請先建立一個單集簡介。",
-    listTitle: "播客",
-    listDesc: "跟踪生成的單集並管理可重複使用的簡介。",
     chooseAView: "選擇視圖",
     episodesTab: "單集",
     templatesTab: "設定檔",
@@ -810,8 +805,6 @@ export const zhTW = {
     loadFailed: "載入設定失敗",
   },
   advanced: {
-    title: "進階工具",
-    desc: "針對進階使用者的調試和實用工具",
     systemInfo: "系統資訊",
     rebuildEmbeddings: "重建索引",
     rebuildEmbeddingsDesc: "為所有來源重建向量索引",
@@ -948,8 +941,6 @@ export const zhTW = {
     addCustomModel: "新增 \"{{name}}\"",
   },
   apiKeys: {
-    title: "使用您自己的 API 金鑰設定 AI",
-    description: "將 API 金鑰安全地儲存在資料庫中，以在 Open Notebook 中啟用 AI 服務商。",
     encryptionRequired: "未設定加密金鑰",
     encryptionRequiredDescription: "請將 OPEN_NOTEBOOK_ENCRYPTION_KEY 環境變數設定為任意密鑰字串，以啟用將 API 金鑰儲存至資料庫。",
     configured: "已設定",

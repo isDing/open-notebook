@@ -6,7 +6,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { NotebookList } from './components/NotebookList'
 import { RecentlyViewed } from './components/RecentlyViewed'
 import { Button } from '@/components/ui/button'
-import { Plus, RefreshCw, LayoutGrid, List } from 'lucide-react'
+import { Plus, LayoutGrid, List } from 'lucide-react'
 import { useNotebooks } from '@/lib/hooks/use-notebooks'
 import { CreateNotebookDialog } from '@/components/notebooks/CreateNotebookDialog'
 import { Input } from '@/components/ui/input'
@@ -19,7 +19,7 @@ export default function NotebooksPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const viewMode = useNotebookViewStore((state) => state.viewMode)
   const setViewMode = useNotebookViewStore((state) => state.setViewMode)
-  const { data: notebooks, isLoading, refetch } = useNotebooks(false)
+  const { data: notebooks, isLoading } = useNotebooks(false)
   const { data: archivedNotebooks } = useNotebooks(true)
 
   const normalizedQuery = searchTerm.trim().toLowerCase()
@@ -55,21 +55,7 @@ export default function NotebooksPage() {
     <AppShell>
       <div className="flex-1 min-h-0 overflow-y-auto">
         <div className="space-y-6 p-4 sm:p-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex min-w-0 items-center justify-between gap-3 sm:justify-start sm:gap-4">
-            <h1 className="truncate font-display text-2xl font-bold tracking-tight">{t('notebooks.title')}</h1>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => refetch()}
-              aria-label={t('common.refresh')}
-              title={t('common.refresh')}
-              className="h-10 w-10 shrink-0 p-0 sm:h-8 sm:w-8"
-            >
-              <RefreshCw className="h-4 w-4" />
-            </Button>
-          </div>
-          <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center sm:gap-4">
+        <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
             <div className="flex w-fit items-center rounded-md border p-0.5">
               <Button
                 variant={viewMode === 'tile' ? 'secondary' : 'ghost'}
@@ -109,8 +95,7 @@ export default function NotebooksPage() {
               {t('notebooks.newNotebook')}
             </Button>
           </div>
-        </div>
-        
+
         <div className="space-y-8">
           <RecentlyViewed />
 

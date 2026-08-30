@@ -233,8 +233,6 @@ export const zhCN = {
   notes: {
     reading: "阅读",
     unfiled: "未归类",
-    title: "阅读笔记",
-    description: "专注阅读你保存的想法。",
     searchPlaceholder: "按标题或内容搜索笔记...",
     sortLabel: "笔记排序",
     sortRecent: "最近更新",
@@ -487,7 +485,6 @@ export const zhCN = {
     sessionDeleted: "会话已删除",
   },
   searchPage: {
-    askAndSearch: "提问与搜索",
     chooseAMode: "选择模式",
     askBeta: "提问 (beta)",
     search: "搜索",
@@ -585,8 +582,6 @@ export const zhCN = {
     podcastTaskStarted: "播客生成任务已开始",
     loadingProfiles: "正在加载单集简介...",
     noProfilesFound: "未找到单集简介。在生成播客之前，请先创建一个单集简介。",
-    listTitle: "播客",
-    listDesc: "跟踪生成的单集并管理可重复使用的简介。",
     chooseAView: "选择视图",
     episodesTab: "单集",
     templatesTab: "配置",
@@ -810,8 +805,6 @@ export const zhCN = {
     loadFailed: "加载设置失败",
   },
   advanced: {
-    title: "高级工具",
-    desc: "面向进阶用户的调试和实用工具",
     systemInfo: "系统信息",
     rebuildEmbeddings: "重建索引",
     rebuildEmbeddingsDesc: "为所有来源重建向量索引",
@@ -948,8 +941,6 @@ export const zhCN = {
     addCustomModel: "添加 \"{{name}}\"",
   },
   apiKeys: {
-    title: "使用您自己的 API 密钥配置 AI",
-    description: "将 API 密钥安全地存储在数据库中，以在 Open Notebook 中启用 AI 服务商。",
     encryptionRequired: "未配置加密密钥",
     encryptionRequiredDescription: "请将 OPEN_NOTEBOOK_ENCRYPTION_KEY 环境变量设置为任意密钥字符串，以启用将 API 密钥存储到数据库。",
     configured: "已配置",

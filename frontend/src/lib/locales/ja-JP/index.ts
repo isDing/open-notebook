@@ -233,8 +233,6 @@ export const jaJP = {
   notes: {
     reading: "Reading",
     unfiled: "Unfiled",
-    title: "Reading notes",
-    description: "A focused space for the ideas you've saved.",
     searchPlaceholder: "Search notes by title or content...",
     sortLabel: "Sort notes",
     sortRecent: "Recently updated",
@@ -487,7 +485,6 @@ export const jaJP = {
     sessionDeleted: "セッションを削除しました",
   },
   searchPage: {
-    askAndSearch: "質問と検索",
     chooseAMode: "モードを選択",
     askBeta: "質問（ベータ）",
     search: "検索",
@@ -585,8 +582,6 @@ export const jaJP = {
     podcastTaskStarted: "ポッドキャストタスクを開始しました",
     loadingProfiles: "エピソードプロファイルを読み込み中...",
     noProfilesFound: "エピソードプロファイルが見つかりません。ポッドキャストを生成する前にエピソードプロファイルを作成してください。",
-    listTitle: "ポッドキャスト",
-    listDesc: "生成されたエピソードを追跡し、再利用可能なプロファイルを管理します。",
     chooseAView: "表示を選択",
     episodesTab: "エピソード",
     templatesTab: "プロファイル",
@@ -810,8 +805,6 @@ export const jaJP = {
     loadFailed: "設定の読み込みに失敗しました",
   },
   advanced: {
-    title: "詳細ツール",
-    desc: "パワーユーザー向けの詳細ツールとユーティリティ",
     systemInfo: "システム情報",
     rebuildEmbeddings: "Embeddingを再構築",
     rebuildEmbeddingsDesc: "すべてのソースのベクトル検索インデックスを再構築",
@@ -948,8 +941,6 @@ export const jaJP = {
     addCustomModel: "\"{{name}}\" を追加",
   },
   apiKeys: {
-    title: "独自のAPIキーでAIを設定",
-    description: "APIキーをデータベースに安全に保存し、AIプロバイダーをOpen Notebookで利用可能にします。",
     encryptionRequired: "暗号化キーが設定されていません",
     encryptionRequiredDescription: "OPEN_NOTEBOOK_ENCRYPTION_KEY 環境変数に任意の秘密文字列を設定して、データベースへのAPIキーの保存を有効にしてください。",
     configured: "設定済み",
