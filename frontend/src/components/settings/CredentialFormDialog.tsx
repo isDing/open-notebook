@@ -145,7 +145,7 @@ export function CredentialFormDialog({
             <Label htmlFor="cred-name">{t('apiKeys.configName')}</Label>
             <input
               id="cred-name"
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base lg:text-sm"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder={`${providerDisplayName} Production`}
@@ -161,7 +161,7 @@ export function CredentialFormDialog({
                 <Label htmlFor="vertex-project">{t('apiKeys.vertexProject')}</Label>
                 <input
                   id="vertex-project"
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base lg:text-sm"
                   value={project}
                   onChange={(e) => setProject(e.target.value)}
                   placeholder="my-gcp-project"
@@ -172,7 +172,7 @@ export function CredentialFormDialog({
                 <Label htmlFor="vertex-location">{t('apiKeys.vertexLocation')}</Label>
                 <input
                   id="vertex-location"
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base lg:text-sm"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   placeholder="us-central1"
@@ -186,7 +186,7 @@ export function CredentialFormDialog({
                 </Label>
                 <input
                   id="vertex-creds"
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base lg:text-sm"
                   value={credentialsPath}
                   onChange={(e) => setCredentialsPath(e.target.value)}
                   placeholder="/path/to/service-account.json"
@@ -205,7 +205,7 @@ export function CredentialFormDialog({
                 <input
                   id="api-key"
                   type={showApiKey ? 'text' : 'password'}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm pr-10"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base lg:text-sm pr-10"
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
                   placeholder={isEditing ? '••••••••••••' : 'sk-...'}
@@ -237,7 +237,7 @@ export function CredentialFormDialog({
               <input
                 id="base-url"
                 type="url"
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base lg:text-sm"
                 value={baseUrl}
                 onChange={(e) => setBaseUrl(e.target.value)}
                 placeholder={
@@ -264,7 +264,7 @@ export function CredentialFormDialog({
                 id="num-ctx"
                 type="number"
                 min={1}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base lg:text-sm"
                 value={numCtx}
                 onChange={(e) => setNumCtx(e.target.value)}
                 placeholder="8192"

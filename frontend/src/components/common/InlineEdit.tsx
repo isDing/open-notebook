@@ -117,7 +117,7 @@ export function InlineEdit({
         }}
         className={cn(
           "px-2 py-1 bg-background border rounded focus:outline-none focus:ring-2 focus:ring-primary w-full",
-          "min-h-[60px] resize-none",
+          "min-h-[60px] resize-none text-base",
           inputClassName
         )}
         placeholder={placeholder}
@@ -144,6 +144,7 @@ export function InlineEdit({
       }}
       className={cn(
         "px-2 py-1 bg-background border rounded focus:outline-none focus:ring-2 focus:ring-primary w-full",
+        "text-base",
         inputClassName
       )}
       placeholder={placeholder}

@@ -459,3 +459,13 @@
     content: none !important;
   }
 }
+
+/* @uiw/react-md-editor hard-codes a 14px editor font (with !important).
+   iOS Safari zooms the page on focus when any field is under 16px, so the
+   note editor must sit at the app's base size too. Higher specificity wins
+   over the library's !important regardless of stylesheet order. */
+.w-md-editor .w-md-editor-text,
+.w-md-editor .w-md-editor-text-pre > code {
+  font-size: 1rem !important;
+  line-height: 1.5 !important;
+}

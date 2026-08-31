@@ -202,7 +202,7 @@ export function DiscoverModelsDialog({
             {/* Search input */}
             <input
               type="text"
-              className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-1 text-sm placeholder:text-muted-foreground sm:h-9"
+              className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-1 text-base lg:text-sm placeholder:text-muted-foreground sm:h-9"
               placeholder={t('models.searchOrAddModel')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
