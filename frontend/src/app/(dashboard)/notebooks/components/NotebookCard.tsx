@@ -48,7 +48,7 @@ export function NotebookCard({ notebook }: NotebookCardProps) {
         onClick={handleCardClick}
         style={{ cursor: 'pointer' }}
       >
-          <CardHeader className="pb-3">
+          <CardHeader className="grid-cols-1 pb-3">
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">
                 <span aria-hidden className="mb-2 block h-2 w-2 rounded-[3px] bg-teal" />

@@ -249,7 +249,7 @@ export default function NotesPage() {
                                   </span>
                                   <span className="min-w-0 flex-1">
                                     <span className="block truncate text-sm font-semibold text-foreground">{note.title || t('notebooks.untitledNote')}</span>
-                                    <span className="mt-1 block line-clamp-2 text-xs leading-5 text-muted-foreground">{notePreview(note.content) || t('notes.noContent')}</span>
+                                    <span className="mt-1 line-clamp-2 text-xs leading-5 text-muted-foreground">{notePreview(note.content) || t('notes.noContent')}</span>
                                     <span className="mt-2 block text-[11px] text-muted-foreground">
                                       {formatDistanceToNow(new Date(note.updated), { addSuffix: true, locale: getDateLocale(language) })}
                                     </span>
