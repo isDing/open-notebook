@@ -232,6 +232,7 @@ export const frFR = {
   },
   notes: {
     reading: "Reading",
+    listTitle: "Liste des notes",
     unfiled: "Unfiled",
     searchPlaceholder: "Search notes by title or content...",
     sortLabel: "Sort notes",

@@ -232,6 +232,7 @@ export const itIT = {
   },
   notes: {
     reading: "Reading",
+    listTitle: "Elenco delle note",
     unfiled: "Unfiled",
     searchPlaceholder: "Search notes by title or content...",
     sortLabel: "Sort notes",

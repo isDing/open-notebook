@@ -232,6 +232,7 @@ export const trTR = {
   },
   notes: {
     reading: "Reading",
+    listTitle: "Not listesi",
     unfiled: "Unfiled",
     searchPlaceholder: "Search notes by title or content...",
     sortLabel: "Sort notes",

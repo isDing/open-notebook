@@ -232,6 +232,7 @@ export const zhTW = {
   },
   notes: {
     reading: "閱讀",
+    listTitle: "筆記列表",
     unfiled: "未分類",
     searchPlaceholder: "按標題或內容搜尋筆記...",
     sortLabel: "筆記排序",

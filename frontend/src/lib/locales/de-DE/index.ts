@@ -235,6 +235,7 @@ export const deDE = {
   },
   notes: {
     reading: "Reading",
+    listTitle: "Notizenliste",
     unfiled: "Unfiled",
     searchPlaceholder: "Search notes by title or content...",
     sortLabel: "Sort notes",

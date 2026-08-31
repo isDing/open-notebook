@@ -232,6 +232,7 @@ export const caES = {
   },
   notes: {
     reading: "Reading",
+    listTitle: "Llista de notes",
     unfiled: "Unfiled",
     searchPlaceholder: "Search notes by title or content...",
     sortLabel: "Sort notes",

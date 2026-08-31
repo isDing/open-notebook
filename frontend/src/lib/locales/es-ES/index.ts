@@ -232,6 +232,7 @@ export const esES = {
   },
   notes: {
     reading: "Reading",
+    listTitle: "Lista de notas",
     unfiled: "Unfiled",
     searchPlaceholder: "Search notes by title or content...",
     sortLabel: "Sort notes",

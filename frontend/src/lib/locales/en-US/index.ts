@@ -230,6 +230,7 @@ export const enUS = {
   },
   notes: {
     reading: "Reading",
+    listTitle: "Notes List",
     unfiled: "Unfiled",
     searchPlaceholder: "Search notes by title or content...",
     sortLabel: "Sort notes",

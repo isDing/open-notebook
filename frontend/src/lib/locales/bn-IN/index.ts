@@ -232,6 +232,7 @@ export const bnIN = {
   },
   notes: {
     reading: "Reading",
+    listTitle: "নোটের তালিকা",
     unfiled: "Unfiled",
     searchPlaceholder: "Search notes by title or content...",
     sortLabel: "Sort notes",

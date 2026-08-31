@@ -232,6 +232,7 @@ export const ruRU = {
   },
   notes: {
     reading: "Reading",
+    listTitle: "Список заметок",
     unfiled: "Unfiled",
     searchPlaceholder: "Search notes by title or content...",
     sortLabel: "Sort notes",

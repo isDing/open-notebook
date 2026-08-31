@@ -232,6 +232,7 @@ export const zhCN = {
   },
   notes: {
     reading: "阅读",
+    listTitle: "笔记列表",
     unfiled: "未归类",
     searchPlaceholder: "按标题或内容搜索笔记...",
     sortLabel: "笔记排序",

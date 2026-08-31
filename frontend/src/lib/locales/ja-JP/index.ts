@@ -232,6 +232,7 @@ export const jaJP = {
   },
   notes: {
     reading: "Reading",
+    listTitle: "ノート一覧",
     unfiled: "Unfiled",
     searchPlaceholder: "Search notes by title or content...",
     sortLabel: "Sort notes",

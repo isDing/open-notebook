@@ -232,6 +232,7 @@ export const plPL = {
   },
   notes: {
     reading: "Reading",
+    listTitle: "Lista notatek",
     unfiled: "Unfiled",
     searchPlaceholder: "Search notes by title or content...",
     sortLabel: "Sort notes",

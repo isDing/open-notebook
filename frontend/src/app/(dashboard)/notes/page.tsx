@@ -30,6 +30,7 @@ import { useIsDesktop } from '@/lib/hooks/use-media-query'
 import { useTranslation } from '@/lib/hooks/use-translation'
 import { getDateLocale } from '@/lib/utils/date-locale'
 import { cn } from '@/lib/utils'
+import { CollapsibleColumn, createCollapseButton } from '@/components/notebooks/CollapsibleColumn'
 
 type NoteSort = 'updated-desc' | 'updated-asc'
 
@@ -64,6 +65,7 @@ export default function NotesPage() {
   const [sort, setSort] = useState<NoteSort>('updated-desc')
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null)
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set())
+  const [listCollapsed, setListCollapsed] = useState(false)
 
   const { data: notes = [], isLoading, isError, refetch } = useAllNotes()
   const isDesktop = useIsDesktop()
@@ -154,6 +156,7 @@ export default function NotesPage() {
   const stats = noteStats(selectedNote?.content ?? null)
 
   const listVisibleOnMobile = !selectedNoteId
+  const isListCollapsed = listCollapsed && isDesktop
 
   return (
     <AppShell>
@@ -187,84 +190,101 @@ export default function NotesPage() {
           </div>
         </header>
 
-        <div className="grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)] lg:grid-cols-[minmax(280px,340px)_minmax(0,1fr)]">
+        <div
+          className={cn(
+            'grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)]',
+            isListCollapsed ? 'lg:grid-cols-[3rem_minmax(0,1fr)]' : 'lg:grid-cols-[minmax(280px,340px)_minmax(0,1fr)]'
+          )}
+        >
           <section className={cn('min-h-0 flex-col border-border lg:flex lg:border-r', listVisibleOnMobile ? 'flex' : 'hidden')}>
-            <div className="flex h-11 shrink-0 items-center justify-between border-b border-border px-4">
-              <span className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">{t('notes.reading')}</span>
-              <span className="font-mono text-xs text-muted-foreground">{filteredNotes.length}</span>
-            </div>
-
-            <div className="min-h-0 flex-1 overflow-y-auto">
-              {isLoading ? (
-                <div className="flex h-full items-center justify-center p-8"><LoadingSpinner /></div>
-              ) : isError ? (
-                <EmptyState
-                  icon={AlertCircle}
-                  title={t('notes.loadErrorTitle')}
-                  description={t('notes.loadErrorDescription')}
-                  action={<Button variant="outline" size="sm" onClick={() => refetch()}>{t('common.retry')}</Button>}
-                />
-              ) : notes.length === 0 ? (
-                <EmptyState icon={StickyNote} title={t('notes.emptyTitle')} description={t('notes.emptyDescription')} />
-              ) : filteredNotes.length === 0 ? (
-                <EmptyState icon={Search} title={t('notes.noMatchesTitle')} description={t('notes.noMatchesDescription')} />
-              ) : (
-                <div role="list" aria-label={t('notes.reading')}>
-                  {noteGroups.map((group) => (
-                    <section key={group.id} aria-labelledby={`notes-group-${group.id}`}>
-                      <button
-                        type="button"
-                        className="sticky top-0 z-10 flex min-h-11 w-full items-center justify-between border-b border-border bg-background/95 px-4 text-left backdrop-blur-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:h-10 sm:min-h-0"
-                        onClick={() => toggleGroup(group.id)}
-                        aria-expanded={!collapsedGroups.has(group.id)}
-                        aria-controls={`notes-group-items-${group.id}`}
-                      >
-                        <span id={`notes-group-${group.id}`} className="flex min-w-0 items-center gap-2 text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-                          {group.id === 'unfiled' ? <StickyNote className="h-3.5 w-3.5 text-gold" /> : <BookOpen className="h-3.5 w-3.5 text-teal" />}
-                          <span className="truncate">{group.name}</span>
-                        </span>
-                        <span className="flex shrink-0 items-center gap-2 font-mono text-[11px] text-muted-foreground">
-                          {group.notes.length}
-                          {collapsedGroups.has(group.id) ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-                        </span>
-                      </button>
-                      <div id={`notes-group-items-${group.id}`} hidden={collapsedGroups.has(group.id)}>
-                        {group.notes.map((note) => {
-                          const isSelected = note.id === selectedNoteId
-                          const isAi = note.note_type === 'ai'
-                          return (
-                            <div role="listitem" key={`${group.id}-${note.id}`}>
-                              <button
-                                type="button"
-                                onClick={() => setSelectedNoteId(note.id)}
-                                aria-current={isSelected ? 'true' : undefined}
-                                className={cn(
-                                  'group min-h-[116px] h-auto w-full overflow-hidden border-b border-border px-4 py-4 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
-                                  isSelected ? 'border-l-2 border-l-teal bg-teal-tint/40 pl-[14px]' : 'border-l-2 border-l-transparent hover:bg-accent'
-                                )}
-                              >
-                                <div className="flex items-start gap-3">
-                                  <span className={cn('mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-sm', isAi ? 'bg-teal-tint text-teal' : 'bg-gold-tint text-gold-deep')}>
-                                    {isAi ? <Sparkles className="h-3.5 w-3.5" /> : <UserRound className="h-3.5 w-3.5" />}
-                                  </span>
-                                  <span className="min-w-0 flex-1">
-                                    <span className="block truncate text-sm font-semibold text-foreground">{note.title || t('notebooks.untitledNote')}</span>
-                                    <span className="mt-1 line-clamp-2 text-xs leading-5 text-muted-foreground">{notePreview(note.content) || t('notes.noContent')}</span>
-                                    <span className="mt-2 block text-[11px] text-muted-foreground">
-                                      {formatDistanceToNow(new Date(note.updated), { addSuffix: true, locale: getDateLocale(language) })}
-                                    </span>
-                                  </span>
-                                </div>
-                              </button>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    </section>
-                  ))}
+            <CollapsibleColumn
+              isCollapsed={isListCollapsed}
+              onToggle={() => setListCollapsed((current) => !current)}
+              collapsedIcon={StickyNote}
+              collapsedLabel={t('notes.listTitle')}
+            >
+              <div className="flex h-full min-h-0 flex-col">
+                <div className="flex h-11 shrink-0 items-center justify-between border-b border-border px-4">
+                  <span className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">{t('notes.listTitle')}</span>
+                  <span className="flex items-center gap-2">
+                    <span className="font-mono text-xs text-muted-foreground">{filteredNotes.length}</span>
+                    {createCollapseButton(() => setListCollapsed(true), t('notes.listTitle'))}
+                  </span>
                 </div>
-              )}
-            </div>
+
+                <div className="min-h-0 flex-1 overflow-y-auto">
+                  {isLoading ? (
+                    <div className="flex h-full items-center justify-center p-8"><LoadingSpinner /></div>
+                  ) : isError ? (
+                    <EmptyState
+                      icon={AlertCircle}
+                      title={t('notes.loadErrorTitle')}
+                      description={t('notes.loadErrorDescription')}
+                      action={<Button variant="outline" size="sm" onClick={() => refetch()}>{t('common.retry')}</Button>}
+                    />
+                  ) : notes.length === 0 ? (
+                    <EmptyState icon={StickyNote} title={t('notes.emptyTitle')} description={t('notes.emptyDescription')} />
+                  ) : filteredNotes.length === 0 ? (
+                    <EmptyState icon={Search} title={t('notes.noMatchesTitle')} description={t('notes.noMatchesDescription')} />
+                  ) : (
+                    <div role="list" aria-label={t('notes.listTitle')}>
+                      {noteGroups.map((group) => (
+                        <section key={group.id} aria-labelledby={`notes-group-${group.id}`}>
+                          <button
+                            type="button"
+                            className="sticky top-0 z-10 flex min-h-11 w-full items-center justify-between border-b border-border bg-background/95 px-4 text-left backdrop-blur-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:h-10 sm:min-h-0"
+                            onClick={() => toggleGroup(group.id)}
+                            aria-expanded={!collapsedGroups.has(group.id)}
+                            aria-controls={`notes-group-items-${group.id}`}
+                          >
+                            <span id={`notes-group-${group.id}`} className="flex min-w-0 items-center gap-2 text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+                              {group.id === 'unfiled' ? <StickyNote className="h-3.5 w-3.5 text-gold" /> : <BookOpen className="h-3.5 w-3.5 text-teal" />}
+                              <span className="truncate">{group.name}</span>
+                            </span>
+                            <span className="flex shrink-0 items-center gap-2 font-mono text-[11px] text-muted-foreground">
+                              {group.notes.length}
+                              {collapsedGroups.has(group.id) ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                            </span>
+                          </button>
+                          <div id={`notes-group-items-${group.id}`} hidden={collapsedGroups.has(group.id)}>
+                            {group.notes.map((note) => {
+                              const isSelected = note.id === selectedNoteId
+                              const isAi = note.note_type === 'ai'
+                              return (
+                                <div role="listitem" key={`${group.id}-${note.id}`}>
+                                  <button
+                                    type="button"
+                                    onClick={() => setSelectedNoteId(note.id)}
+                                    aria-current={isSelected ? 'true' : undefined}
+                                    className={cn(
+                                      'group min-h-[116px] h-auto w-full overflow-hidden border-b border-border px-4 py-4 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
+                                      isSelected ? 'border-l-2 border-l-teal bg-teal-tint/40 pl-[14px]' : 'border-l-2 border-l-transparent hover:bg-accent'
+                                    )}
+                                  >
+                                    <div className="flex items-start gap-3">
+                                      <span className={cn('mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-sm', isAi ? 'bg-teal-tint text-teal' : 'bg-gold-tint text-gold-deep')}>
+                                        {isAi ? <Sparkles className="h-3.5 w-3.5" /> : <UserRound className="h-3.5 w-3.5" />}
+                                      </span>
+                                      <span className="min-w-0 flex-1">
+                                        <span className="block truncate text-sm font-semibold text-foreground">{note.title || t('notebooks.untitledNote')}</span>
+                                        <span className="mt-1 line-clamp-2 text-xs leading-5 text-muted-foreground">{notePreview(note.content) || t('notes.noContent')}</span>
+                                        <span className="mt-2 block text-[11px] text-muted-foreground">
+                                          {formatDistanceToNow(new Date(note.updated), { addSuffix: true, locale: getDateLocale(language) })}
+                                        </span>
+                                      </span>
+                                    </div>
+                                  </button>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        </section>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </CollapsibleColumn>
           </section>
 
           <article className={cn('min-h-0 flex-col', listVisibleOnMobile ? 'hidden lg:flex' : 'flex')}>
