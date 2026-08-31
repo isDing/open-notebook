@@ -17,6 +17,43 @@ Start in this order — each tier depends on the one below:
 
 Or all at once: `make start-all` (status: `make status`, stop: `make stop-all`).
 
+## Deployment
+
+Local deployment uses `compose.production.yml`:
+
+- `surrealdb`: SurrealDB database
+- `open-notebook`: Includes the Next.js frontend, FastAPI, and background worker
+- Frontend port: `127.0.0.1:8502`
+- Application data: `./notebook_data`
+- Database data: `./surreal-data`
+
+The API automatically runs pending database migrations when the application
+container starts.
+
+## Upgrade After Code Changes
+
+After modifying code, rebuild and recreate only the application service. Keep
+the database and data directories unchanged:
+
+```bash
+docker compose -f compose.production.yml stop open-notebook
+docker compose -f compose.production.yml build open-notebook
+docker compose -f compose.production.yml up -d --no-build --force-recreate open-notebook
+```
+
+Preserve `.env`, `OPEN_NOTEBOOK_ENCRYPTION_KEY`, `./surreal-data`, and
+`./notebook_data` during upgrades.
+
+## Minimal Deployment for Partial Changes
+
+- Frontend, backend, worker, prompt, dependency, or Docker configuration
+  changes: rebuild and recreate `open-notebook`.
+- Application environment-only changes: recreate `open-notebook`; no rebuild is
+  required.
+- Documentation-only changes: no deployment is required.
+- SurrealDB configuration or version changes: recreate only `surrealdb`, while
+  preserving its data directory.
+
 ## Commands
 
 - Tests: `uv run pytest tests/`
