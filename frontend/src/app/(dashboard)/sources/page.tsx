@@ -8,7 +8,8 @@ import { LoadingSpinner } from '@/components/common/LoadingSpinner'
 import { EmptyState } from '@/components/common/EmptyState'
 import { AppShell } from '@/components/layout/AppShell'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
-import { FileText, Trash2, ArrowDown, ArrowUp, ArrowUpDown, Plus } from 'lucide-react'
+import { PageHeader } from '@/components/common/PageHeader'
+import { FileText, Trash2, ArrowDown, ArrowUp, ArrowUpDown, Plus, AlertCircle } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { Button } from '@/components/ui/button'
 import { useTranslation } from '@/lib/hooks/use-translation'
@@ -290,38 +291,60 @@ export default function SourcesPage() {
   const renderContent = () => {
     if (loading) {
       return (
-        <div className="flex h-full items-center justify-center">
+        <div className="flex flex-1 items-center justify-center">
           <LoadingSpinner />
         </div>
       )
     }
 
+    const header = (
+      <PageHeader
+        title={t('sources.title')}
+        description={t('sources.pageDescription')}
+        actions={
+          <Button onClick={() => setSourceDialogOpen(true)}>
+            <Plus className="h-4 w-4" />
+            {t('sources.newSource')}
+          </Button>
+        }
+      />
+    )
+
     if (error) {
       return (
-        <div className="flex h-full items-center justify-center">
-          <p className="text-destructive">{error}</p>
+        <div className="flex-1 px-4 py-5 sm:px-6 sm:py-6">
+          {header}
+          <EmptyState
+            icon={AlertCircle}
+            title={t('sources.failedToLoad')}
+            description={t('common.refreshPage')}
+          />
         </div>
       )
     }
 
     if (sources.length === 0) {
       return (
-        <EmptyState
-          icon={FileText}
-          title={t('sources.noSourcesYet')}
-          description={t('sources.allSourcesDescShort')}
-          action={
-            <Button onClick={() => setSourceDialogOpen(true)} variant="outline" className="mt-4">
-              <Plus className="h-4 w-4 mr-2" />
-              {t('sources.newSource')}
-            </Button>
-          }
-        />
+        <div className="flex-1 px-4 py-5 sm:px-6 sm:py-6">
+          {header}
+          <EmptyState
+            icon={FileText}
+            title={t('sources.noSourcesYet')}
+            description={t('sources.createFirstSource')}
+            action={
+              <Button onClick={() => setSourceDialogOpen(true)}>
+                <Plus className="h-4 w-4" />
+                {t('sources.newSource')}
+              </Button>
+            }
+          />
+        </div>
       )
     }
 
     return (<>
-      <div className="flex min-h-0 flex-1 w-full max-w-none flex-col px-4 py-4 sm:px-6 sm:py-6">
+      <div className="flex min-h-0 flex-1 w-full max-w-none flex-col px-4 py-5 sm:px-6 sm:py-6">
+        {header}
         <div ref={scrollContainerRef} className="min-h-0 flex-1 overflow-auto rounded-md border overscroll-contain">
           <table
             ref={tableRef}

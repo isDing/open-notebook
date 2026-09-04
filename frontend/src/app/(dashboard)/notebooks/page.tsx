@@ -5,8 +5,9 @@ import { useMemo, useState } from 'react'
 import { AppShell } from '@/components/layout/AppShell'
 import { NotebookList } from './components/NotebookList'
 import { RecentlyViewed } from './components/RecentlyViewed'
+import { PageHeader } from '@/components/common/PageHeader'
 import { Button } from '@/components/ui/button'
-import { Plus, LayoutGrid, List } from 'lucide-react'
+import { Plus, LayoutGrid, List, Search } from 'lucide-react'
 import { useNotebooks } from '@/lib/hooks/use-notebooks'
 import { CreateNotebookDialog } from '@/components/notebooks/CreateNotebookDialog'
 import { Input } from '@/components/ui/input'
@@ -54,32 +55,21 @@ export default function NotebooksPage() {
   return (
     <AppShell>
       <div className="flex-1 min-h-0 overflow-y-auto">
-        <div className="space-y-6 p-4 sm:p-6">
-        <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-            <div className="flex w-fit items-center rounded-md border p-0.5">
-              <Button
-                variant={viewMode === 'tile' ? 'secondary' : 'ghost'}
-                size="sm"
-                className="h-10 w-10 p-0 sm:h-8 sm:w-8"
-                onClick={() => setViewMode('tile')}
-                aria-label={t('notebooks.tileView')}
-                aria-pressed={viewMode === 'tile'}
-                title={t('notebooks.tileView')}
-              >
-                <LayoutGrid className="h-4 w-4" />
-              </Button>
-              <Button
-                variant={viewMode === 'list' ? 'secondary' : 'ghost'}
-                size="sm"
-                className="h-10 w-10 p-0 sm:h-8 sm:w-8"
-                onClick={() => setViewMode('list')}
-                aria-label={t('notebooks.listView')}
-                aria-pressed={viewMode === 'list'}
-                title={t('notebooks.listView')}
-              >
-                <List className="h-4 w-4" />
-              </Button>
-            </div>
+        <div className="px-4 py-5 sm:px-6 sm:py-6">
+        <PageHeader
+          title={t('notebooks.title')}
+          description={t('notebooks.pageDescription')}
+          actions={
+            <Button onClick={() => setCreateDialogOpen(true)}>
+              <Plus className="h-4 w-4" />
+              {t('notebooks.newNotebook')}
+            </Button>
+          }
+        />
+
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="relative w-full sm:max-w-xs">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               id="notebook-search"
               name="notebook-search"
@@ -88,13 +78,34 @@ export default function NotebooksPage() {
               placeholder={t('notebooks.searchPlaceholder')}
               autoComplete="off"
               aria-label={t('common.accessibility.searchNotebooks')}
-              className="w-full sm:w-64"
+              className="h-11 pl-9 sm:h-9"
             />
-            <Button onClick={() => setCreateDialogOpen(true)} className="w-full sm:w-auto">
-              <Plus className="h-4 w-4 mr-2" />
-              {t('notebooks.newNotebook')}
+          </div>
+          <div className="flex w-fit items-center rounded-md border p-0.5">
+            <Button
+              variant={viewMode === 'tile' ? 'secondary' : 'ghost'}
+              size="sm"
+              className="h-10 w-10 p-0 sm:h-8 sm:w-8"
+              onClick={() => setViewMode('tile')}
+              aria-label={t('notebooks.tileView')}
+              aria-pressed={viewMode === 'tile'}
+              title={t('notebooks.tileView')}
+            >
+              <LayoutGrid className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={viewMode === 'list' ? 'secondary' : 'ghost'}
+              size="sm"
+              className="h-10 w-10 p-0 sm:h-8 sm:w-8"
+              onClick={() => setViewMode('list')}
+              aria-label={t('notebooks.listView')}
+              aria-pressed={viewMode === 'list'}
+              title={t('notebooks.listView')}
+            >
+              <List className="h-4 w-4" />
             </Button>
           </div>
+        </div>
 
         <div className="space-y-8">
           <RecentlyViewed />

@@ -3,6 +3,8 @@
 import { useMemo } from 'react'
 import { AppShell } from '@/components/layout/AppShell'
 import { LoadingSpinner } from '@/components/common/LoadingSpinner'
+import { PageHeader } from '@/components/common/PageHeader'
+import { Button } from '@/components/ui/button'
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 import { ShieldAlert, AlertCircle } from 'lucide-react'
 import { useTranslation } from '@/lib/hooks/use-translation'
@@ -88,7 +90,29 @@ export default function ApiKeysPage() {
   return (
     <AppShell>
       <div className="flex-1 min-h-0 overflow-y-auto">
-        <div className="space-y-6 p-4 md:p-6">
+        <div className="space-y-6 px-4 py-5 sm:px-6 sm:py-6">
+          <PageHeader
+            title={t('apiKeys.pageTitle')}
+            description={t('apiKeys.pageDescription')}
+            className="mb-0"
+            actions={
+              <Button
+                variant="link"
+                size="sm"
+                asChild
+                className="h-auto min-h-0 px-0 text-[13px] font-normal"
+              >
+                <a
+                  href="https://github.com/lfnovo/open-notebook/blob/main/docs/5-CONFIGURATION/ai-providers.md"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t('apiKeys.learnMore')}
+                </a>
+              </Button>
+            }
+          />
+
           {/* Encryption warning */}
           {!encryptionReady && (
             <Alert className="border-destructive/30 bg-destructive-tint">
@@ -132,18 +156,6 @@ export default function ApiKeysPage() {
               ))}
             </div>
           )}
-
-          {/* Help link */}
-          <div className="border-t pt-4">
-            <a
-              href="https://github.com/lfnovo/open-notebook/blob/main/docs/5-CONFIGURATION/ai-providers.md"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-primary hover:underline"
-            >
-              {t('apiKeys.learnMore')}
-            </a>
-          </div>
         </div>
       </div>
     </AppShell>

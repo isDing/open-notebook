@@ -66,7 +66,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </head>
       <body
-        className={`${instrumentSans.variable} ${bricolageGrotesque.variable} ${splineSansMono.variable} font-sans`}
+        className={`${instrumentSans.variable} ${bricolageGrotesque.variable} ${splineSansMono.variable} app-body font-sans`}
       >
         <ErrorBoundary>
           <ThemeProvider>

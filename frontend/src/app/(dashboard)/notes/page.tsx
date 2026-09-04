@@ -19,6 +19,7 @@ import { formatDistanceToNow } from 'date-fns'
 
 import { AppShell } from '@/components/layout/AppShell'
 import { EmptyState } from '@/components/common/EmptyState'
+import { PageHeader } from '@/components/common/PageHeader'
 import { LoadingSpinner } from '@/components/common/LoadingSpinner'
 import { MarkdownRenderer } from '@/components/ui/markdown-renderer'
 import { Badge } from '@/components/ui/badge'
@@ -161,32 +162,36 @@ export default function NotesPage() {
   return (
     <AppShell>
       <div className="flex min-h-0 flex-1 flex-col">
-        <header className="shrink-0 border-b border-border bg-background px-4 py-4 md:px-6">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
-            <div className="relative min-w-0 flex-1 lg:max-w-xl">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder={t('notes.searchPlaceholder')}
-                aria-label={t('notes.searchPlaceholder')}
-                className="h-11 pl-9 sm:h-9"
-              />
-            </div>
-
-            <Select value={sort} onValueChange={(value) => setSort(value as NoteSort)}>
-              <SelectTrigger className="h-11 w-full lg:h-9 lg:w-44" aria-label={t('notes.sortLabel')}>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="updated-desc">
-                  <span className="flex items-center gap-2"><ArrowDownAZ className="h-3.5 w-3.5" />{t('notes.sortRecent')}</span>
-                </SelectItem>
-                <SelectItem value="updated-asc">
-                  <span className="flex items-center gap-2"><ArrowUpAZ className="h-3.5 w-3.5" />{t('notes.sortOldest')}</span>
-                </SelectItem>
-              </SelectContent>
-            </Select>
+        <header className="shrink-0 border-b border-border bg-background px-4 py-4 sm:px-6 sm:py-5">
+          <PageHeader
+            className="mb-4"
+            title={t('notes.pageTitle')}
+            description={t('notes.pageDescription')}
+            actions={
+              <Select value={sort} onValueChange={(value) => setSort(value as NoteSort)}>
+                <SelectTrigger className="h-11 w-full lg:h-9 lg:w-44" aria-label={t('notes.sortLabel')}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="updated-desc">
+                    <span className="flex items-center gap-2"><ArrowDownAZ className="h-3.5 w-3.5" />{t('notes.sortRecent')}</span>
+                  </SelectItem>
+                  <SelectItem value="updated-asc">
+                    <span className="flex items-center gap-2"><ArrowUpAZ className="h-3.5 w-3.5" />{t('notes.sortOldest')}</span>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            }
+          />
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder={t('notes.searchPlaceholder')}
+              aria-label={t('notes.searchPlaceholder')}
+              className="h-11 pl-9 sm:h-9"
+            />
           </div>
         </header>
 
@@ -205,7 +210,7 @@ export default function NotesPage() {
             >
               <div className="flex h-full min-h-0 flex-col">
                 <div className="flex h-11 shrink-0 items-center justify-between border-b border-border px-4">
-                  <span className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">{t('notes.listTitle')}</span>
+                  <span className="text-2xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">{t('notes.listTitle')}</span>
                   <span className="flex items-center gap-2">
                     <span className="font-mono text-xs text-muted-foreground">{filteredNotes.length}</span>
                     {createCollapseButton(() => setListCollapsed(true), t('notes.listTitle'))}
@@ -237,7 +242,7 @@ export default function NotesPage() {
                             aria-expanded={!collapsedGroups.has(group.id)}
                             aria-controls={`notes-group-items-${group.id}`}
                           >
-                            <span id={`notes-group-${group.id}`} className="flex min-w-0 items-center gap-2 text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+                              <span id={`notes-group-${group.id}`} className="flex min-w-0 items-center gap-2 text-2xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                               {group.id === 'unfiled' ? <StickyNote className="h-3.5 w-3.5 text-gold" /> : <BookOpen className="h-3.5 w-3.5 text-teal" />}
                               <span className="truncate">{group.name}</span>
                             </span>

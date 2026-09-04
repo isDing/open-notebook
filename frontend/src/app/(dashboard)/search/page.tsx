@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useTranslation } from '@/lib/hooks/use-translation'
 import { AppShell } from '@/components/layout/AppShell'
+import { PageHeader } from '@/components/common/PageHeader'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -23,6 +24,7 @@ import { LoadingSpinner } from '@/components/common/LoadingSpinner'
 import { StreamingResponse } from '@/components/search/StreamingResponse'
 import { AdvancedModelsDialog } from '@/components/search/AdvancedModelsDialog'
 import { SaveToNotebooksDialog } from '@/components/search/SaveToNotebooksDialog'
+import { cn } from '@/lib/utils'
 
 export default function SearchPage() {
   const { t } = useTranslation()
@@ -158,11 +160,14 @@ export default function SearchPage() {
 
   return (
     <AppShell>
-      <div className="flex-1 overflow-y-auto p-4 md:p-6">
+      <div className="flex-1 overflow-y-auto px-4 py-5 sm:px-6 sm:py-6">
+        <PageHeader
+          title={t('searchPage.pageTitle')}
+          description={t('searchPage.pageDescription')}
+          className="mb-6"
+        />
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'ask' | 'search')} className="w-full space-y-6">
-          <div className="space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t('searchPage.chooseAMode')}</p>
-            <TabsList aria-label={t('common.accessibility.searchKB')} className="w-full max-w-xl">
+          <TabsList aria-label={t('common.accessibility.searchKB')} className="w-full max-w-xl">
               <TabsTrigger value="ask">
                 <MessageCircleQuestion className="h-4 w-4" />
                 {t('searchPage.askBeta')}
@@ -172,7 +177,6 @@ export default function SearchPage() {
                 {t('searchPage.search')}
               </TabsTrigger>
             </TabsList>
-          </div>
 
           <TabsContent value="ask" className="mt-6">
             <Card>
@@ -213,35 +217,34 @@ export default function SearchPage() {
                     <span>{t('searchPage.noEmbeddingModel')}</span>
                   </div>
                 ) : (
-                  <>
-                    <div className="space-y-2">
-                      <div className="flex flex-wrap items-center justify-between gap-2">
-                        <Label className="text-xs text-muted-foreground">
-                          {customModels ? t('searchPage.usingCustomModels') : t('searchPage.usingDefaultModels')}
-                        </Label>
+                    <>
+                      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                        <div className="min-w-0 flex-1 basis-64">
+                          <div className="text-xs font-medium text-muted-foreground">
+                            {customModels ? t('searchPage.usingCustomModels') : t('searchPage.usingDefaultModels')}
+                          </div>
+                          <p
+                            className="mt-0.5 truncate font-mono text-[11px] text-muted-foreground"
+                            title={`${t('searchPage.strategy')}: ${resolveModelName(customModels?.strategy || modelDefaults?.default_chat_model)} · ${t('searchPage.answer')}: ${resolveModelName(customModels?.answer || modelDefaults?.default_chat_model)} · ${t('searchPage.final')}: ${resolveModelName(customModels?.finalAnswer || modelDefaults?.default_chat_model)}`}
+                          >
+                            {t('searchPage.strategy')}: {resolveModelName(customModels?.strategy || modelDefaults?.default_chat_model)}
+                            {' · '}
+                            {t('searchPage.answer')}: {resolveModelName(customModels?.answer || modelDefaults?.default_chat_model)}
+                            {' · '}
+                            {t('searchPage.final')}: {resolveModelName(customModels?.finalAnswer || modelDefaults?.default_chat_model)}
+                          </p>
+                        </div>
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => setShowAdvancedModels(true)}
                           disabled={ask.isStreaming}
-                          className="min-h-11 px-2 py-1 sm:min-h-8"
+                          className="shrink-0 min-h-11 px-2 sm:min-h-9"
                         >
                           <Settings className="h-3 w-3 mr-1" />
                           {t('searchPage.advanced')}
                         </Button>
                       </div>
-                      <div className="flex gap-2 text-xs flex-wrap">
-                        <Badge variant="secondary" className="max-w-[180px] truncate sm:max-w-[240px] lg:max-w-none font-mono text-[11px]">
-                          {t('searchPage.strategy')}: {resolveModelName(customModels?.strategy || modelDefaults?.default_chat_model)}
-                        </Badge>
-                        <Badge variant="secondary" className="max-w-[180px] truncate sm:max-w-[240px] lg:max-w-none font-mono text-[11px]">
-                          {t('searchPage.answer')}: {resolveModelName(customModels?.answer || modelDefaults?.default_chat_model)}
-                        </Badge>
-                        <Badge variant="secondary" className="max-w-[180px] truncate sm:max-w-[240px] lg:max-w-none font-mono text-[11px]">
-                          {t('searchPage.final')}: {resolveModelName(customModels?.finalAnswer || modelDefaults?.default_chat_model)}
-                        </Badge>
-                      </div>
-                    </div>
 
                     <div className="flex flex-col sm:flex-row gap-2">
                       <Button
@@ -432,13 +435,11 @@ export default function SearchPage() {
                     </div>
 
                     {searchMutation.data.results.length === 0 ? (
-                      <Card>
-                        <CardContent className="pt-6 text-center text-muted-foreground">
-                          {t('searchPage.noResultsFor', { query: searchQuery })}
-                        </CardContent>
-                      </Card>
+                      <div className="rounded-md border py-8 text-center text-sm text-muted-foreground">
+                        {t('searchPage.noResultsFor', { query: searchQuery })}
+                      </div>
                     ) : (
-                      <div className="space-y-2">
+                      <div className="divide-y rounded-md border">
                         {searchMutation.data.results.map((result, index) => {
                           // Parse type from parent_id (format: "source:id" or "note:id" or "source_insight:id")
                           // Handle null parent_id gracefully (orphaned records)
@@ -448,41 +449,44 @@ export default function SearchPage() {
                           }
                           const [type, id] = result.parent_id.split(':')
                           const modalType = type === 'source_insight' ? 'insight' : type as 'source' | 'note' | 'insight'
+                          const dotClass =
+                            modalType === 'note'
+                              ? 'bg-cite-note'
+                              : modalType === 'insight'
+                                ? 'bg-cite-derived'
+                                : 'bg-cite-source'
 
                           return (
-                          <Card key={index} className="transition-shadow hover:shadow-lift">
-                            <CardContent className="pt-4">
-                              <div className="flex items-start justify-between gap-4">
-                              <div className="flex min-w-0 flex-1 flex-wrap items-start gap-2">
-                                <button
-                                  onClick={() => openModal(modalType, id)}
-                                  className="min-h-11 max-w-full break-words text-left font-medium text-primary hover:underline"
-                                >
-                                  {result.title}
-                                </button>
-                                <Badge variant="secondary" className="shrink-0 font-mono text-[11px]">
-                                  {result.final_score.toFixed(2)}
-                                </Badge>
-                                </div>
-                              </div>
+                          <div key={index} className="px-4 py-3">
+                            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                              <span aria-hidden className={cn('h-2 w-2 shrink-0 rounded-full', dotClass)} />
+                              <button
+                                onClick={() => openModal(modalType, id)}
+                                className="min-h-11 max-w-full break-words text-left text-sm font-medium hover:text-primary hover:underline"
+                              >
+                                {result.title}
+                              </button>
+                              <Badge variant="secondary" className="shrink-0 font-mono text-[11px]">
+                                {result.final_score.toFixed(2)}
+                              </Badge>
+                            </div>
 
-                              {result.matches && result.matches.length > 0 && (
-                                <Collapsible className="mt-3">
-                                  <CollapsibleTrigger className="flex min-h-11 items-center gap-2 text-left text-sm text-muted-foreground hover:text-foreground">
-                                    <ChevronDown className="h-4 w-4" />
-                                    {t('searchPage.matches', { count: result.matches.length })}
-                                  </CollapsibleTrigger>
-                                  <CollapsibleContent className="mt-2 space-y-1">
-                                    {result.matches.map((match, i) => (
-                                      <div key={i} className="text-sm pl-6 py-1 border-l-2 border-muted">
-                                        {match}
-                                      </div>
-                                    ))}
-                                  </CollapsibleContent>
-                                </Collapsible>
-                              )}
-                            </CardContent>
-                          </Card>
+                            {result.matches && result.matches.length > 0 && (
+                              <Collapsible className="mt-1">
+                                <CollapsibleTrigger className="flex min-h-11 items-center gap-2 text-left text-[13px] text-muted-foreground hover:text-foreground">
+                                  <ChevronDown className="h-4 w-4" />
+                                  {t('searchPage.matches', { count: result.matches.length })}
+                                </CollapsibleTrigger>
+                                <CollapsibleContent className="mb-2 space-y-1">
+                                  {result.matches.map((match, i) => (
+                                    <div key={i} className="border-l-2 border-border pl-4 text-[13px] leading-5 text-muted-foreground">
+                                      {match}
+                                    </div>
+                                  ))}
+                                </CollapsibleContent>
+                              </Collapsible>
+                            )}
+                          </div>
                         )})}
                       </div>
                     )}

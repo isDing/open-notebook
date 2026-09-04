@@ -89,7 +89,7 @@ export function NotesColumn({
         <Card className="h-full flex flex-col flex-1 overflow-hidden">
           <CardHeader className="flex-shrink-0 pb-3">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <CardTitle className="flex min-w-0 items-center gap-2 text-xs font-semibold uppercase tracking-[0.13em] text-muted-foreground">
+              <CardTitle className="flex min-w-0 items-center gap-2 text-2xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                 <span aria-hidden className="h-3.5 w-[3px] rounded-full bg-gold" />
                 {notesLabel}
               </CardTitle>

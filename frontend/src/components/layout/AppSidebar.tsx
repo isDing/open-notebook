@@ -420,7 +420,7 @@ export function AppSidebar() {
               )}
               <div className="space-y-1">
                 {!collapsed && (
-                  <h3 className="mb-1.5 px-3 text-[10.5px] font-bold uppercase tracking-[0.14em] text-sidebar-foreground/40">
+                  <h3 className="mb-1.5 px-3 text-2xs font-semibold uppercase tracking-[0.12em] text-sidebar-foreground/40">
                     {section.title}
                   </h3>
                 )}

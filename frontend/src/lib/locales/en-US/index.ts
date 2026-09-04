@@ -190,7 +190,6 @@ export const enUS = {
     localDevLabel: "For local development",
   },
   auth: {
-    loginTitle: "Open Notebook",
     loginDesc: "Enter your password to access the application",
     passwordPlaceholder: "Password",
     signingIn: "Signing in...",
@@ -219,6 +218,8 @@ export const enUS = {
   },
   notes: {
     reading: "Reading",
+    pageTitle: "Notes",
+    pageDescription: "Your reading notes, grouped by notebook.",
     listTitle: "Notes List",
     unfiled: "Unfiled",
     searchPlaceholder: "Search notes by title or content...",
@@ -241,6 +242,7 @@ export const enUS = {
   },
   notebooks: {
     title: "Notebooks",
+    pageDescription: "Organize sources and notes, and chat with them.",
     newNotebook: "New Notebook",
     searchPlaceholder: "Search notebooks...",
     archived: "Archived",
@@ -288,6 +290,7 @@ export const enUS = {
   },
   sources: {
     title: "Sources",
+    pageDescription: "The links, files, and text you have collected.",
     newSource: "New Source",
     bulkContext: "Context",
     includeAllInContext: "Include all in context",
@@ -309,14 +312,12 @@ export const enUS = {
     statusCompletedDesc: "Successfully processed",
     statusFailedDesc: "Processing failed",
     failedToLoad: "Failed to load sources",
-    allSourcesDesc: "View all your sources here. You can add new sources or manage existing ones.",
     allSources: "All Sources",
     insights: "Insights",
     yes: "Yes",
     no: "No",
     loadingMore: "Loading more...",
     noSourcesYet: "No sources yet",
-    allSourcesDescShort: "View all your sources here.",
     cannotSaveNoteNoNotebook: "Cannot save note: notebook ID not available",
     createFirstSource: "Add your first source to start building your knowledge base.",
     deleteSourceConfirm: "Are you sure you want to delete this source?",
@@ -473,7 +474,8 @@ export const enUS = {
     sessionDeleted: "Session deleted",
   },
   searchPage: {
-    chooseAMode: "Choose a mode",
+    pageTitle: "Ask & Search",
+    pageDescription: "Question your knowledge base, or find exact passages.",
     askBeta: "Ask (beta)",
     search: "Search",
     askYourKb: "Ask Your Knowledge Base (beta)",
@@ -570,7 +572,8 @@ export const enUS = {
     podcastTaskStarted: "Podcast task started",
     loadingProfiles: "Loading episode profiles...",
     noProfilesFound: "No episode profiles found. Create an episode profile before generating a podcast.",
-    chooseAView: "Choose a view",
+    pageTitle: "Podcasts",
+    pageDescription: "Generate and review podcast episodes from your notebooks.",
     episodesTab: "Episodes",
     templatesTab: "Profiles",
     overviewTitle: "Episodes overview",
@@ -755,6 +758,8 @@ export const enUS = {
     notConfigured: "Not configured",
   },
   settings: {
+    pageTitle: "Settings",
+    pageDescription: "Preferences for processing, search, and file handling.",
     contentProcessing: "Content Processing",
     contentProcessingDesc: "Configure how documents and URLs are processed",
     docEngine: "Document Processing Engine",
@@ -794,6 +799,8 @@ export const enUS = {
     loadFailed: "Failed to load settings",
   },
   advanced: {
+    pageTitle: "Advanced",
+    pageDescription: "System details and maintenance tools.",
     systemInfo: "System Info",
     rebuildEmbeddings: "Rebuild Embeddings",
     rebuildEmbeddingsDesc: "Rebuild vector search index for all sources",
@@ -836,7 +843,6 @@ export const enUS = {
   transformations: {
     title: "Transformations",
     desc: "Transformations are prompts that will be used by the LLM to process a source and extract insights, summaries, etc.",
-    workspace: "Choose a workspace",
     playground: "Playground",
     defaultPrompt: "Default Transformation Prompt",
     defaultPromptDesc: "This will be added to all your transformation prompts",
@@ -930,6 +936,8 @@ export const enUS = {
     addCustomModel: "Add \"{{name}}\"",
   },
   apiKeys: {
+    pageTitle: "Models",
+    pageDescription: "Connect AI providers and choose your default models.",
     encryptionRequired: "Encryption key not configured",
     encryptionRequiredDescription: "Set the OPEN_NOTEBOOK_ENCRYPTION_KEY environment variable to any secret string to enable storing API keys in the database.",
     configured: "Configured",

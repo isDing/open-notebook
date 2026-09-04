@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { AlertCircle } from 'lucide-react'
 import { LoadingSpinner } from '@/components/common/LoadingSpinner'
+import { LogoPebbles } from '@/components/layout/AppSidebar'
 import { useTranslation } from '@/lib/hooks/use-translation'
 
 export function LoginForm() {
@@ -141,7 +142,8 @@ export function LoginForm() {
     <div className="min-h-dvh flex items-center justify-center bg-background p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-[calc(1rem+env(safe-area-inset-top))]">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle>{t('auth.loginTitle')}</CardTitle>
+          <LogoPebbles className="mx-auto mb-3" />
+          <CardTitle className="font-display text-xl font-bold tracking-tight">{t('common.appName')}</CardTitle>
           <CardDescription>
             {t('auth.loginDesc')}
           </CardDescription>

@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 import { AlertTriangle } from 'lucide-react'
 
 import { AppShell } from '@/components/layout/AppShell'
+import { PageHeader } from '@/components/common/PageHeader'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { EpisodesTab } from '@/components/podcasts/EpisodesTab'
@@ -27,7 +28,13 @@ export default function PodcastsPage() {
   return (
     <AppShell>
       <div className="flex-1 overflow-y-auto">
-        <div className="space-y-6 px-4 py-4 md:px-6 md:py-6">
+        <div className="space-y-6 px-4 py-5 sm:px-6 sm:py-6">
+          <PageHeader
+            title={t('podcasts.pageTitle')}
+            description={t('podcasts.pageDescription')}
+            className="mb-0"
+          />
+
           {hasUnconfiguredProfiles ? (
             <Alert className="bg-warn-tint text-warn border-warn/30">
               <AlertTriangle className="h-4 w-4" />
@@ -43,19 +50,16 @@ export default function PodcastsPage() {
             onValueChange={(value) => setActiveTab(value as 'episodes' | 'templates')}
             className="space-y-6"
           >
-            <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t('podcasts.chooseAView')}</p>
-              <TabsList aria-label={t('common.accessibility.podcastViews')} className="w-full max-w-md">
-                <TabsTrigger value="episodes">
-                  <Mic className="h-4 w-4" />
-                  {t('podcasts.episodesTab')}
-                </TabsTrigger>
-                <TabsTrigger value="templates">
-                  <LayoutTemplate className="h-4 w-4" />
-                  {t('podcasts.templatesTab')}
-                </TabsTrigger>
-              </TabsList>
-            </div>
+            <TabsList aria-label={t('common.accessibility.podcastViews')} className="w-full max-w-md">
+              <TabsTrigger value="episodes">
+                <Mic className="h-4 w-4" />
+                {t('podcasts.episodesTab')}
+              </TabsTrigger>
+              <TabsTrigger value="templates">
+                <LayoutTemplate className="h-4 w-4" />
+                {t('podcasts.templatesTab')}
+              </TabsTrigger>
+            </TabsList>
 
             <TabsContent value="episodes">
               <EpisodesTab />

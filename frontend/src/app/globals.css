@@ -119,6 +119,10 @@
   --color-ctx-insights: var(--ctx-insights);
   --color-ctx-insights-tint: var(--ctx-insights-tint);
 
+  /* type scale — 2xs is the micro-label size (section labels, meta lines) */
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+
   /* shape — squared: instrument, not toy; floor is 4px */
   --radius-sm: 4px;
   --radius-md: 5px;
@@ -375,6 +379,21 @@
 
   body {
     @apply bg-background text-foreground transition-colors;
+  }
+
+  /* Match the compact canvas people expect from an 80% browser zoom while
+     preserving the viewport edge for the full-height application shell. */
+  html {
+    overflow-x: hidden;
+  }
+
+  .app-body {
+    zoom: 0.8;
+    min-height: 125dvh;
+  }
+
+  .app-shell {
+    min-height: 125dvh;
   }
 
   /* Ensure proper theme inheritance for popovers and dropdowns */

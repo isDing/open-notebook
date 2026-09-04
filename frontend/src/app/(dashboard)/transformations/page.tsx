@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { AppShell } from '@/components/layout/AppShell'
+import { PageHeader } from '@/components/common/PageHeader'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { DefaultPromptEditor } from './components/DefaultPromptEditor'
 import { TransformationsList } from './components/TransformationsList'
@@ -25,21 +26,23 @@ export default function TransformationsPage() {
   return (
     <AppShell>
       <div className="flex-1 overflow-y-auto">
-        <div className="space-y-6 p-4 md:p-6">
+        <div className="space-y-6 px-4 py-5 sm:px-6 sm:py-6">
+        <PageHeader
+          title={t('transformations.title')}
+          description={t('transformations.desc')}
+          className="mb-6"
+        />
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <div className="space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t('transformations.workspace')}</p>
-            <TabsList aria-label={t('common.accessibility.transformationViews')} className="w-full max-w-xl">
-              <TabsTrigger value="transformations" className="flex items-center gap-2">
-                <Wand2 className="h-4 w-4" />
-                {t('transformations.title')}
-              </TabsTrigger>
-              <TabsTrigger value="playground" className="flex items-center gap-2">
-                <Play className="h-4 w-4" />
-                {t('transformations.playground')}
-              </TabsTrigger>
-            </TabsList>
-          </div>
+          <TabsList aria-label={t('common.accessibility.transformationViews')} className="w-full max-w-xl">
+            <TabsTrigger value="transformations" className="flex items-center gap-2">
+              <Wand2 className="h-4 w-4" />
+              {t('transformations.title')}
+            </TabsTrigger>
+            <TabsTrigger value="playground" className="flex items-center gap-2">
+              <Play className="h-4 w-4" />
+              {t('transformations.playground')}
+            </TabsTrigger>
+          </TabsList>
           
           <TabsContent value="transformations" className="space-y-6">
             <DefaultPromptEditor />
