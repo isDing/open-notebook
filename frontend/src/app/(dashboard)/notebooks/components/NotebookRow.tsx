@@ -29,6 +29,13 @@ export function NotebookRow({ notebook }: NotebookRowProps) {
   const router = useRouter()
   const updateNotebook = useUpdateNotebook()
 
+  const updatedLabel = t('common.updated', {
+    time: formatDistanceToNow(new Date(notebook.updated), {
+      addSuffix: true,
+      locale: getDateLocale(language)
+    })
+  })
+
   const handleArchiveToggle = (e: React.MouseEvent) => {
     e.stopPropagation()
     updateNotebook.mutate({
@@ -47,33 +54,46 @@ export function NotebookRow({ notebook }: NotebookRowProps) {
           the accessible primary action (a real link) for keyboard/screen-reader
           users — avoiding nested interactive (button-in-button) semantics. */}
       <div
-        className="group flex items-center gap-4 rounded-lg border bg-card px-4 py-3 card-hover"
+        className="group flex items-center gap-3 rounded-lg border bg-card px-4 py-3 card-hover"
         onClick={handleRowClick}
         style={{ cursor: 'pointer' }}
       >
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
+        <div className="min-w-0 flex-1">
+          <div className="flex min-w-0 items-center gap-2">
             <Link
               href={`/notebooks/${encodeURIComponent(notebook.id)}`}
               onClick={(e) => e.stopPropagation()}
-              className="font-medium truncate rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="min-w-0 truncate rounded-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               {notebook.name}
             </Link>
             {notebook.archived && (
-              <Badge variant="secondary">
+              <Badge variant="secondary" className="shrink-0">
                 {t('notebooks.archived')}
               </Badge>
             )}
           </div>
           {notebook.description && (
-            <p className="text-sm text-muted-foreground truncate">
+            <p className="mt-0.5 truncate text-sm text-muted-foreground">
               {notebook.description}
             </p>
           )}
+          {/* Mobile: counts and updated time wrap below the name */}
+          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground sm:hidden">
+            <span className="flex items-center gap-1">
+              <FileText className="h-3 w-3" />
+              <span>{notebook.source_count}</span>
+            </span>
+            <span className="flex items-center gap-1">
+              <StickyNote className="h-3 w-3" />
+              <span>{notebook.note_count}</span>
+            </span>
+            <span>{updatedLabel}</span>
+          </div>
         </div>
 
-        <div className="flex items-center gap-3 shrink-0 text-xs text-muted-foreground">
+        {/* Desktop: counts stay inline */}
+        <div className="hidden shrink-0 items-center gap-3 text-xs text-muted-foreground sm:flex">
           <span className="flex items-center gap-1">
             <FileText className="h-3 w-3" />
             <span>{notebook.source_count}</span>
@@ -84,11 +104,9 @@ export function NotebookRow({ notebook }: NotebookRowProps) {
           </span>
         </div>
 
-        <div className="hidden sm:block w-40 shrink-0 text-right text-xs text-muted-foreground">
-          {t('common.updated', { time: formatDistanceToNow(new Date(notebook.updated), {
-            addSuffix: true,
-            locale: getDateLocale(language)
-          }) })}
+        {/* Desktop: updated time stays inline */}
+        <div className="hidden w-40 shrink-0 text-right text-xs text-muted-foreground sm:block">
+          {updatedLabel}
         </div>
 
         <DropdownMenu>
@@ -97,7 +115,7 @@ export function NotebookRow({ notebook }: NotebookRowProps) {
               aria-label={t('common.actions')}
               variant="ghost"
               size="sm"
-              className="h-10 w-10 p-0 touch-reveal group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 transition-opacity shrink-0 sm:h-8 sm:w-8"
+              className="h-10 w-10 shrink-0 p-0 touch-reveal group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 transition-opacity sm:h-8 sm:w-8"
               onClick={(e) => e.stopPropagation()}
             >
               <MoreHorizontal className="h-4 w-4" />

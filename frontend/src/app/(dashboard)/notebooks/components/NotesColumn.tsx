@@ -18,7 +18,7 @@ import { NoteEditorDialog } from './NoteEditorDialog'
 import { getDateLocale } from '@/lib/utils/date-locale'
 import { formatDistanceToNow } from 'date-fns'
 import { ContextToggle } from '@/components/common/ContextToggle'
-import type { NoteContextMode } from '../[id]/page'
+import type { NoteContextMode } from '@/lib/types/notebook-context'
 import type { NoteContextDefault } from '@/lib/utils/source-context'
 import { useDeleteNote } from '@/lib/hooks/use-notes'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
@@ -123,7 +123,7 @@ export function NotesColumn({
                   <Plus className="h-4 w-4 mr-2" />
                   {t('common.writeNote')}
                 </Button>
-                {collapseButton}
+                {collapsible && collapseButton}
               </div>
             </div>
           </CardHeader>

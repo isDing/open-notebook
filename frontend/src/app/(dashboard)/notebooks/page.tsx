@@ -108,7 +108,7 @@ export default function NotebooksPage() {
         </div>
 
         <div className="space-y-8">
-          <RecentlyViewed />
+          {!isSearching && <RecentlyViewed limit={4} />}
 
           <NotebookList 
             notebooks={filteredActive} 

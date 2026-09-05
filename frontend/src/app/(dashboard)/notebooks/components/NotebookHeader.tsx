@@ -1,10 +1,17 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { NotebookResponse } from '@/lib/types/api'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Archive, ArchiveRestore, Trash2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { ArrowLeft, Archive, ArchiveRestore, MoreHorizontal, Trash2 } from 'lucide-react'
 import { useUpdateNotebook } from '@/lib/hooks/use-notebooks'
 import { NotebookDeleteDialog } from './NotebookDeleteDialog'
 import { formatDistanceToNow } from 'date-fns'
@@ -20,12 +27,12 @@ export function NotebookHeader({ notebook }: NotebookHeaderProps) {
   const { t, language } = useTranslation()
   const dfLocale = getDateLocale(language)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-  
+
   const updateNotebook = useUpdateNotebook()
 
   const handleUpdateName = async (name: string) => {
     if (!name || name === notebook.name) return
-    
+
     await updateNotebook.mutateAsync({
       id: notebook.id,
       data: { name }
@@ -34,7 +41,7 @@ export function NotebookHeader({ notebook }: NotebookHeaderProps) {
 
   const handleUpdateDescription = async (description: string) => {
     if (description === notebook.description) return
-    
+
     await updateNotebook.mutateAsync({
       id: notebook.id,
       data: { description: description || undefined }
@@ -50,30 +57,46 @@ export function NotebookHeader({ notebook }: NotebookHeaderProps) {
 
   return (
     <>
-      <div className="border-b pb-6">
-        <div className="space-y-2">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div className="flex min-w-0 flex-1 items-center gap-3">
-              <InlineEdit
-                id="notebook-name"
-                name="notebook-name"
-                value={notebook.name}
-                onSave={handleUpdateName}
-                className="min-w-0 font-display text-2xl font-bold tracking-tight"
-                inputClassName="font-display text-2xl font-bold tracking-tight"
-                placeholder={t('notebooks.namePlaceholder')}
-              />
-              {notebook.archived && (
-                <Badge variant="secondary">{t('notebooks.archived')}</Badge>
-              )}
-            </div>
-            <div className="flex w-full flex-wrap gap-2 sm:w-auto sm:shrink-0">
+      <div className="min-w-0 space-y-1.5">
+        <Link
+          href="/notebooks"
+          className="inline-flex min-h-8 items-center gap-1.5 rounded-sm text-xs font-medium text-muted-foreground outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" />
+          {t('notebooks.backToNotebooks')}
+        </Link>
+
+        <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
+          <div className="flex min-w-0 flex-1 items-center gap-2">
+            <InlineEdit
+              id="notebook-name"
+              name="notebook-name"
+              value={notebook.name}
+              onSave={handleUpdateName}
+              className="min-w-0 font-display text-xl font-bold tracking-tight sm:text-2xl"
+              inputClassName="font-display text-xl font-bold tracking-tight sm:text-2xl"
+              placeholder={t('notebooks.namePlaceholder')}
+            />
+            {notebook.archived && (
+              <Badge variant="secondary" className="shrink-0">
+                {t('notebooks.archived')}
+              </Badge>
+            )}
+          </div>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
               <Button
-                variant="outline"
-                size="sm"
-                onClick={handleArchiveToggle}
-                className="min-h-10 flex-1 sm:min-h-8 sm:flex-none"
+                variant="ghost"
+                size="icon"
+                className="h-10 w-10 shrink-0 p-0 sm:h-8 sm:w-8"
+                aria-label={t('notebooks.notebookActions')}
               >
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleArchiveToggle}>
                 {notebook.archived ? (
                   <>
                     <ArchiveRestore className="h-4 w-4 mr-2" />
@@ -85,38 +108,33 @@ export function NotebookHeader({ notebook }: NotebookHeaderProps) {
                     {t('notebooks.archive')}
                   </>
                 )}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
+              </DropdownMenuItem>
+              <DropdownMenuItem
                 onClick={() => setShowDeleteDialog(true)}
-                className="min-h-10 flex-1 text-destructive hover:text-destructive sm:min-h-8 sm:flex-none"
+                className="text-destructive focus:text-destructive"
               >
                 <Trash2 className="h-4 w-4 mr-2" />
                 {t('common.delete')}
-              </Button>
-            </div>
-          </div>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
 
-          {/* Signature: one short flat fern underline — one hue, no show */}
-          <div aria-hidden className="h-[3px] w-14 rounded-[1px] bg-fern" />
+        <InlineEdit
+          id="notebook-description"
+          name="notebook-description"
+          value={notebook.description || ''}
+          onSave={handleUpdateDescription}
+          className="max-w-3xl text-sm text-muted-foreground line-clamp-2"
+          inputClassName="max-w-3xl text-sm text-muted-foreground"
+          placeholder={t('notebooks.addDescription')}
+          multiline
+          emptyText={t('notebooks.addDescription')}
+        />
 
-          <InlineEdit
-            id="notebook-description"
-            name="notebook-description"
-            value={notebook.description || ''}
-            onSave={handleUpdateDescription}
-            className="text-muted-foreground"
-            inputClassName="text-muted-foreground"
-            placeholder={t('notebooks.addDescription')}
-            multiline
-            emptyText={t('notebooks.addDescription')}
-          />
-          
-          <div className="text-xs text-muted-foreground">
-            {t('common.created', { time: formatDistanceToNow(new Date(notebook.created), { addSuffix: true, locale: dfLocale }) })} • 
-            {t('common.updated', { time: formatDistanceToNow(new Date(notebook.updated), { addSuffix: true, locale: dfLocale }) })}
-          </div>
+        <div className="text-xs text-muted-foreground">
+          {t('common.created', { time: formatDistanceToNow(new Date(notebook.created), { addSuffix: true, locale: dfLocale }) })} •
+          {t('common.updated', { time: formatDistanceToNow(new Date(notebook.updated), { addSuffix: true, locale: dfLocale }) })}
         </div>
       </div>
 

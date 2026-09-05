@@ -4,19 +4,13 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { AppShell } from '@/components/layout/AppShell'
 import { NotebookHeader } from '../components/NotebookHeader'
-import { SourcesColumn } from '../components/SourcesColumn'
-import { NotesColumn } from '../components/NotesColumn'
-import { ChatColumn } from '../components/ChatColumn'
+import { NotebookWorkspace } from '../components/NotebookWorkspace'
 import { useNotebook } from '@/lib/hooks/use-notebooks'
 import { useNotebookSources } from '@/lib/hooks/use-sources'
 import { useNotes } from '@/lib/hooks/use-notes'
 import { LoadingSpinner } from '@/components/common/LoadingSpinner'
-import { useNotebookColumnsStore } from '@/lib/stores/notebook-columns-store'
-import { useIsDesktop } from '@/lib/hooks/use-media-query'
 import { useTranslation } from '@/lib/hooks/use-translation'
-import { cn } from '@/lib/utils'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { FileText, StickyNote, MessageSquare } from 'lucide-react'
+import type { ContextMode, ContextSelections, NoteContextMode } from '@/lib/types/notebook-context'
 import {
   applyBulkSourceContext,
   applyBulkNoteContext,
@@ -29,7 +23,6 @@ import {
 
 // Re-exported from the shared types module for backward compatibility; several
 // components historically import these from this route file.
-import type { ContextMode, ContextSelections, NoteContextMode } from '@/lib/types/notebook-context'
 export type { ContextMode, ContextSelections, NoteContextMode }
 
 export default function NotebookPage() {
@@ -49,15 +42,6 @@ export default function NotebookPage() {
     fetchNextPage,
   } = useNotebookSources(notebookId)
   const { data: notes, isLoading: notesLoading } = useNotes(notebookId)
-
-  // Get collapse states for dynamic layout
-  const { sourcesCollapsed, notesCollapsed } = useNotebookColumnsStore()
-
-  // Detect desktop to avoid double-mounting ChatColumn
-  const isDesktop = useIsDesktop()
-
-  // Mobile tab state (Sources, Notes, or Chat)
-  const [mobileActiveTab, setMobileActiveTab] = useState<'sources' | 'notes' | 'chat'>('chat')
 
   // Context selection state
   const [contextSelections, setContextSelections] = useState<ContextSelections>({
@@ -153,126 +137,27 @@ export default function NotebookPage() {
 
   return (
     <AppShell>
-      <div className="flex flex-col flex-1 min-h-0">
-        <div className="flex-shrink-0 p-4 pb-0 sm:p-6 sm:pb-0">
+      <div className="flex min-h-0 flex-1 flex-col">
+        <div className="shrink-0 border-b border-border px-4 py-3 sm:px-6 sm:py-4">
           <NotebookHeader notebook={notebook} />
         </div>
-
-        <div className="flex-1 min-h-0 overflow-x-hidden p-4 pt-4 sm:p-6 sm:pt-6 flex flex-col">
-          {/* Mobile: Tabbed interface - only render on mobile to avoid double-mounting */}
-          {!isDesktop && (
-            <>
-              <div className="lg:hidden mb-4">
-                <Tabs value={mobileActiveTab} onValueChange={(value) => setMobileActiveTab(value as 'sources' | 'notes' | 'chat')}>
-                  <TabsList className="grid w-full grid-cols-3 gap-1">
-                    <TabsTrigger value="sources" className="min-h-10 gap-2 sm:min-h-9">
-                      <FileText className="h-4 w-4" />
-                      {t('navigation.sources')}
-                    </TabsTrigger>
-                    <TabsTrigger value="notes" className="min-h-10 gap-2 sm:min-h-9">
-                      <StickyNote className="h-4 w-4" />
-                      {t('common.notes')}
-                    </TabsTrigger>
-                    <TabsTrigger value="chat" className="min-h-10 gap-2 sm:min-h-9">
-                      <MessageSquare className="h-4 w-4" />
-                      {t('common.chat')}
-                    </TabsTrigger>
-                  </TabsList>
-                </Tabs>
-              </div>
-
-              {/* Mobile: Show only active tab */}
-              <div className="flex-1 overflow-hidden lg:hidden">
-                {mobileActiveTab === 'sources' && (
-                  <SourcesColumn
-                    sources={sources}
-                    isLoading={sourcesLoading}
-                    notebookId={notebookId}
-                    notebookName={notebook?.name}
-                    onRefresh={refetchSources}
-                    contextSelections={contextSelections.sources}
-                    onContextModeChange={handleSourceContextModeChange}
-                    onBulkContextModeChange={handleBulkSourceContext}
-                    hasNextPage={hasNextPage}
-                    isFetchingNextPage={isFetchingNextPage}
-                    fetchNextPage={fetchNextPage}
-                    collapsible={false}
-                  />
-                )}
-                {mobileActiveTab === 'notes' && (
-                  <NotesColumn
-                    notes={notes}
-                    isLoading={notesLoading}
-                    notebookId={notebookId}
-                    contextSelections={contextSelections.notes}
-                    onContextModeChange={handleNoteContextModeChange}
-                    onBulkContextModeChange={handleBulkNoteContext}
-                    collapsible={false}
-                  />
-                )}
-                {mobileActiveTab === 'chat' && (
-                  <ChatColumn
-                    notebookId={notebookId}
-                    contextSelections={contextSelections}
-                    sources={sources}
-                    sourcesLoading={sourcesLoading}
-                  />
-                )}
-              </div>
-            </>
-          )}
-
-          {/* Desktop: Collapsible columns layout */}
-          <div className={cn(
-            'hidden lg:flex h-full min-h-0 gap-6 transition-all duration-150',
-            'flex-row'
-          )}>
-            {/* Sources Column */}
-            <div className={cn(
-              'transition-all duration-150',
-              sourcesCollapsed ? 'w-12 flex-shrink-0' : 'flex-none basis-1/3'
-            )}>
-              <SourcesColumn
-                sources={sources}
-                isLoading={sourcesLoading}
-                notebookId={notebookId}
-                notebookName={notebook?.name}
-                onRefresh={refetchSources}
-                contextSelections={contextSelections.sources}
-                onContextModeChange={handleSourceContextModeChange}
-                onBulkContextModeChange={handleBulkSourceContext}
-                hasNextPage={hasNextPage}
-                isFetchingNextPage={isFetchingNextPage}
-                fetchNextPage={fetchNextPage}
-              />
-            </div>
-
-            {/* Notes Column */}
-            <div className={cn(
-              'transition-all duration-150',
-              notesCollapsed ? 'w-12 flex-shrink-0' : 'flex-none basis-1/3'
-            )}>
-              <NotesColumn
-                notes={notes}
-                isLoading={notesLoading}
-                notebookId={notebookId}
-                contextSelections={contextSelections.notes}
-                onContextModeChange={handleNoteContextModeChange}
-                onBulkContextModeChange={handleBulkNoteContext}
-              />
-            </div>
-
-            {/* Chat Column - always expanded, takes remaining space */}
-            <div className="transition-all duration-150 flex-1 min-w-0 lg:pr-6 lg:-mr-6">
-              <ChatColumn
-                notebookId={notebookId}
-                contextSelections={contextSelections}
-                sources={sources}
-                sourcesLoading={sourcesLoading}
-              />
-            </div>
-          </div>
-        </div>
+        <NotebookWorkspace
+          notebookId={notebookId}
+          notebookName={notebook.name}
+          sources={sources}
+          notes={notes ?? []}
+          sourcesLoading={sourcesLoading}
+          notesLoading={notesLoading}
+          refetchSources={refetchSources}
+          hasNextPage={hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+          fetchNextPage={fetchNextPage}
+          contextSelections={contextSelections}
+          onSourceContextModeChange={handleSourceContextModeChange}
+          onBulkSourceContextChange={handleBulkSourceContext}
+          onNoteContextModeChange={handleNoteContextModeChange}
+          onBulkNoteContextChange={handleBulkNoteContext}
+        />
       </div>
     </AppShell>
   )
