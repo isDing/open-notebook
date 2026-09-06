@@ -20,7 +20,7 @@ services:
     restart: unless-stopped
 
   open-notebook:
-    image: isding/open-notebook:1.14.0-source
+    image: isding/open-notebook:1.14.2-source
     build:
       context: .
       target: runtime

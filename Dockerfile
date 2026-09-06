@@ -62,6 +62,24 @@ ENV TIKTOKEN_CACHE_DIR=/app/tiktoken-cache
 RUN mkdir -p /app/tiktoken-cache && \
     .venv/bin/python -c "import tiktoken; tiktoken.get_encoding('o200k_base')"
 
+# Bake the opt-in heavy extraction runtimes (Docling, Crawl4AI) into the image.
+# Without this the entrypoint installs them on first boot of every fresh
+# container, and the default PyPI resolution pulls the CUDA build of torch —
+# dead weight on GPU-less hosts. The PyTorch CPU index publishes +cpu local
+# versions that sort above the plain releases, so unsafe-best-match resolves
+# torch/torchvision to +cpu while everything else still comes from PyPI.
+# The guard below fails the build if any CUDA-only wheel leaks back in.
+RUN set -eu; \
+    CCORE_VERSION="$(.venv/bin/python -c 'import importlib.metadata as m; print(m.version("content-core"))')"; \
+    uv pip install --python .venv/bin/python \
+        --index-strategy unsafe-best-match \
+        --extra-index-url https://download.pytorch.org/whl/cpu \
+        "content-core[docling,crawl4ai]==${CCORE_VERSION}"; \
+    if uv pip freeze --python .venv/bin/python | grep -qE '^(nvidia-|triton==)'; then \
+        echo 'ERROR: CUDA torch stack resolved from PyPI; expected +cpu builds'; exit 1; \
+    fi; \
+    .venv/bin/python -c "import importlib.util as u, torch; assert u.find_spec('docling') and u.find_spec('crawl4ai'); print('baked heavy runtimes; torch', torch.__version__)"
+
 # Stage 3: SurrealDB binary (pinned to v2 to match docker-compose.yml; used by the single target only)
 FROM surrealdb/surrealdb:v2 AS surreal-binary
 
@@ -70,10 +88,21 @@ FROM python:3.12-slim-trixie AS runtime-base
 
 # Install only runtime system dependencies (no build tools)
 # Add Node.js 22.x LTS for running the frontend
+# The Chromium libraries and font packages below are the set that
+# `playwright install --with-deps` would apt-install at runtime; baking them
+# (including CJK fonts) keeps headless rendering working without a network
+# round-trip on first boot.
 RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
     ffmpeg \
     supervisor \
     curl \
+    libasound2t64 libatk-bridge2.0-0t64 libatk1.0-0t64 libatspi2.0-0t64 \
+    libcairo2 libcups2t64 libdbus-1-3 libdrm2 libgbm1 libglib2.0-0t64 \
+    libnspr4 libnss3 libpango-1.0-0 libx11-6 libxcb1 libxcomposite1 \
+    libxdamage1 libxext6 libxfixes3 libxkbcommon0 libxrandr2 xvfb \
+    fonts-noto-color-emoji fonts-unifont libfontconfig1 libfreetype6 \
+    xfonts-scalable fonts-liberation fonts-ipafont-gothic fonts-wqy-zenhei \
+    fonts-tlwg-loma-otf fonts-freefont-ttf \
     && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get install -y --no-install-recommends nodejs \
     && rm -rf /var/lib/apt/lists/*
@@ -115,8 +144,12 @@ ENV UV_CACHE_DIR=/app/data/.cache/uv
 ENV PLAYWRIGHT_BROWSERS_PATH=/app/data/.cache/playwright
 ENV HF_HOME=/app/data/.cache/huggingface
 
-# Data directory (volume-mounted by users) and supervisor log directory
+# Data directory (volume-mounted by users) and supervisor log directory.
+# The stamp marks the Chromium system libraries as baked into the image, so
+# the entrypoint skips `playwright install --with-deps` and only verifies the
+# browser itself (persisted on the /app/data volume cache).
 RUN mkdir -p /app/data /var/log/supervisor \
+    && touch /app/.playwright-system-deps.done \
     && chmod +x /app/scripts/wait-for-api.sh /app/scripts/docker-entrypoint.sh
 
 # Copy supervisord configuration (shared programs: api, worker, frontend)
