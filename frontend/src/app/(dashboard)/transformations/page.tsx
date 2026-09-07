@@ -7,9 +7,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { DefaultPromptEditor } from './components/DefaultPromptEditor'
 import { TransformationsList } from './components/TransformationsList'
 import { TransformationPlayground } from './components/TransformationPlayground'
+import { PresetList } from './components/PresetList'
 import { useTransformations } from '@/lib/hooks/use-transformations'
 import { Transformation } from '@/lib/types/transformations'
-import { Wand2, Play } from 'lucide-react'
+import { Wand2, FlaskConical, Sparkles } from 'lucide-react'
 import { useTranslation } from '@/lib/hooks/use-translation'
 
 export default function TransformationsPage() {
@@ -38,11 +39,15 @@ export default function TransformationsPage() {
               <Wand2 className="h-4 w-4" />
               {t('transformations.title')}
             </TabsTrigger>
-            <TabsTrigger value="playground" className="flex items-center gap-2">
-              <Play className="h-4 w-4" />
-              {t('transformations.playground')}
-            </TabsTrigger>
-          </TabsList>
+          <TabsTrigger value="playground" className="flex items-center gap-2">
+            <FlaskConical className="h-4 w-4" />
+            {t('transformations.playground')}
+          </TabsTrigger>
+          <TabsTrigger value="presets" className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4" />
+            {t('presets.title')}
+          </TabsTrigger>
+        </TabsList>
           
           <TabsContent value="transformations" className="space-y-6">
             <DefaultPromptEditor />
@@ -58,6 +63,10 @@ export default function TransformationsPage() {
               transformations={transformations}
               selectedTransformation={selectedTransformation}
             />
+          </TabsContent>
+
+          <TabsContent value="presets">
+            <PresetList />
           </TabsContent>
         </Tabs>
         </div>

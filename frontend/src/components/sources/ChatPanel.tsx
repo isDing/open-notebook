@@ -7,7 +7,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
-import { Bot, User, Send, Loader2, FileText, Lightbulb, StickyNote, Clock } from 'lucide-react'
+import { Bot, User, Send, Loader2, FileText, Lightbulb, StickyNote, Clock, Wand2, ChevronDown } from 'lucide-react'
 import { MarkdownRenderer } from '@/components/ui/markdown-renderer'
 import {
   SourceChatMessage,
@@ -15,6 +15,12 @@ import {
   BaseChatSession
 } from '@/lib/types/api'
 import { ModelSelector } from './ModelSelector'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu'
 import { ContextIndicator } from '@/components/common/ContextIndicator'
 import { SessionManager } from '@/components/sources/SessionManager'
 import { MessageActions } from '@/components/sources/MessageActions'
@@ -31,6 +37,11 @@ interface NotebookContextStats {
   charCount?: number
 }
 
+export interface ChatPresetOption {
+  title: string
+  prompt: string
+}
+
 interface ChatPanelProps {
   messages: SourceChatMessage[]
   isStreaming: boolean
@@ -38,6 +49,9 @@ interface ChatPanelProps {
   onSendMessage: (message: string, modelOverride?: string) => void
   modelOverride?: string
   onModelChange?: (model?: string) => void
+  // Optional list of preset prompts; selecting one fills the input box with
+  // the prompt, while the selector only shows the title
+  presetPrompts?: ChatPresetOption[]
   // Session management props
   sessions?: BaseChatSession[]
   currentSessionId?: string | null
@@ -62,6 +76,7 @@ export function ChatPanel({
   onSendMessage,
   modelOverride,
   onModelChange,
+  presetPrompts,
   sessions = [],
   currentSessionId,
   onCreateSession,
@@ -221,6 +236,7 @@ export function ChatPanel({
           isStreaming={isStreaming}
           modelOverride={modelOverride}
           onModelChange={onModelChange}
+          presetPrompts={presetPrompts}
         />
       </CardContent>
     </Card>
@@ -236,16 +252,19 @@ interface ChatComposerProps {
   isStreaming: boolean
   modelOverride?: string
   onModelChange?: (model?: string) => void
+  presetPrompts?: ChatPresetOption[]
 }
 
 function ChatComposer({
   onSendMessage,
   isStreaming,
   modelOverride,
-  onModelChange
+  onModelChange,
+  presetPrompts
 }: ChatComposerProps) {
   const { t } = useTranslation()
   const chatInputId = useId()
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
   const [input, setInput] = useState('')
 
   const handleSend = () => {
@@ -253,6 +272,11 @@ function ChatComposer({
       onSendMessage(input.trim(), modelOverride)
       setInput('')
     }
+  }
+
+  const handlePresetSelect = (preset: ChatPresetOption) => {
+    setInput(preset.prompt)
+    textareaRef.current?.focus()
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -272,21 +296,56 @@ function ChatComposer({
 
   return (
     <div className="flex-shrink-0 space-y-3 border-t p-3 sm:p-4">
-      {/* Model selector */}
-      {onModelChange && (
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className="text-xs text-muted-foreground">{t('chat.model')}</span>
-          <ModelSelector
-            currentModel={modelOverride}
-            onModelChange={onModelChange}
-            disabled={isStreaming}
-          />
+      {/* Model + preset selectors (same row) */}
+      {(onModelChange || (presetPrompts && presetPrompts.length > 0)) && (
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          {onModelChange && (
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground">{t('chat.model')}</span>
+              <ModelSelector
+                currentModel={modelOverride}
+                onModelChange={onModelChange}
+                disabled={isStreaming}
+              />
+            </div>
+          )}
+          {presetPrompts && presetPrompts.length > 0 && (
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground">{t('chat.presetLabel')}</span>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={isStreaming}
+                    className="h-10 sm:h-8 gap-1"
+                  >
+                    <Wand2 className="h-4 w-4" />
+                    <span className="sr-only">{t('chat.presetLabel')}</span>
+                    <ChevronDown className="h-3.5 w-3.5 opacity-60" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="max-h-72 min-w-[16rem] overflow-y-auto">
+                  {presetPrompts.map((preset) => (
+                    <DropdownMenuItem
+                      key={preset.title}
+                      onSelect={() => handlePresetSelect(preset)}
+                      className="max-w-[22rem] whitespace-normal break-words"
+                    >
+                      {preset.title}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          )}
         </div>
       )}
 
       <div className="flex gap-2 items-end min-w-0">
         <Textarea
           id={chatInputId}
+          ref={textareaRef}
           name="chat-message"
           autoComplete="off"
           value={input}

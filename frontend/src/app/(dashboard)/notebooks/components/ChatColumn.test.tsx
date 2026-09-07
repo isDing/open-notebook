@@ -4,6 +4,9 @@ import { ChatColumn } from './ChatColumn'
 import { useNotebookChat } from '@/lib/hooks/use-notebook-chat'
 
 vi.mock('@/lib/hooks/use-notebook-chat')
+vi.mock('@/lib/hooks/use-presets', () => ({
+  usePresets: () => ({ data: [], isLoading: false }),
+}))
 vi.mock('@/components/sources/ChatPanel', () => ({
   ChatPanel: () => <div data-testid="chat-panel" />
 }))

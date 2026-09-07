@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { act } from 'react'
 import { ChatPanel } from './ChatPanel'
 
 // useTranslation is mocked globally in setup.ts (t returns the key string)
@@ -106,5 +107,76 @@ describe('ChatPanel composer', () => {
     fireEvent.keyDown(textarea, { key: 'Enter', ctrlKey: true })
 
     expect(onSendMessage).not.toHaveBeenCalled()
+  })
+
+  it('renders the preset selector when presetPrompts are provided', () => {
+    render(
+      <ChatPanel
+        messages={[]}
+        isStreaming={false}
+        contextIndicators={null}
+        onSendMessage={vi.fn()}
+        presetPrompts={[
+          { title: 'Summarize', prompt: 'Summarize the key points' },
+        ]}
+      />
+    )
+    expect(
+      screen.getByRole('button', { name: 'chat.presetLabel' }),
+    ).toBeInTheDocument()
+  })
+
+  it('does not render the preset selector when presetPrompts are absent', () => {
+    render(
+      <ChatPanel
+        messages={[]}
+        isStreaming={false}
+        contextIndicators={null}
+        onSendMessage={vi.fn()}
+      />
+    )
+    expect(
+      screen.queryByRole('button', { name: 'chat.presetLabel' }),
+    ).not.toBeInTheDocument()
+  })
+
+  it('fills the input box when a preset prompt is selected', () => {
+    render(
+      <ChatPanel
+        messages={[]}
+        isStreaming={false}
+        contextIndicators={null}
+        onSendMessage={vi.fn()}
+        presetPrompts={[
+          { title: 'Summarize', prompt: 'Summarize the key points' },
+          { title: 'Main insights', prompt: 'What are the main insights?' },
+        ]}
+      />
+    )
+
+    // Radix toggles the menu on a primary pointerdown (button 0, no ctrl).
+    // jsdom has no PointerEvent, so fireEvent builds a bare Event that drops
+    // `button`/`ctrlKey`; dispatch a MouseEvent that carries both instead.
+    // Wrapped in act so the re-render that mounts the menu is flushed.
+    const trigger = screen.getByRole('button', { name: 'chat.presetLabel' })
+    act(() => {
+      trigger.dispatchEvent(
+        new MouseEvent('pointerdown', {
+          button: 0,
+          ctrlKey: false,
+          bubbles: true,
+          cancelable: true,
+        }),
+      )
+    })
+
+    // The selector shows the preset title; selecting it fills the box with the
+    // prompt.
+    const presetItem = screen.getByRole('menuitem', {
+      name: 'Main insights',
+    })
+    fireEvent.click(presetItem)
+
+    expect(getTextarea().value).toBe('What are the main insights?')
   })
 })

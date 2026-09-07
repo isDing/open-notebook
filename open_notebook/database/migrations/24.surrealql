@@ -1,0 +1,9 @@
+-- Migration 24: Create preset_prompt table for reusable chat preset prompts
+-- Each preset stores a display title and the prompt text that gets inserted
+-- into the chat input box when selected.
+
+DEFINE TABLE IF NOT EXISTS preset_prompt SCHEMAFULL;
+DEFINE FIELD IF NOT EXISTS title ON TABLE preset_prompt TYPE string;
+DEFINE FIELD IF NOT EXISTS prompt ON TABLE preset_prompt TYPE string;
+DEFINE FIELD IF NOT EXISTS created ON TABLE preset_prompt TYPE option<datetime> DEFAULT time::now();
+DEFINE FIELD IF NOT EXISTS updated ON TABLE preset_prompt TYPE option<datetime> DEFAULT time::now();

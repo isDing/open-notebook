@@ -2,7 +2,8 @@
 
 import { useMemo } from 'react'
 import { useNotebookChat } from '@/lib/hooks/use-notebook-chat'
-import { ChatPanel } from '@/components/sources/ChatPanel'
+import { usePresets } from '@/lib/hooks/use-presets'
+import { ChatPanel, type ChatPresetOption } from '@/components/sources/ChatPanel'
 import { LoadingSpinner } from '@/components/common/LoadingSpinner'
 import { Card, CardContent } from '@/components/ui/card'
 import { useTranslation } from '@/lib/hooks/use-translation'
@@ -27,6 +28,14 @@ export function ChatColumn({
   notesLoading,
 }: ChatColumnProps) {
   const { t } = useTranslation()
+
+  // Preset prompts offered next to the model selector; selecting one fills the
+  // input box with the prompt (the selector only shows the title).
+  const { data: presets = [] } = usePresets()
+  const presetPrompts: ChatPresetOption[] = useMemo(
+    () => presets.map((preset) => ({ title: preset.title, prompt: preset.prompt })),
+    [presets],
+  )
 
   // Initialize notebook chat hook
   const chat = useNotebookChat({
@@ -90,6 +99,7 @@ export function ChatColumn({
       onSendMessage={(message, modelOverride) => chat.sendMessage(message, modelOverride)}
       modelOverride={chat.currentSession?.model_override ?? chat.pendingModelOverride ?? undefined}
       onModelChange={(model) => chat.setModelOverride(model ?? null)}
+      presetPrompts={presetPrompts}
       sessions={chat.sessions}
       currentSessionId={chat.currentSessionId}
       onCreateSession={(title) => chat.createSession(title)}

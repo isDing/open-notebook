@@ -37,6 +37,7 @@ from api.routers import (
     notebooks,
     notes,
     podcasts,
+    presets,
     providers,
     search,
     settings,
@@ -386,6 +387,7 @@ app.include_router(notebooks.router, prefix="/api", tags=["notebooks"])
 app.include_router(search.router, prefix="/api", tags=["search"])
 app.include_router(models.router, prefix="/api", tags=["models"])
 app.include_router(transformations.router, prefix="/api", tags=["transformations"])
+app.include_router(presets.router, prefix="/api", tags=["presets"])
 app.include_router(notes.router, prefix="/api", tags=["notes"])
 app.include_router(embedding.router, prefix="/api", tags=["embedding"])
 app.include_router(

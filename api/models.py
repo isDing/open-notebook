@@ -186,6 +186,31 @@ class DefaultPromptUpdate(BaseModel):
     )
 
 
+# Preset Prompts API models
+class PresetCreate(BaseModel):
+    title: str = Field(..., description="Display title for the preset prompt")
+    prompt: str = Field(
+        ..., description="The prompt text inserted into the chat input box"
+    )
+
+
+class PresetUpdate(BaseModel):
+    title: Optional[str] = Field(
+        None, description="Display title for the preset prompt"
+    )
+    prompt: Optional[str] = Field(
+        None, description="The prompt text inserted into the chat input box"
+    )
+
+
+class PresetResponse(BaseModel):
+    id: str
+    title: str
+    prompt: str
+    created: str
+    updated: str
+
+
 # Notes API models
 class NoteCreate(BaseModel):
     title: Optional[str] = Field(None, description="Note title")
