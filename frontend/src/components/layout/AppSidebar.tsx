@@ -88,12 +88,12 @@ const getNavigation = (t: TFunction): Array<{ title: string; items: NavigationIt
 export function LogoMark({ className }: { className?: string }) {
   return (
     <span
-      className={cn('flex size-[22px] shrink-0 items-center justify-center rounded-md bg-primary', className)}
+      className={cn('flex size-[22px] shrink-0 items-center justify-center rounded-md bg-accent-solid', className)}
       aria-hidden="true"
     >
       <span className="flex flex-col gap-[3px]">
-        <span className="h-[2px] w-[11px] rounded-full bg-primary-foreground/95" />
-        <span className="h-[2px] w-[7px] rounded-full bg-primary-foreground/95" />
+        <span className="h-[2px] w-[11px] rounded-full bg-white/95" />
+        <span className="h-[2px] w-[7px] rounded-full bg-white/95" />
       </span>
     </span>
   )

@@ -5,17 +5,19 @@
 @variant dark (&:where(.dark, .dark *));
 
 /* ============================================================================
-   OPEN NOTEBOOK — DESIGN FOUNDATION v3 ("Warm Neutral")
+   OPEN NOTEBOOK — DESIGN FOUNDATION v3 ("Cool Slate + Blue Accent")
 
    The laws, in one breath:
-     a warm neutral canvas · primary is a dark neutral, not a hue
-     red destroys · amber warns · no other saturated color
+     a cool slate canvas · primary is a dark slate button voice
+     one blue accent: logo, active nav, links, AI voice
+     content types wear teal / violet / amber — chrome stays slate
+     red destroys · amber warns
      1px soft borders · whitespace over separators · gentle shadows
      geometry 8–16px (12px controls · 16px cards) · one typeface,
      hierarchy by restrained weight & size
      motion is quick and quiet: opacity, small travel, nothing else
 
-   Supersedes v2's indigo accent (see PDR-005).
+   Supersedes v2's indigo accent (see PDR-005); palette per PDR-007.
    Layering: raw palette + semantic raws live in :root and are overridden by
    `.dark`; every alias defined with var() re-resolves automatically — never
    duplicate aliases into the dark block.
@@ -47,6 +49,7 @@
   --color-destructive-tint: var(--danger-tint);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
+  --color-accent-solid: var(--accent-solid);
   --color-muted-foreground: var(--muted-foreground);
   --color-muted: var(--muted);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -62,7 +65,8 @@
   --color-card: var(--card);
 
   /* hue aliases — legacy names kept for existing components.
-     teal & fern now render as the neutral primary voice; the rest are warm grays. */
+      teal/fern/sage render as teal, plum/mauve/violet as violet,
+      gold/clay as amber, slate stays gray. */
   --color-fern: var(--fern);
   --color-fern-deep: var(--fern-deep);
   --color-fern-tint: var(--fern-tint);
@@ -144,60 +148,63 @@
 
 :root {
   /* --------------------------------------------------------------
-     spec palette — warm neutrals (PDR-005)
+     spec palette — cool slate + blue accent (PDR-007)
      -------------------------------------------------------------- */
-  --bg: #fafaf9;
-  --surface: #ffffff;
-  --text: #1c1b19;
-  --text-secondary: #6f6d68;
-  --text-muted: #9a9892;
-  --border: #e8e6e1;
-  --hover: #f5f4f1;
-  --selected: #eeece7;
-  --primary: #29261f;
+  --bg: #fafbfd;
+  --surface: #f7fafd;
+  --text: #0f172a;
+  --text-secondary: #5d6a84;
+  --text-muted: #7d889f;
+  --border: #e2e8f0;
+  --hover: #eef2f8;
+  --selected: #e8eef7;
+  --primary: #343d4c;
 
-  /* primary steps — dark neutral voice for actions, active, AI */
-  --primary-hover: #3e3b32;
-  --primary-ink: var(--text);
-  --primary-tint: var(--selected);
+  /* primary steps — dark slate button voice; blue carries accent states */
+  --primary-hover: #2a3240;
+  --primary-ink: #1349c0;
+  --primary-tint: #ecf2fc;
   --on-primary: #ffffff;
 
-  /* legacy hue names — teal & fern now carry the neutral primary voice */
-  --teal: var(--primary-ink);
-  --teal-deep: var(--primary);
-  --teal-tint: var(--primary-tint);
+  /* brand mark — the solid blue tile behind the logo */
+  --accent-solid: #4f8cee;
 
-  --fern: var(--primary-ink);
-  --fern-deep: var(--primary);
-  --fern-tint: var(--primary-tint);
+  /* legacy hue names — teal & fern now carry the teal voice */
+  --teal: #0e7e7b;
+  --teal-deep: #0a5f5c;
+  --teal-tint: #eaf7f6;
 
-  /* neutrals that used to be hues — warm gray steps */
-  --gold: #9a9892;
-  --gold-deep: #6f6d68;
-  --gold-tint: #f5f4f1;
+  --fern: #0e7e7b;
+  --fern-deep: #0a5f5c;
+  --fern-tint: #eaf7f6;
 
-  --sage: #9a9892;
-  --sage-deep: #6f6d68;
-  --sage-tint: #f5f4f1;
+  /* content-type hues — the four sanctioned content colors */
+  --gold: #b45309;
+  --gold-deep: #92400e;
+  --gold-tint: #fdf3e7;
 
-  --plum: #9a9892;
-  --plum-tint: #f5f4f1;
+  --sage: #0e7e7b;
+  --sage-deep: #0a5f5c;
+  --sage-tint: #eaf7f6;
 
-  --mauve: #9a9892;
-  --mauve-deep: #6f6d68;
-  --mauve-tint: #f5f4f1;
+  --plum: #4a4fd2;
+  --plum-tint: #f1effe;
 
-  --slate: #6f6d68;
-  --slate-deep: #4a4843;
-  --slate-tint: #f5f4f1;
+  --mauve: #4a4fd2;
+  --mauve-deep: #3d41b8;
+  --mauve-tint: #f1effe;
 
-  --violet: #9a9892;
-  --violet-deep: #6f6d68;
-  --violet-tint: #f5f4f1;
+  --slate: #5d6a84;
+  --slate-deep: #46536e;
+  --slate-tint: #eef2f8;
+
+  --violet: #4a4fd2;
+  --violet-deep: #3d41b8;
+  --violet-tint: #f1effe;
 
   --clay: #b45309;
   --clay-deep: #92400e;
-  --clay-tint: #fffbeb;
+  --clay-tint: #fdf3e7;
 
   /* --------------------------------------------------------------
      semantic raws — surfaces, ink, hairlines, danger, warn
@@ -210,10 +217,10 @@
   --ink: var(--text);
   --ink-soft: var(--text-secondary);
   --ink-faint: var(--text-muted);
-  --ink-faintest: #c4c2bc;
+  --ink-faintest: #b6c0d4;
 
   --line: var(--border);
-  --line-soft: #f1efeb;
+  --line-soft: #eaeef5;
   --line-strong: var(--text);
 
   --danger: #dc2626;
@@ -222,15 +229,15 @@
 
   --warn: #b45309;
   --warn-deep: #92400e;
-  --warn-tint: #fffbeb;
+  --warn-tint: #fdf3e7;
 
   /* evidence washes — the one sanctioned tinted text bg */
-  --excerpt-wash: #f7f6f2;
-  --best-match: rgba(41, 38, 31, 0.12);
-  --best-match-ring: rgba(41, 38, 31, 0.12);
+  --excerpt-wash: #f0f5fc;
+  --best-match: rgba(19, 73, 192, 0.1);
+  --best-match-ring: rgba(19, 73, 192, 0.1);
 
   /* depth — gentle; overlays own the strongest shadow */
-  --shadow-soft: 0 1px 2px rgba(28, 27, 25, 0.03);
+  --shadow-soft: 0 1px 2px rgba(15, 23, 42, 0.04);
   --shadow-lift: 0 4px 20px rgba(0, 0, 0, 0.04);
   --shadow-pop: 0 4px 20px rgba(0, 0, 0, 0.04), 0 12px 32px rgba(0, 0, 0, 0.05);
   --shadow-overlay: 0 8px 28px rgba(0, 0, 0, 0.06), 0 24px 64px rgba(0, 0, 0, 0.1);
@@ -238,29 +245,29 @@
   /* --------------------------------------------------------------
      aliases — re-resolve automatically in dark; defined once
      -------------------------------------------------------------- */
-  /* content-type hues — monochrome; icons carry the distinction */
-  --type-video: #8a8780;
-  --type-video-soft: var(--surface-recessed);
-  --type-pdf: #8a8780;
-  --type-pdf-soft: var(--surface-recessed);
-  --type-web: #8a8780;
-  --type-web-soft: var(--surface-recessed);
-  --type-audio: #8a8780;
-  --type-audio-soft: var(--surface-recessed);
-  --type-paper: #8a8780;
-  --type-paper-soft: var(--surface-recessed);
-  --type-note: #8a8780;
-  --type-note-soft: var(--surface-recessed);
+  /* content-type hues — teal / violet / amber content colors; blue for AI */
+  --type-video: #0e7e7b;
+  --type-video-soft: #eaf7f6;
+  --type-pdf: #4a4fd2;
+  --type-pdf-soft: #f1effe;
+  --type-web: #2563eb;
+  --type-web-soft: #e7f0fd;
+  --type-audio: #b45309;
+  --type-audio-soft: #fdf3e7;
+  --type-paper: #5d6a84;
+  --type-paper-soft: #eef2f8;
+  --type-note: #b45309;
+  --type-note-soft: #fdf3e7;
   --type-ai: var(--primary-ink);
   --type-ai-soft: var(--primary-tint);
   --type-insight: var(--primary-ink);
   --type-insight-soft: var(--primary-tint);
 
-  /* evidence classes — primary for sources, neutral steps for the rest */
+  /* evidence classes — blue for sources, slate steps for the rest */
   --cite-source: var(--primary-ink);
-  --cite-source-deep: var(--primary);
+  --cite-source-deep: #2563eb;
   --cite-note: var(--text-secondary);
-  --cite-note-deep: #4a4843;
+  --cite-note-deep: #46536e;
   --cite-derived: var(--text-muted);
   --cite-derived-deep: var(--text-secondary);
   --cite-external: var(--ink-faintest);
@@ -271,7 +278,7 @@
   /* context states */
   --ctx-full: var(--primary-ink);
   --ctx-full-tint: var(--primary-tint);
-  --ctx-insights: var(--text-muted);
+  --ctx-insights: #7d889f;
   --ctx-insights-tint: var(--surface-recessed);
   --ctx-off-ink: var(--ink-faint);
   --ctx-off-bg: var(--surface-recessed);
@@ -296,96 +303,99 @@
   --secondary-foreground: var(--text);
   --muted: var(--surface-recessed);
   --muted-foreground: var(--ink-soft);
-  --accent: var(--surface-sunken);
-  --accent-foreground: var(--text);
+  --accent: var(--primary-tint);
+  --accent-foreground: var(--primary-ink);
   --destructive: var(--danger);
   --input: var(--line);
-  --ring: var(--primary);
-  --chart-1: var(--primary);
-  --chart-2: #4a4843;
-  --chart-3: #8a8780;
-  --chart-4: #b5b3ac;
-  --chart-5: #29261f;
-  --sidebar: var(--bg);
+  --ring: #2563eb;
+  --chart-1: #2563eb;
+  --chart-2: #343d4c;
+  --chart-3: #7d889f;
+  --chart-4: #b6c0d4;
+  --chart-5: #1349c0;
+  --sidebar: #f4f7fb;
   --sidebar-foreground: var(--text);
   --sidebar-primary: var(--primary);
   --sidebar-primary-foreground: var(--on-primary);
   --sidebar-accent: var(--hover);
   --sidebar-accent-foreground: var(--text);
   --sidebar-border: var(--line);
-  --sidebar-ring: var(--primary);
+  --sidebar-ring: #2563eb;
 }
 
 /* ============================================================================
    DARK — overrides raw layers only; var() aliases re-resolve on their own
    ========================================================================== */
 .dark {
-  /* spec palette — warm neutrals, dark steps */
-  --bg: #191817;
-  --surface: #201f1d;
-  --text: #eceae5;
-  --text-secondary: #a6a49d;
-  --text-muted: #85837c;
-  --border: #34332e;
-  --hover: #262522;
-  --selected: #2e2d29;
-  --primary: #eceae5;
+  /* spec palette — navy slate, dark steps */
+  --bg: #0f1219;
+  --surface: #161b26;
+  --text: #e6eaf2;
+  --text-secondary: #9aa5bd;
+  --text-muted: #7c87a0;
+  --border: #262e3d;
+  --hover: #1b2130;
+  --selected: #202a3d;
+  --primary: #e6eaf2;
 
-  /* primary steps — light neutral voice on the dark canvas */
-  --primary-hover: #dddad3;
-  --primary-ink: var(--text);
-  --primary-tint: var(--selected);
-  --on-primary: #1c1b19;
+  /* primary steps — light voice on the dark canvas; blue accent steps up */
+  --primary-hover: #d5dbe8;
+  --primary-ink: #7ea6f5;
+  --primary-tint: rgba(59, 130, 246, 0.16);
+  --on-primary: #10141c;
 
-  --teal: var(--primary-ink);
-  --teal-deep: var(--primary);
-  --teal-tint: var(--primary-tint);
+  /* brand mark */
+  --accent-solid: #5b9bf5;
 
-  --fern: var(--primary-ink);
-  --fern-deep: var(--primary);
-  --fern-tint: var(--primary-tint);
+  --teal: #34c0b4;
+  --teal-deep: #7ee0d8;
+  --teal-tint: rgba(45, 212, 191, 0.12);
 
-  /* neutrals that used to be hues — warm gray steps */
-  --gold: #a6a49d;
-  --gold-deep: #c9c7c0;
-  --gold-tint: rgba(166, 164, 157, 0.12);
+  --fern: #34c0b4;
+  --fern-deep: #7ee0d8;
+  --fern-tint: rgba(45, 212, 191, 0.12);
 
-  --sage: #a6a49d;
-  --sage-deep: #c9c7c0;
-  --sage-tint: rgba(166, 164, 157, 0.12);
+  /* content-type hues — lifted steps for the dark canvas */
+  --gold: #fbbf24;
+  --gold-deep: #fcd34d;
+  --gold-tint: rgba(251, 191, 36, 0.13);
 
-  --plum: #a6a49d;
-  --plum-tint: rgba(166, 164, 157, 0.12);
+  --sage: #34c0b4;
+  --sage-deep: #7ee0d8;
+  --sage-tint: rgba(45, 212, 191, 0.12);
 
-  --mauve: #a6a49d;
-  --mauve-deep: #c9c7c0;
-  --mauve-tint: rgba(166, 164, 157, 0.12);
+  --plum: #8b90f0;
+  --plum-tint: rgba(139, 144, 240, 0.12);
 
-  --slate: #a6a49d;
-  --slate-deep: #c9c7c0;
-  --slate-tint: rgba(166, 164, 157, 0.12);
+  --mauve: #8b90f0;
+  --mauve-deep: #b3b6f7;
+  --mauve-tint: rgba(139, 144, 240, 0.12);
 
-  --violet: #a6a49d;
-  --violet-deep: #c9c7c0;
-  --violet-tint: rgba(166, 164, 157, 0.12);
+  --slate: #9aa5bd;
+  --slate-deep: #c3cbdd;
+  --slate-tint: rgba(154, 165, 189, 0.12);
+
+  --violet: #8b90f0;
+  --violet-deep: #b3b6f7;
+  --violet-tint: rgba(139, 144, 240, 0.12);
 
   --clay: #fbbf24;
   --clay-deep: #fcd34d;
   --clay-tint: rgba(251, 191, 36, 0.13);
 
   /* semantic raws */
-  --bg-deep: #141312;
-  --surface-raised: #262522;
-  --surface-recessed: #262522;
-  --surface-sunken: #2e2d29;
+  --bg-deep: #0b0e14;
+  --surface-raised: #1b2130;
+  --surface-recessed: #1b2130;
+  --surface-sunken: #202a3d;
 
   --ink: var(--text);
   --ink-soft: var(--text-secondary);
   --ink-faint: var(--text-muted);
-  --ink-faintest: #6b6962;
+  --ink-faintest: #5c6478;
 
   --line: var(--border);
-  --line-soft: #2b2a26;
+  --line-soft: #232a38;
   --line-strong: var(--text);
 
   --danger: #dc2626;
@@ -397,9 +407,9 @@
   --warn-tint: rgba(251, 191, 36, 0.13);
 
   /* evidence washes */
-  --excerpt-wash: rgba(236, 234, 229, 0.07);
-  --best-match: rgba(236, 234, 229, 0.16);
-  --best-match-ring: rgba(236, 234, 229, 0.16);
+  --excerpt-wash: rgba(126, 166, 245, 0.1);
+  --best-match: rgba(126, 166, 245, 0.16);
+  --best-match-ring: rgba(126, 166, 245, 0.16);
 
   /* depth */
   --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.4);
@@ -408,38 +418,38 @@
   --shadow-overlay: 0 8px 28px rgba(0, 0, 0, 0.45), 0 24px 64px rgba(0, 0, 0, 0.55);
 
   /* aliases — dark steps */
-  --type-video: #a6a49d;
-  --type-video-soft: rgba(166, 164, 157, 0.12);
-  --type-pdf: #a6a49d;
-  --type-pdf-soft: rgba(166, 164, 157, 0.12);
-  --type-web: #a6a49d;
-  --type-web-soft: rgba(166, 164, 157, 0.12);
-  --type-audio: #a6a49d;
-  --type-audio-soft: rgba(166, 164, 157, 0.12);
-  --type-paper: #a6a49d;
-  --type-paper-soft: rgba(166, 164, 157, 0.12);
-  --type-note: #a6a49d;
-  --type-note-soft: rgba(166, 164, 157, 0.12);
+  --type-video: #34c0b4;
+  --type-video-soft: rgba(45, 212, 191, 0.12);
+  --type-pdf: #8b90f0;
+  --type-pdf-soft: rgba(139, 144, 240, 0.12);
+  --type-web: #60a5fa;
+  --type-web-soft: rgba(96, 165, 250, 0.12);
+  --type-audio: #fbbf24;
+  --type-audio-soft: rgba(251, 191, 36, 0.13);
+  --type-paper: #9aa5bd;
+  --type-paper-soft: rgba(154, 165, 189, 0.12);
+  --type-note: #fbbf24;
+  --type-note-soft: rgba(251, 191, 36, 0.13);
   --type-ai: var(--primary-ink);
   --type-ai-soft: var(--primary-tint);
   --type-insight: var(--primary-ink);
   --type-insight-soft: var(--primary-tint);
 
   --cite-source: var(--primary-ink);
-  --cite-source-deep: var(--primary);
-  --cite-note: #c9c7c0;
-  --cite-note-deep: #e2e0da;
-  --cite-derived: #a6a49d;
-  --cite-derived-deep: #c9c7c0;
-  --cite-external: #85837c;
-  --cite-external-deep: #a6a49d;
-  --cite-synthesis: #85837c;
+  --cite-source-deep: #9dbcfa;
+  --cite-note: #c3cbdd;
+  --cite-note-deep: #d8dde9;
+  --cite-derived: #9aa5bd;
+  --cite-derived-deep: #c3cbdd;
+  --cite-external: #5c6478;
+  --cite-external-deep: #7c87a0;
+  --cite-synthesis: #5c6478;
   --cite-warn: var(--clay);
 
   --ctx-full: var(--primary-ink);
   --ctx-full-tint: var(--primary-tint);
-  --ctx-insights: #a6a49d;
-  --ctx-insights-tint: rgba(166, 164, 157, 0.12);
+  --ctx-insights: #7c87a0;
+  --ctx-insights-tint: rgba(154, 165, 189, 0.12);
   --ctx-off-ink: var(--ink-faint);
   --ctx-off-bg: var(--surface-recessed);
 
@@ -450,7 +460,7 @@
   --sidebar-accent: var(--surface-raised);
   --sidebar-accent-foreground: var(--text);
   --sidebar-border: var(--line);
-  --sidebar-ring: var(--primary);
+  --sidebar-ring: #60a5fa;
 }
 
 @layer base {

@@ -93,6 +93,12 @@ function SourceTypeIcon({ type, className }: { type: SourceType; className?: str
   return <FileText className={className} aria-hidden="true" />
 }
 
+function getSourceTypeTileClass(type: SourceType) {
+  if (type === 'link') return 'bg-type-web-soft text-type-web'
+  if (type === 'file') return 'bg-type-pdf-soft text-type-pdf'
+  return 'bg-type-note-soft text-type-note'
+}
+
 interface SourceTileProps {
   source: SourceListResponse
   onDelete: () => void
@@ -112,10 +118,10 @@ function SourceTile({ source, onDelete }: SourceTileProps) {
     >
       <div className="flex items-start gap-3.5">
         <div
-          className="flex size-11 shrink-0 items-center justify-center rounded-lg border bg-popover"
+          className={cn('flex size-11 shrink-0 items-center justify-center rounded-lg border', getSourceTypeTileClass(type))}
           aria-hidden="true"
         >
-          <SourceTypeIcon type={type} className="h-5 w-5 text-foreground/70" />
+          <SourceTypeIcon type={type} className="h-5 w-5" />
         </div>
 
         <div className="min-w-0 flex-1">

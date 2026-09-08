@@ -50,10 +50,10 @@ export function NotebookCard({ notebook }: NotebookCardProps) {
       >
         <div className="flex items-start gap-3.5">
           <div
-            className="flex size-11 shrink-0 items-center justify-center rounded-lg border bg-popover"
+            className="flex size-11 shrink-0 items-center justify-center rounded-lg border bg-primary-tint"
             aria-hidden="true"
           >
-            <FileText className="h-5 w-5 text-foreground/70" />
+            <FileText className="h-5 w-5 text-primary-ink" />
           </div>
 
           <div className="min-w-0 flex-1">

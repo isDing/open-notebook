@@ -53,4 +53,6 @@ What this makes easier, what it makes harder, what to watch. (bullets)
 | [PDR-002](PDR-002-provider-agnostic-core.md) | Provider-agnostic core by default | Accepted |
 | [PDR-003](PDR-003-mobile-layout.md) | Mobile-capable layout by default; desktop (lg+) is the reference experience | Accepted |
 | [PDR-004](PDR-004-visual-language.md) | Visual language v2 — neutral surfaces, one accent, typography-led hierarchy | Superseded (accent rule) by PDR-005 |
-| [PDR-005](PDR-005-warm-neutral-visual-language.md) | Visual language v3 — warm neutral palette, dark neutral primary, no saturated color | Accepted |
+| [PDR-005](PDR-005-warm-neutral-visual-language.md) | Visual language v3 — warm neutral palette, dark neutral primary, no saturated color | Accepted (palette superseded by PDR-006 → PDR-007; structural rules remain) |
+| [PDR-006](PDR-006-palette-retune-neutral.md) | Palette retune — neutral ramp matched to the reference screenshot | Superseded by PDR-007 |
+| [PDR-007](PDR-007-blue-accent-visual-language.md) | Palette v4 — cool slate canvas with one blue accent | Accepted |

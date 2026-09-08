@@ -64,10 +64,10 @@ import { Progress } from "@/components/ui/progress"
 import { Checkbox } from "@/components/ui/checkbox"
 
 const SEMANTIC = [
-  ["--primary", "primary — dark neutral voice: actions, active, AI"],
+  ["--primary", "primary — dark slate voice: buttons, actions"],
   ["--primary-hover", "primary-hover — pressed state"],
-  ["--primary-ink", "primary-ink — primary text (steps up in dark)"],
-  ["--primary-tint", "primary-tint — selected/active wash"],
+  ["--primary-ink", "primary-ink — blue accent: active, links, AI"],
+  ["--primary-tint", "primary-tint — blue accent wash"],
   ["--danger", "danger — destructive only"],
   ["--warn", "warn — pending, degraded, caution"],
 ] as const
@@ -147,11 +147,13 @@ function Sheet() {
       <header className="mb-2 flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">
-            Warm Neutral — design foundation v3
+            Cool Slate + Blue Accent — design foundation v4
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            warm neutral canvas · primary is a dark neutral, not a hue ·
-            red destroys · amber warns · no other saturated color ·
+            cool slate canvas · primary is a dark slate button voice ·
+            one blue accent: brand, active, links, AI ·
+            content types wear teal / violet / amber ·
+            red destroys · amber warns ·
             1px soft borders, gentle shadows · whitespace over separators ·
             8–16px · one typeface, restrained weight · quick, quiet motion
           </p>
@@ -472,7 +474,7 @@ function Sheet() {
       <Separator className="my-10" />
       <p className="text-xs text-muted-foreground">
         Canonical tokens: <span className="font-mono">frontend/src/app/globals.css</span> ·
-        rationale: <span className="font-mono">docs/7-DEVELOPMENT/decisions/PDR-005-warm-neutral-visual-language.md</span>
+        rationale: <span className="font-mono">docs/7-DEVELOPMENT/decisions/PDR-007-blue-accent-visual-language.md</span>
       </p>
     </div>
   )
