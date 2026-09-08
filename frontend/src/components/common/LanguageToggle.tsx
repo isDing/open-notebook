@@ -23,10 +23,10 @@ export function LanguageToggle({ iconOnly = false }: LanguageToggleProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button 
-          variant={iconOnly ? "ghost" : "outline"} 
-          size={iconOnly ? "icon" : "default"} 
-          className={iconOnly ? "h-9 w-full sidebar-menu-item" : "w-full justify-start gap-2 sidebar-menu-item"}
+        <Button
+          variant="ghost"
+          size={iconOnly ? "icon" : "default"}
+          className={iconOnly ? "h-9 w-full sidebar-menu-item" : "h-10 w-full justify-start gap-2.5 sidebar-menu-item"}
         >
           <Languages className="h-[1.2rem] w-[1.2rem]" />
           {!iconOnly && <span>{t('common.language')}</span>}

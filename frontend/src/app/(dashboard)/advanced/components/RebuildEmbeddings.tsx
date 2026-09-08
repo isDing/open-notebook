@@ -272,19 +272,19 @@ export function RebuildEmbeddings() {
               <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">{t('navigation.sources')}</p>
-                  <p className="font-mono text-2xl font-bold">{sourcesProcessed}</p>
+                  <p className="font-mono text-2xl font-semibold">{sourcesProcessed}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">{t('common.notes')}</p>
-                  <p className="font-mono text-2xl font-bold">{notesProcessed}</p>
+                  <p className="font-mono text-2xl font-semibold">{notesProcessed}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">{t('common.insights')}</p>
-                  <p className="font-mono text-2xl font-bold">{insightsProcessed}</p>
+                  <p className="font-mono text-2xl font-semibold">{insightsProcessed}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">{t('advanced.rebuild.time')}</p>
-                  <p className="font-mono text-2xl font-bold">
+                  <p className="font-mono text-2xl font-semibold">
                     {processingTimeSeconds !== undefined ? `${processingTimeSeconds.toFixed(1)}s` : '—'}
                   </p>
                 </div>

@@ -73,8 +73,8 @@ export function NotebookHeader({ notebook }: NotebookHeaderProps) {
               name="notebook-name"
               value={notebook.name}
               onSave={handleUpdateName}
-              className="min-w-0 font-display text-xl font-bold tracking-tight sm:text-2xl"
-              inputClassName="font-display text-xl font-bold tracking-tight sm:text-2xl"
+              className="min-w-0 font-display text-xl font-semibold tracking-tight sm:text-2xl"
+              inputClassName="font-display text-xl font-semibold tracking-tight sm:text-2xl"
               placeholder={t('notebooks.namePlaceholder')}
             />
             {notebook.archived && (

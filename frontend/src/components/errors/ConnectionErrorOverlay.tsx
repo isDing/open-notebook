@@ -41,7 +41,7 @@ export function ConnectionErrorOverlay({
             <Database className="w-12 h-12 text-destructive" aria-hidden="true" />
           )}
           <div>
-            <h1 className="text-2xl font-bold" id="error-title">
+            <h1 className="text-2xl font-semibold" id="error-title">
               {isApiError
                 ? t('connectionErrors.apiTitle')
                 : t('connectionErrors.dbTitle')}

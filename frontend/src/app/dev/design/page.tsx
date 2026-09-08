@@ -1,6 +1,6 @@
 "use client"
 
-// Living styleguide for the "Signal on Neutral" design foundation (v2).
+// Living styleguide for the "Warm Neutral" design foundation (v3).
 // Dev-only: returns 404 in production builds. Not translated on purpose —
 // this is an internal spec artifact, not user-facing UI.
 
@@ -64,10 +64,10 @@ import { Progress } from "@/components/ui/progress"
 import { Checkbox } from "@/components/ui/checkbox"
 
 const SEMANTIC = [
-  ["--primary", "primary — the one accent: actions, active, AI"],
+  ["--primary", "primary — dark neutral voice: actions, active, AI"],
   ["--primary-hover", "primary-hover — pressed state"],
-  ["--primary-ink", "primary-ink — accent text (steps up in dark)"],
-  ["--primary-tint", "primary-tint — active washes"],
+  ["--primary-ink", "primary-ink — primary text (steps up in dark)"],
+  ["--primary-tint", "primary-tint — selected/active wash"],
   ["--danger", "danger — destructive only"],
   ["--warn", "warn — pending, degraded, caution"],
 ] as const
@@ -96,10 +96,10 @@ const SHADOWS = [
 ] as const
 
 const RADII = [
-  ["--radius-sm", "sm 6px — chips, small buttons"],
-  ["--radius-md", "md 8px — controls, inputs"],
-  ["--radius-lg", "lg 10px — cards, popovers"],
-  ["--radius-xl", "xl 12px — dialogs, panels"],
+  ["--radius-sm", "sm 8px — chips, small buttons"],
+  ["--radius-md", "md 12px — controls, inputs"],
+  ["--radius-lg", "lg 14px — popovers"],
+  ["--radius-xl", "xl 16px — cards, dialogs"],
 ] as const
 
 const TYPE_HUES = [
@@ -117,7 +117,7 @@ const CITE_CLASSES = ["source", "note", "derived", "external"] as const
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="text-xl font-bold tracking-tight mt-10 mb-4">
+    <h2 className="text-xl font-semibold tracking-tight mt-10 mb-4">
       {children}
     </h2>
   )
@@ -146,14 +146,14 @@ function Sheet() {
     <div className="bg-background text-foreground p-8">
       <header className="mb-2 flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">
-            Signal on Neutral — design foundation v2
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Warm Neutral — design foundation v3
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            neutral carries the interface · one accent speaks (actions, active, AI) ·
-            red destroys · amber warns · nothing else is colored ·
-            hairline borders, near-zero shadows · 6–12px · one typeface ·
-            quick, quiet motion
+            warm neutral canvas · primary is a dark neutral, not a hue ·
+            red destroys · amber warns · no other saturated color ·
+            1px soft borders, gentle shadows · whitespace over separators ·
+            8–16px · one typeface, restrained weight · quick, quiet motion
           </p>
         </div>
         <Button
@@ -166,7 +166,7 @@ function Sheet() {
         </Button>
       </header>
 
-      <SectionTitle>The accent</SectionTitle>
+      <SectionTitle>Primary &amp; semantics</SectionTitle>
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
         {SEMANTIC.map(([v, label]) => (
           <Swatch key={v} varName={v} label={label} />
@@ -189,8 +189,8 @@ function Sheet() {
 
       <SectionTitle>Typography</SectionTitle>
       <div className="space-y-3">
-        <div className="text-2xl font-bold tracking-tight">
-          Display — Instrument Sans 700
+        <div className="text-2xl font-semibold tracking-tight">
+          Display — Instrument Sans 600
         </div>
         <div className="text-base font-semibold">
           Headings &amp; emphasis — Instrument Sans 600
@@ -207,7 +207,7 @@ function Sheet() {
         </div>
       </div>
 
-      <SectionTitle>Content-type hues (dots, ticks, chips — monochrome; AI is the accent)</SectionTitle>
+      <SectionTitle>Content-type hues (dots, ticks, chips — monochrome; AI carries the primary voice)</SectionTitle>
       <div className="flex flex-wrap gap-2">
         {TYPE_HUES.map((t) => (
           <span
@@ -326,8 +326,8 @@ function Sheet() {
           <CardHeader>
             <CardTitle>Attention is all you need</CardTitle>
             <CardDescription>
-              Hairline border, no default shadow — surfaces separate with
-              lines, not depth.
+              1px soft border, 16px corners, no default shadow — surfaces
+              separate with lines and whitespace, not depth.
             </CardDescription>
           </CardHeader>
           <CardContent className="text-sm">
@@ -359,7 +359,7 @@ function Sheet() {
           <TabsTrigger value="chat">Chat</TabsTrigger>
         </TabsList>
         <TabsContent value="content" className="pt-3 text-sm text-muted-foreground">
-          Underline tabs — the active one carries the accent spine.
+          Underline tabs — the active one carries the dark spine.
         </TabsContent>
         <TabsContent value="insights" className="pt-3 text-sm text-muted-foreground">
           Insights speak with the accent voice.
@@ -409,9 +409,9 @@ function Sheet() {
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle>Rename notebook</DialogTitle>
-              <DialogDescription>
-                Overlays use the one real shadow and 12px corners.
-              </DialogDescription>
+                <DialogDescription>
+                  Overlays use the strongest shadow and 16px corners.
+                </DialogDescription>
             </DialogHeader>
             <Input placeholder="Notebook name" />
             <DialogFooter>
@@ -472,7 +472,7 @@ function Sheet() {
       <Separator className="my-10" />
       <p className="text-xs text-muted-foreground">
         Canonical tokens: <span className="font-mono">frontend/src/app/globals.css</span> ·
-        rationale: <span className="font-mono">docs/7-DEVELOPMENT/decisions/PDR-004-visual-language.md</span>
+        rationale: <span className="font-mono">docs/7-DEVELOPMENT/decisions/PDR-005-warm-neutral-visual-language.md</span>
       </p>
     </div>
   )

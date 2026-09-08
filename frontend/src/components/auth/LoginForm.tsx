@@ -143,7 +143,7 @@ export function LoginForm() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <LogoMark className="mx-auto mb-4 size-9 rounded-lg" />
-          <CardTitle className="text-xl font-bold tracking-tight">{t('common.appName')}</CardTitle>
+          <CardTitle className="text-xl font-semibold tracking-tight">{t('common.appName')}</CardTitle>
           <CardDescription>
             {t('auth.loginDesc')}
           </CardDescription>

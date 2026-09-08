@@ -416,8 +416,8 @@ function SourceDetailContentInner({
             <InlineEdit
               value={source.title || ''}
               onSave={handleUpdateTitle}
-              className="min-w-0 text-xl font-bold sm:text-2xl"
-              inputClassName="text-xl font-bold sm:text-2xl"
+              className="min-w-0 text-xl font-semibold sm:text-2xl"
+              inputClassName="text-xl font-semibold sm:text-2xl"
               placeholder={t('sources.titlePlaceholder')}
               emptyText={t('sources.untitledSource')}
             />

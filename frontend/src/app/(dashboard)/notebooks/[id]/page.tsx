@@ -128,7 +128,7 @@ export default function NotebookPage() {
     return (
       <AppShell>
         <div className="p-6">
-          <h1 className="text-2xl font-bold mb-4">{t('notebooks.notFound')}</h1>
+          <h1 className="text-2xl font-semibold mb-4">{t('notebooks.notFound')}</h1>
           <p className="text-muted-foreground">{t('notebooks.notFoundDesc')}</p>
         </div>
       </AppShell>

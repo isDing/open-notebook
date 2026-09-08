@@ -88,7 +88,7 @@ const getNavigation = (t: TFunction): Array<{ title: string; items: NavigationIt
 export function LogoMark({ className }: { className?: string }) {
   return (
     <span
-      className={cn('flex size-[22px] shrink-0 items-center justify-center rounded-[6px] bg-primary', className)}
+      className={cn('flex size-[22px] shrink-0 items-center justify-center rounded-md bg-primary', className)}
       aria-hidden="true"
     >
       <span className="flex flex-col gap-[3px]">
@@ -280,7 +280,7 @@ export function AppSidebar() {
             <>
               <div className="flex min-w-0 items-center gap-2.5">
                 <LogoMark />
-                <span className="truncate text-[15px] font-bold tracking-tight text-sidebar-foreground">
+                 <span className="truncate text-[15px] font-semibold tracking-tight text-sidebar-foreground">
                   {t('common.appName')}
                 </span>
               </div>
@@ -312,7 +312,7 @@ export function AppSidebar() {
             <>
               <div className="flex items-center gap-2.5">
                 <LogoMark />
-                <span className="text-[15px] font-bold tracking-tight text-sidebar-foreground">
+                <span className="text-[15px] font-semibold tracking-tight text-sidebar-foreground">
                   {t('common.appName')}
                 </span>
               </div>
@@ -349,11 +349,10 @@ export function AppSidebar() {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="default"
-                        size="sm"
-                        className="w-full justify-center px-2 font-semibold"
-                        aria-label={t('common.create')}
+                        <Button
+                          variant="secondary"
+                          className="w-full justify-center bg-selected px-2 hover:bg-hover"
+                         aria-label={t('common.create')}
                       >
                         <Plus className="h-4 w-4" />
                       </Button>
@@ -363,13 +362,12 @@ export function AppSidebar() {
                 </Tooltip>
               ) : (
                 <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="default"
-                    size="sm"
-                    className={cn(
-                      'w-full justify-start font-semibold',
-                      isDrawer && 'min-h-11 touch-manipulation'
-                    )}
+                    <Button
+                      variant="secondary"
+                      className={cn(
+                        'w-full justify-start bg-selected hover:bg-hover',
+                        isDrawer && 'min-h-11 touch-manipulation'
+                      )}
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     {t('common.create')}
@@ -418,10 +416,8 @@ export function AppSidebar() {
 
           {navigation.map((section, index) => (
             <div key={section.title}>
-              {index > 0 && (
-                <Separator className="my-3" />
-              )}
-              <div className="space-y-1">
+              {index > 0 && <Separator className="my-4" />}
+              <div className="space-y-1.5">
                 {!collapsed && (
                   <h3 className="mb-1.5 px-3 text-2xs font-semibold uppercase tracking-[0.1em] text-foreground/45">
                     {section.title}
@@ -435,8 +431,8 @@ export function AppSidebar() {
                       asChild
                       variant="ghost"
                       className={cn(
-                        'relative w-full min-w-0 gap-2.5 rounded-md text-[13px] font-medium text-muted-foreground sidebar-menu-item hover:bg-sidebar-accent hover:text-foreground',
-                        isActive && 'bg-primary-tint font-semibold text-primary-ink hover:bg-primary-tint hover:text-primary-ink',
+                          'relative h-10 w-full min-w-0 gap-2.5 rounded-md text-sm font-medium text-muted-foreground sidebar-menu-item hover:bg-sidebar-accent hover:text-foreground',
+                        isActive && 'bg-primary-tint text-primary-ink hover:bg-primary-tint hover:text-primary-ink',
                         collapsed ? 'justify-center px-2' : 'justify-start',
                         isDrawer && 'min-h-11 touch-manipulation'
                       )}
@@ -529,7 +525,7 @@ export function AppSidebar() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   className="w-full justify-center sidebar-menu-item"
                   onClick={logout}
                   aria-label={t('common.signOut')}
@@ -541,8 +537,8 @@ export function AppSidebar() {
             </Tooltip>
           ) : (
             <Button
-              variant="outline"
-              className="w-full justify-start gap-3 sidebar-menu-item"
+              variant="ghost"
+              className="h-10 w-full justify-start gap-2.5 sidebar-menu-item"
               onClick={logout}
               aria-label={t('common.signOut')}
              >

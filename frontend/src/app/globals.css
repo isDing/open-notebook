@@ -5,15 +5,17 @@
 @variant dark (&:where(.dark, .dark *));
 
 /* ============================================================================
-   OPEN NOTEBOOK — DESIGN FOUNDATION v2 ("Signal on Neutral")
+   OPEN NOTEBOOK — DESIGN FOUNDATION v3 ("Warm Neutral")
 
    The laws, in one breath:
-     neutral carries the interface · one accent speaks (actions, active, AI)
-     red destroys · amber warns · nothing else is colored
-     hairline borders, near-zero shadows — overlays own the one real shadow
-     geometry is soft-squared, 6–12px · one typeface, hierarchy by weight & size
+     a warm neutral canvas · primary is a dark neutral, not a hue
+     red destroys · amber warns · no other saturated color
+     1px soft borders · whitespace over separators · gentle shadows
+     geometry 8–16px (12px controls · 16px cards) · one typeface,
+     hierarchy by restrained weight & size
      motion is quick and quiet: opacity, small travel, nothing else
 
+   Supersedes v2's indigo accent (see PDR-005).
    Layering: raw palette + semantic raws live in :root and are overridden by
    `.dark`; every alias defined with var() re-resolves automatically — never
    duplicate aliases into the dark block.
@@ -60,7 +62,7 @@
   --color-card: var(--card);
 
   /* hue aliases — legacy names kept for existing components.
-     teal & fern carry the accent voice; the rest are neutral. */
+     teal & fern now render as the neutral primary voice; the rest are warm grays. */
   --color-fern: var(--fern);
   --color-fern-deep: var(--fern-deep);
   --color-fern-tint: var(--fern-tint);
@@ -127,13 +129,13 @@
   --text-2xs: 0.6875rem;
   --text-2xs--line-height: 1rem;
 
-  /* shape — soft-squared: 6–12px, calm not toy */
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 10px;
-  --radius-xl: 12px;
+  /* shape — soft-squared: 8–16px; controls 12px, cards & dialogs 16px */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 14px;
+  --radius-xl: 16px;
 
-  /* depth — hairlines separate; overlays own the one real shadow */
+  /* depth — gentle; overlays own the strongest shadow */
   --shadow-soft: var(--shadow-soft);
   --shadow-lift: var(--shadow-lift);
   --shadow-pop: var(--shadow-pop);
@@ -142,69 +144,77 @@
 
 :root {
   /* --------------------------------------------------------------
-     the accent — one voice for actions, active states and AI
+     spec palette — warm neutrals (PDR-005)
      -------------------------------------------------------------- */
-  --primary: #4f46e5;
-  --primary-hover: #4338ca;
-  --primary-ink: #4f46e5;
-  --primary-tint: #eef2ff;
+  --bg: #fafaf9;
+  --surface: #ffffff;
+  --text: #1c1b19;
+  --text-secondary: #6f6d68;
+  --text-muted: #9a9892;
+  --border: #e8e6e1;
+  --hover: #f5f4f1;
+  --selected: #eeece7;
+  --primary: #29261f;
+
+  /* primary steps — dark neutral voice for actions, active, AI */
+  --primary-hover: #3e3b32;
+  --primary-ink: var(--text);
+  --primary-tint: var(--selected);
   --on-primary: #ffffff;
 
-  /* legacy hue names, re-mapped onto the new system */
+  /* legacy hue names — teal & fern now carry the neutral primary voice */
   --teal: var(--primary-ink);
-  --teal-deep: var(--primary-hover);
+  --teal-deep: var(--primary);
   --teal-tint: var(--primary-tint);
 
   --fern: var(--primary-ink);
-  --fern-deep: var(--primary-hover);
+  --fern-deep: var(--primary);
   --fern-tint: var(--primary-tint);
 
-  /* neutrals that used to be hues */
-  --gold: #71717a;
-  --gold-deep: #52525b;
-  --gold-tint: #f4f4f5;
+  /* neutrals that used to be hues — warm gray steps */
+  --gold: #9a9892;
+  --gold-deep: #6f6d68;
+  --gold-tint: #f5f4f1;
 
-  --sage: #71717a;
-  --sage-deep: #52525b;
-  --sage-tint: #f4f4f5;
+  --sage: #9a9892;
+  --sage-deep: #6f6d68;
+  --sage-tint: #f5f4f1;
 
-  --plum: #71717a;
-  --plum-tint: #f4f4f5;
+  --plum: #9a9892;
+  --plum-tint: #f5f4f1;
 
-  --mauve: #71717a;
-  --mauve-deep: #52525b;
-  --mauve-tint: #f4f4f5;
+  --mauve: #9a9892;
+  --mauve-deep: #6f6d68;
+  --mauve-tint: #f5f4f1;
 
-  --slate: #52525b;
-  --slate-deep: #3f3f46;
-  --slate-tint: #f4f4f5;
+  --slate: #6f6d68;
+  --slate-deep: #4a4843;
+  --slate-tint: #f5f4f1;
 
-  --violet: #71717a;
-  --violet-deep: #52525b;
-  --violet-tint: #f4f4f5;
+  --violet: #9a9892;
+  --violet-deep: #6f6d68;
+  --violet-tint: #f5f4f1;
 
   --clay: #b45309;
   --clay-deep: #92400e;
   --clay-tint: #fffbeb;
 
   /* --------------------------------------------------------------
-     semantic raws — surfaces, ink, hairlines, action, danger
+     semantic raws — surfaces, ink, hairlines, danger, warn
      -------------------------------------------------------------- */
-  --bg: #fafafa;
-  --bg-deep: #f4f4f5;
-  --surface: #ffffff;
-  --surface-raised: #ffffff;
-  --surface-recessed: #f4f4f5;
-  --surface-sunken: #eeeeef;
+  --bg-deep: var(--hover);
+  --surface-raised: var(--surface);
+  --surface-recessed: var(--hover);
+  --surface-sunken: var(--selected);
 
-  --ink: #18181b;
-  --ink-soft: #52525b;
-  --ink-faint: #71717a;
-  --ink-faintest: #a1a1aa;
+  --ink: var(--text);
+  --ink-soft: var(--text-secondary);
+  --ink-faint: var(--text-muted);
+  --ink-faintest: #c4c2bc;
 
-  --line: #e4e4e7;
-  --line-soft: #ececef;
-  --line-strong: #18181b;
+  --line: var(--border);
+  --line-soft: #f1efeb;
+  --line-strong: var(--text);
 
   --danger: #dc2626;
   --danger-deep: #b91c1c;
@@ -215,53 +225,53 @@
   --warn-tint: #fffbeb;
 
   /* evidence washes — the one sanctioned tinted text bg */
-  --excerpt-wash: #f3f4fe;
-  --best-match: rgba(79, 70, 229, 0.14);
-  --best-match-ring: rgba(79, 70, 229, 0.14);
+  --excerpt-wash: #f7f6f2;
+  --best-match: rgba(41, 38, 31, 0.12);
+  --best-match-ring: rgba(41, 38, 31, 0.12);
 
-  /* depth — minimal, soft, cool */
-  --shadow-soft: 0 1px 2px rgba(24, 24, 27, 0.04);
-  --shadow-lift: 0 1px 3px rgba(24, 24, 27, 0.07);
-  --shadow-pop: 0 2px 4px rgba(24, 24, 27, 0.05), 0 8px 24px rgba(24, 24, 27, 0.1);
-  --shadow-overlay: 0 2px 8px rgba(24, 24, 27, 0.06), 0 16px 48px rgba(24, 24, 27, 0.14);
+  /* depth — gentle; overlays own the strongest shadow */
+  --shadow-soft: 0 1px 2px rgba(28, 27, 25, 0.03);
+  --shadow-lift: 0 4px 20px rgba(0, 0, 0, 0.04);
+  --shadow-pop: 0 4px 20px rgba(0, 0, 0, 0.04), 0 12px 32px rgba(0, 0, 0, 0.05);
+  --shadow-overlay: 0 8px 28px rgba(0, 0, 0, 0.06), 0 24px 64px rgba(0, 0, 0, 0.1);
 
   /* --------------------------------------------------------------
      aliases — re-resolve automatically in dark; defined once
      -------------------------------------------------------------- */
   /* content-type hues — monochrome; icons carry the distinction */
-  --type-video: #71717a;
+  --type-video: #8a8780;
   --type-video-soft: var(--surface-recessed);
-  --type-pdf: #71717a;
+  --type-pdf: #8a8780;
   --type-pdf-soft: var(--surface-recessed);
-  --type-web: #71717a;
+  --type-web: #8a8780;
   --type-web-soft: var(--surface-recessed);
-  --type-audio: #71717a;
+  --type-audio: #8a8780;
   --type-audio-soft: var(--surface-recessed);
-  --type-paper: #71717a;
+  --type-paper: #8a8780;
   --type-paper-soft: var(--surface-recessed);
-  --type-note: #71717a;
+  --type-note: #8a8780;
   --type-note-soft: var(--surface-recessed);
   --type-ai: var(--primary-ink);
   --type-ai-soft: var(--primary-tint);
   --type-insight: var(--primary-ink);
   --type-insight-soft: var(--primary-tint);
 
-  /* evidence classes — accent for sources, neutral steps for the rest */
+  /* evidence classes — primary for sources, neutral steps for the rest */
   --cite-source: var(--primary-ink);
-  --cite-source-deep: var(--primary-hover);
-  --cite-note: #52525b;
-  --cite-note-deep: #3f3f46;
-  --cite-derived: #71717a;
-  --cite-derived-deep: #52525b;
-  --cite-external: #a1a1aa;
-  --cite-external-deep: #71717a;
-  --cite-synthesis: #a1a1aa;
+  --cite-source-deep: var(--primary);
+  --cite-note: var(--text-secondary);
+  --cite-note-deep: #4a4843;
+  --cite-derived: var(--text-muted);
+  --cite-derived-deep: var(--text-secondary);
+  --cite-external: var(--ink-faintest);
+  --cite-external-deep: var(--text-muted);
+  --cite-synthesis: var(--ink-faintest);
   --cite-warn: var(--clay);
 
   /* context states */
   --ctx-full: var(--primary-ink);
   --ctx-full-tint: var(--primary-tint);
-  --ctx-insights: #71717a;
+  --ctx-insights: var(--text-muted);
   --ctx-insights-tint: var(--surface-recessed);
   --ctx-off-ink: var(--ink-faint);
   --ctx-off-bg: var(--surface-recessed);
@@ -274,35 +284,34 @@
   /* --------------------------------------------------------------
      shadcn semantic slots — the contract existing components use
      -------------------------------------------------------------- */
-  --radius: 8px;
+  --radius: 12px;
   --background: var(--bg);
-  --foreground: var(--ink);
+  --foreground: var(--text);
   --card: var(--surface);
-  --card-foreground: var(--ink);
+  --card-foreground: var(--text);
   --popover: var(--surface-raised);
-  --popover-foreground: var(--ink);
+  --popover-foreground: var(--text);
   --primary-foreground: var(--on-primary);
   --secondary: var(--surface-recessed);
-  --secondary-foreground: var(--ink);
+  --secondary-foreground: var(--text);
   --muted: var(--surface-recessed);
   --muted-foreground: var(--ink-soft);
   --accent: var(--surface-sunken);
-  --accent-foreground: var(--ink);
+  --accent-foreground: var(--text);
   --destructive: var(--danger);
-  --border: var(--line);
   --input: var(--line);
   --ring: var(--primary);
   --chart-1: var(--primary);
-  --chart-2: #52525b;
-  --chart-3: #71717a;
-  --chart-4: #a1a1aa;
-  --chart-5: #3f3f46;
-  --sidebar: var(--bg-deep);
-  --sidebar-foreground: var(--ink);
+  --chart-2: #4a4843;
+  --chart-3: #8a8780;
+  --chart-4: #b5b3ac;
+  --chart-5: #29261f;
+  --sidebar: var(--bg);
+  --sidebar-foreground: var(--text);
   --sidebar-primary: var(--primary);
   --sidebar-primary-foreground: var(--on-primary);
-  --sidebar-accent: var(--surface);
-  --sidebar-accent-foreground: var(--ink);
+  --sidebar-accent: var(--hover);
+  --sidebar-accent-foreground: var(--text);
   --sidebar-border: var(--line);
   --sidebar-ring: var(--primary);
 }
@@ -311,65 +320,73 @@
    DARK — overrides raw layers only; var() aliases re-resolve on their own
    ========================================================================== */
 .dark {
-  /* accent — fills stay saturated, text steps up a shade for contrast */
-  --primary: #6366f1;
-  --primary-hover: #818cf8;
-  --primary-ink: #818cf8;
-  --primary-tint: rgba(99, 102, 241, 0.16);
-  --on-primary: #ffffff;
+  /* spec palette — warm neutrals, dark steps */
+  --bg: #191817;
+  --surface: #201f1d;
+  --text: #eceae5;
+  --text-secondary: #a6a49d;
+  --text-muted: #85837c;
+  --border: #34332e;
+  --hover: #262522;
+  --selected: #2e2d29;
+  --primary: #eceae5;
+
+  /* primary steps — light neutral voice on the dark canvas */
+  --primary-hover: #dddad3;
+  --primary-ink: var(--text);
+  --primary-tint: var(--selected);
+  --on-primary: #1c1b19;
 
   --teal: var(--primary-ink);
-  --teal-deep: #a5b4fc;
+  --teal-deep: var(--primary);
   --teal-tint: var(--primary-tint);
 
   --fern: var(--primary-ink);
-  --fern-deep: #a5b4fc;
+  --fern-deep: var(--primary);
   --fern-tint: var(--primary-tint);
 
-  /* neutrals */
-  --gold: #a1a1aa;
-  --gold-deep: #d4d4d8;
-  --gold-tint: rgba(161, 161, 170, 0.12);
+  /* neutrals that used to be hues — warm gray steps */
+  --gold: #a6a49d;
+  --gold-deep: #c9c7c0;
+  --gold-tint: rgba(166, 164, 157, 0.12);
 
-  --sage: #a1a1aa;
-  --sage-deep: #d4d4d8;
-  --sage-tint: rgba(161, 161, 170, 0.12);
+  --sage: #a6a49d;
+  --sage-deep: #c9c7c0;
+  --sage-tint: rgba(166, 164, 157, 0.12);
 
-  --plum: #a1a1aa;
-  --plum-tint: rgba(161, 161, 170, 0.12);
+  --plum: #a6a49d;
+  --plum-tint: rgba(166, 164, 157, 0.12);
 
-  --mauve: #a1a1aa;
-  --mauve-deep: #d4d4d8;
-  --mauve-tint: rgba(161, 161, 170, 0.12);
+  --mauve: #a6a49d;
+  --mauve-deep: #c9c7c0;
+  --mauve-tint: rgba(166, 164, 157, 0.12);
 
-  --slate: #a1a1aa;
-  --slate-deep: #d4d4d8;
-  --slate-tint: rgba(161, 161, 170, 0.12);
+  --slate: #a6a49d;
+  --slate-deep: #c9c7c0;
+  --slate-tint: rgba(166, 164, 157, 0.12);
 
-  --violet: #a1a1aa;
-  --violet-deep: #d4d4d8;
-  --violet-tint: rgba(161, 161, 170, 0.12);
+  --violet: #a6a49d;
+  --violet-deep: #c9c7c0;
+  --violet-tint: rgba(166, 164, 157, 0.12);
 
   --clay: #fbbf24;
   --clay-deep: #fcd34d;
   --clay-tint: rgba(251, 191, 36, 0.13);
 
   /* semantic raws */
-  --bg: #0f0f11;
-  --bg-deep: #0b0b0d;
-  --surface: #161618;
-  --surface-raised: #1c1c1f;
-  --surface-recessed: #1c1c1f;
-  --surface-sunken: #232327;
+  --bg-deep: #141312;
+  --surface-raised: #262522;
+  --surface-recessed: #262522;
+  --surface-sunken: #2e2d29;
 
-  --ink: #f4f4f5;
-  --ink-soft: #a1a1aa;
-  --ink-faint: #71717a;
-  --ink-faintest: #52525b;
+  --ink: var(--text);
+  --ink-soft: var(--text-secondary);
+  --ink-faint: var(--text-muted);
+  --ink-faintest: #6b6962;
 
-  --line: #2a2a2e;
-  --line-soft: #232327;
-  --line-strong: #f4f4f5;
+  --line: var(--border);
+  --line-soft: #2b2a26;
+  --line-strong: var(--text);
 
   --danger: #dc2626;
   --danger-deep: #f87171;
@@ -380,58 +397,58 @@
   --warn-tint: rgba(251, 191, 36, 0.13);
 
   /* evidence washes */
-  --excerpt-wash: rgba(99, 102, 241, 0.09);
-  --best-match: rgba(99, 102, 241, 0.22);
-  --best-match-ring: rgba(99, 102, 241, 0.22);
+  --excerpt-wash: rgba(236, 234, 229, 0.07);
+  --best-match: rgba(236, 234, 229, 0.16);
+  --best-match-ring: rgba(236, 234, 229, 0.16);
 
   /* depth */
-  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.35);
-  --shadow-lift: 0 1px 3px rgba(0, 0, 0, 0.45);
-  --shadow-pop: 0 2px 4px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.5);
-  --shadow-overlay: 0 2px 8px rgba(0, 0, 0, 0.4), 0 16px 48px rgba(0, 0, 0, 0.55);
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-lift: 0 4px 20px rgba(0, 0, 0, 0.35);
+  --shadow-pop: 0 4px 20px rgba(0, 0, 0, 0.35), 0 12px 32px rgba(0, 0, 0, 0.45);
+  --shadow-overlay: 0 8px 28px rgba(0, 0, 0, 0.45), 0 24px 64px rgba(0, 0, 0, 0.55);
 
   /* aliases — dark steps */
-  --type-video: #a1a1aa;
-  --type-video-soft: rgba(161, 161, 170, 0.12);
-  --type-pdf: #a1a1aa;
-  --type-pdf-soft: rgba(161, 161, 170, 0.12);
-  --type-web: #a1a1aa;
-  --type-web-soft: rgba(161, 161, 170, 0.12);
-  --type-audio: #a1a1aa;
-  --type-audio-soft: rgba(161, 161, 170, 0.12);
-  --type-paper: #a1a1aa;
-  --type-paper-soft: rgba(161, 161, 170, 0.12);
-  --type-note: #a1a1aa;
-  --type-note-soft: rgba(161, 161, 170, 0.12);
+  --type-video: #a6a49d;
+  --type-video-soft: rgba(166, 164, 157, 0.12);
+  --type-pdf: #a6a49d;
+  --type-pdf-soft: rgba(166, 164, 157, 0.12);
+  --type-web: #a6a49d;
+  --type-web-soft: rgba(166, 164, 157, 0.12);
+  --type-audio: #a6a49d;
+  --type-audio-soft: rgba(166, 164, 157, 0.12);
+  --type-paper: #a6a49d;
+  --type-paper-soft: rgba(166, 164, 157, 0.12);
+  --type-note: #a6a49d;
+  --type-note-soft: rgba(166, 164, 157, 0.12);
   --type-ai: var(--primary-ink);
   --type-ai-soft: var(--primary-tint);
   --type-insight: var(--primary-ink);
   --type-insight-soft: var(--primary-tint);
 
   --cite-source: var(--primary-ink);
-  --cite-source-deep: #a5b4fc;
-  --cite-note: #d4d4d8;
-  --cite-note-deep: #e4e4e7;
-  --cite-derived: #a1a1aa;
-  --cite-derived-deep: #d4d4d8;
-  --cite-external: #71717a;
-  --cite-external-deep: #a1a1aa;
-  --cite-synthesis: #71717a;
+  --cite-source-deep: var(--primary);
+  --cite-note: #c9c7c0;
+  --cite-note-deep: #e2e0da;
+  --cite-derived: #a6a49d;
+  --cite-derived-deep: #c9c7c0;
+  --cite-external: #85837c;
+  --cite-external-deep: #a6a49d;
+  --cite-synthesis: #85837c;
   --cite-warn: var(--clay);
 
   --ctx-full: var(--primary-ink);
   --ctx-full-tint: var(--primary-tint);
-  --ctx-insights: #a1a1aa;
-  --ctx-insights-tint: rgba(161, 161, 170, 0.12);
+  --ctx-insights: #a6a49d;
+  --ctx-insights-tint: rgba(166, 164, 157, 0.12);
   --ctx-off-ink: var(--ink-faint);
   --ctx-off-bg: var(--surface-recessed);
 
   --sidebar: var(--bg-deep);
-  --sidebar-foreground: var(--ink);
+  --sidebar-foreground: var(--text);
   --sidebar-primary: var(--primary);
   --sidebar-primary-foreground: var(--on-primary);
   --sidebar-accent: var(--surface-raised);
-  --sidebar-accent-foreground: var(--ink);
+  --sidebar-accent-foreground: var(--text);
   --sidebar-border: var(--line);
   --sidebar-ring: var(--primary);
 }

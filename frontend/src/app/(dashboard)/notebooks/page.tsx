@@ -55,20 +55,9 @@ export default function NotebooksPage() {
   return (
     <AppShell>
       <div className="flex-1 min-h-0 overflow-y-auto">
-        <div className="px-4 py-5 sm:px-6 sm:py-6">
-        <PageHeader
-          title={t('notebooks.title')}
-          description={t('notebooks.pageDescription')}
-          actions={
-            <Button onClick={() => setCreateDialogOpen(true)}>
-              <Plus className="h-4 w-4" />
-              {t('notebooks.newNotebook')}
-            </Button>
-          }
-        />
-
-        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="relative w-full sm:max-w-xs">
+        <div className="px-4 py-6 sm:px-8 sm:py-8">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="relative flex-1">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               id="notebook-search"
@@ -78,34 +67,49 @@ export default function NotebooksPage() {
               placeholder={t('notebooks.searchPlaceholder')}
               autoComplete="off"
               aria-label={t('common.accessibility.searchNotebooks')}
-              className="h-11 pl-9 sm:h-9"
+              className="h-11 pl-9"
             />
           </div>
-          <div className="flex w-fit items-center rounded-md border p-0.5">
+          <div className="flex items-center gap-3">
             <Button
-              variant={viewMode === 'tile' ? 'secondary' : 'ghost'}
-              size="sm"
-              className="h-10 w-10 p-0 sm:h-8 sm:w-8"
-              onClick={() => setViewMode('tile')}
-              aria-label={t('notebooks.tileView')}
-              aria-pressed={viewMode === 'tile'}
-              title={t('notebooks.tileView')}
+              className="h-11 px-5"
+              onClick={() => setCreateDialogOpen(true)}
             >
-              <LayoutGrid className="h-4 w-4" />
+              <Plus className="h-4 w-4" />
+              {t('notebooks.newNotebook')}
             </Button>
-            <Button
-              variant={viewMode === 'list' ? 'secondary' : 'ghost'}
-              size="sm"
-              className="h-10 w-10 p-0 sm:h-8 sm:w-8"
-              onClick={() => setViewMode('list')}
-              aria-label={t('notebooks.listView')}
-              aria-pressed={viewMode === 'list'}
-              title={t('notebooks.listView')}
-            >
-              <List className="h-4 w-4" />
-            </Button>
+            <div className="flex w-fit items-center rounded-md border p-0.5">
+              <Button
+                variant={viewMode === 'tile' ? 'secondary' : 'ghost'}
+                size="sm"
+                className="h-10 w-10 p-0"
+                onClick={() => setViewMode('tile')}
+                aria-label={t('notebooks.tileView')}
+                aria-pressed={viewMode === 'tile'}
+                title={t('notebooks.tileView')}
+              >
+                <LayoutGrid className="h-4 w-4" />
+              </Button>
+              <Button
+                variant={viewMode === 'list' ? 'secondary' : 'ghost'}
+                size="sm"
+                className="h-10 w-10 p-0"
+                onClick={() => setViewMode('list')}
+                aria-label={t('notebooks.listView')}
+                aria-pressed={viewMode === 'list'}
+                title={t('notebooks.listView')}
+              >
+                <List className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
+
+        <PageHeader
+          title={t('notebooks.title')}
+          description={t('notebooks.pageDescription')}
+          className="mt-6 sm:mt-8"
+        />
 
         <div className="space-y-8">
           {!isSearching && <RecentlyViewed limit={4} />}

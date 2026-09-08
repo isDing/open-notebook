@@ -310,7 +310,7 @@ export default function NotesPage() {
 
                 <div className="min-h-0 flex-1 overflow-y-auto">
                   <div className="mx-auto w-full max-w-3xl px-5 py-8 md:px-10 md:py-12">
-                    <h2 className="break-words font-display text-3xl font-bold tracking-tight md:text-4xl">{selectedNote.title || t('notebooks.untitledNote')}</h2>
+                    <h2 className="break-words font-display text-3xl font-semibold tracking-tight md:text-4xl">{selectedNote.title || t('notebooks.untitledNote')}</h2>
                     <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
                       <span className="inline-flex items-center gap-1.5"><Clock3 className="h-3.5 w-3.5" />{t('notes.readingTime', { minutes: stats.minutes })}</span>
                       <span>{t('notes.wordCount', { count: stats.words })}</span>

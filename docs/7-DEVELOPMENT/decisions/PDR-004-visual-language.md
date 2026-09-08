@@ -1,6 +1,6 @@
 # PDR-004: Visual language v2 — neutral surfaces, one accent, typography-led hierarchy
 
-- **Status**: Accepted
+- **Status**: Superseded (one-accent rule) by [PDR-005](PDR-005-warm-neutral-visual-language.md); structural rules remain in force
 - **Date**: 2026-09
 - **Related**: [PDR-003](PDR-003-mobile-layout.md), [frontend/AGENTS.md](../../../frontend/AGENTS.md), `frontend/src/app/globals.css` (canonical tokens), `frontend/src/app/dev/design/page.tsx` (living styleguide)
 

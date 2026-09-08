@@ -47,7 +47,7 @@ export function MobileTopBar() {
           <Menu className="h-5 w-5" />
         </Button>
         <LogoMark />
-        <span className="truncate text-[15px] font-bold tracking-tight text-sidebar-foreground">
+        <span className="truncate text-[15px] font-semibold tracking-tight text-sidebar-foreground">
           {title}
         </span>
       </div>

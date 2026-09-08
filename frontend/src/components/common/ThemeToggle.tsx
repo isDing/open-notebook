@@ -22,10 +22,10 @@ export function ThemeToggle({ iconOnly = false }: ThemeToggleProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button 
-          variant={iconOnly ? "ghost" : "outline"} 
-          size={iconOnly ? "icon" : "default"} 
-          className={iconOnly ? "h-9 w-full sidebar-menu-item" : "w-full justify-start gap-2 sidebar-menu-item"}
+        <Button
+          variant="ghost"
+          size={iconOnly ? "icon" : "default"}
+          className={iconOnly ? "h-9 w-full sidebar-menu-item" : "h-10 w-full justify-start gap-2.5 sidebar-menu-item"}
         >
           <div className="relative h-[1.2rem] w-[1.2rem]">
             <Sun className="absolute inset-0 h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
