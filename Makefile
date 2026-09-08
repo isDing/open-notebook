@@ -162,11 +162,11 @@ worker: worker-start
 
 worker-start:
 	@echo "Starting surreal-commands worker..."
-	uv run --env-file .env surreal-commands-worker --import-modules commands --max-tasks "$${OPEN_NOTEBOOK_WORKER_MAX_TASKS:-5}"
+	uv run --env-file .env surreal-commands-worker --import-modules commands --max-tasks "$${OPEN_NOTEBOOK_WORKER_MAX_TASKS:-6}"
 
 worker-stop:
 	@echo "Stopping surreal-commands worker..."
-	pkill -f "surreal-commands-worker" || true
+	pkill -f "surreal-commands-[w]orker" || true
 
 worker-restart: worker-stop
 	@sleep 2
@@ -176,13 +176,13 @@ worker-restart: worker-stop
 start-all:
 	@echo "🚀 Starting Open Notebook (Database + API + Worker + Frontend)..."
 	@echo "📊 Starting SurrealDB..."
-	@docker compose -f docker-compose.dev.yml up -d surrealdb
+	@docker compose up -d surrealdb
 	@sleep 3
 	@echo "🔧 Starting API backend..."
 	@uv run run_api.py &
 	@sleep 3
 	@echo "⚙️ Starting background worker..."
-	@uv run --env-file .env surreal-commands-worker --import-modules commands --max-tasks "$${OPEN_NOTEBOOK_WORKER_MAX_TASKS:-5}" &
+	@uv run --env-file .env surreal-commands-worker --import-modules commands --max-tasks "$${OPEN_NOTEBOOK_WORKER_MAX_TASKS:-6}" &
 	@sleep 2
 	@echo "🌐 Starting Next.js frontend..."
 	@echo "✅ All services started!"
@@ -193,10 +193,10 @@ start-all:
 
 stop-all:
 	@echo "🛑 Stopping all Open Notebook services..."
-	@pkill -f "next dev" || true
-	@pkill -f "surreal-commands-worker" || true
-	@pkill -f "run_api.py" || true
-	@pkill -f "uvicorn api.main:app" || true
+	@pkill -f "next [d]ev" || true
+	@pkill -f "surreal-commands-[w]orker" || true
+	@pkill -f "run_api[.]py" || true
+	@pkill -f "uvicorn api[.]main:app" || true
 	@docker compose down
 	@echo "✅ All services stopped!"
 
@@ -205,11 +205,11 @@ status:
 	@echo "Database (SurrealDB):"
 	@docker compose ps surrealdb 2>/dev/null || echo "  ❌ Not running"
 	@echo "API Backend:"
-	@pgrep -f "run_api.py\|uvicorn api.main:app" >/dev/null && echo "  ✅ Running" || echo "  ❌ Not running"
+	@pgrep -f "run_api[.]py|uvicorn api[.]main:app" >/dev/null && echo "  ✅ Running" || echo "  ❌ Not running"
 	@echo "Background Worker:"
-	@pgrep -f "surreal-commands-worker" >/dev/null && echo "  ✅ Running" || echo "  ❌ Not running"
+	@pgrep -f "surreal-commands-[w]orker" >/dev/null && echo "  ✅ Running" || echo "  ❌ Not running"
 	@echo "Next.js Frontend:"
-	@pgrep -f "next dev" >/dev/null && echo "  ✅ Running" || echo "  ❌ Not running"
+	@pgrep -f "next [d]ev" >/dev/null && echo "  ✅ Running" || echo "  ❌ Not running"
 
 # === Documentation Export ===
 export-docs:

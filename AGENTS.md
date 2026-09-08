@@ -4,7 +4,11 @@ Open Notebook is an open-source, privacy-focused alternative to Google's Noteboo
 
 This file holds the project-wide rules every coding session needs. Component rules: [open_notebook/AGENTS.md](open_notebook/AGENTS.md) (backend — also covers `api/`, `commands/`, `prompts/`) and [frontend/AGENTS.md](frontend/AGENTS.md). Knowledge lives in the docs (see [Where to look](#where-to-look)) — read it on demand instead of guessing.
 
-## Stack, ports, startup order
+## Deployment
+
+Two local modes: **development** (from source) and **production** (Docker Compose).
+
+### Local development (from source)
 
 Three tiers: Next.js frontend (3000) → FastAPI (5055) → SurrealDB (8000).
 
@@ -17,9 +21,12 @@ Start in this order — each tier depends on the one below:
 
 Or all at once: `make start-all` (status: `make status`, stop: `make stop-all`).
 
-## Deployment
+- Frontend: http://localhost:3000
+- API: http://localhost:5055 (docs: http://localhost:5055/docs)
 
-Local deployment uses `compose.production.yml`:
+### Local production (Docker Compose)
+
+Uses `compose.production.yml`:
 
 - `surrealdb`: SurrealDB database
 - `open-notebook`: Includes the Next.js frontend, FastAPI, and background worker
@@ -30,7 +37,7 @@ Local deployment uses `compose.production.yml`:
 The API automatically runs pending database migrations when the application
 container starts.
 
-## Upgrade After Code Changes
+#### Upgrade after code changes
 
 After modifying code, rebuild and recreate only the application service. Keep
 the database and data directories unchanged:
@@ -44,7 +51,7 @@ docker compose -f compose.production.yml up -d --no-build --force-recreate open-
 Preserve `.env`, `OPEN_NOTEBOOK_ENCRYPTION_KEY`, `./surreal-data`, and
 `./notebook_data` during upgrades.
 
-## Minimal Deployment for Partial Changes
+#### Minimal deployment for partial changes
 
 - Frontend, backend, worker, prompt, dependency, or Docker configuration
   changes: rebuild and recreate `open-notebook`.
