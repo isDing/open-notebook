@@ -50,48 +50,51 @@ type NavigationItem = {
   name: string
   href: string
   icon: LucideIcon
-  iconClass?: string
 }
 
 const getNavigation = (t: TFunction): Array<{ title: string; items: NavigationItem[] }> => [
   {
     title: t('navigation.collect'),
     items: [
-      { name: t('navigation.sources'), href: '/sources', icon: FileText, iconClass: 'text-sage' },
+      { name: t('navigation.sources'), href: '/sources', icon: FileText },
     ],
   },
   {
     title: t('navigation.process'),
     items: [
-      { name: t('navigation.notebooks'), href: '/notebooks', icon: Book, iconClass: 'text-teal' },
-      { name: t('notes.reading'), href: '/notes', icon: StickyNote, iconClass: 'text-gold' },
-      { name: t('navigation.askAndSearch'), href: '/search', icon: Search, iconClass: undefined },
+      { name: t('navigation.notebooks'), href: '/notebooks', icon: Book },
+      { name: t('notes.reading'), href: '/notes', icon: StickyNote },
+      { name: t('navigation.askAndSearch'), href: '/search', icon: Search },
     ],
   },
   {
     title: t('navigation.create'),
     items: [
-      { name: t('navigation.podcasts'), href: '/podcasts', icon: Mic, iconClass: 'text-mauve' },
+      { name: t('navigation.podcasts'), href: '/podcasts', icon: Mic },
     ],
   },
   {
     title: t('navigation.manage'),
     items: [
-      { name: t('navigation.models'), href: '/settings/api-keys', icon: Bot, iconClass: undefined },
-      { name: t('navigation.transformations'), href: '/transformations', icon: Shuffle, iconClass: undefined },
-      { name: t('navigation.settings'), href: '/settings', icon: Settings, iconClass: undefined },
-      { name: t('navigation.advanced'), href: '/advanced', icon: Wrench, iconClass: undefined },
+      { name: t('navigation.models'), href: '/settings/api-keys', icon: Bot },
+      { name: t('navigation.transformations'), href: '/transformations', icon: Shuffle },
+      { name: t('navigation.settings'), href: '/settings', icon: Settings },
+      { name: t('navigation.advanced'), href: '/advanced', icon: Wrench },
     ],
   },
 ]
 
-// The tri-hue mark recomposed in the owned palette: fern / gold / teal.
-export function LogoPebbles({ className }: { className?: string }) {
+// The mark: one accent tile carrying two notebook lines.
+export function LogoMark({ className }: { className?: string }) {
   return (
-    <span className={cn('flex items-center gap-[3px]', className)} aria-hidden="true">
-      <span className="size-[9px] rounded-[3px] bg-fern" />
-      <span className="size-[9px] rounded-[3px] bg-gold" />
-      <span className="size-[9px] rounded-[3px] bg-teal" />
+    <span
+      className={cn('flex size-[22px] shrink-0 items-center justify-center rounded-[6px] bg-primary', className)}
+      aria-hidden="true"
+    >
+      <span className="flex flex-col gap-[3px]">
+        <span className="h-[2px] w-[11px] rounded-full bg-primary-foreground/95" />
+        <span className="h-[2px] w-[7px] rounded-full bg-primary-foreground/95" />
+      </span>
     </span>
   )
 }
@@ -276,8 +279,8 @@ export function AppSidebar() {
           {isDrawer ? (
             <>
               <div className="flex min-w-0 items-center gap-2.5">
-                <LogoPebbles />
-                <span className="truncate font-display text-[15px] font-bold tracking-tight text-sidebar-foreground">
+                <LogoMark />
+                <span className="truncate text-[15px] font-bold tracking-tight text-sidebar-foreground">
                   {t('common.appName')}
                 </span>
               </div>
@@ -294,7 +297,7 @@ export function AppSidebar() {
             </>
           ) : collapsed ? (
             <div className="relative flex items-center justify-center w-full">
-              <LogoPebbles className="flex-col gap-[3px] transition-opacity group-hover:opacity-0 pointer-coarse:hidden" />
+              <LogoMark className="transition-opacity group-hover:opacity-0 pointer-coarse:hidden" />
               <Button
                 variant="ghost"
                 size="sm"
@@ -308,8 +311,8 @@ export function AppSidebar() {
           ) : (
             <>
               <div className="flex items-center gap-2.5">
-                <LogoPebbles />
-                <span className="font-display text-[15px] font-bold tracking-tight text-sidebar-foreground">
+                <LogoMark />
+                <span className="text-[15px] font-bold tracking-tight text-sidebar-foreground">
                   {t('common.appName')}
                 </span>
               </div>
@@ -349,7 +352,7 @@ export function AppSidebar() {
                       <Button
                         variant="default"
                         size="sm"
-                        className="w-full justify-center px-2 font-display font-bold"
+                        className="w-full justify-center px-2 font-semibold"
                         aria-label={t('common.create')}
                       >
                         <Plus className="h-4 w-4" />
@@ -364,10 +367,10 @@ export function AppSidebar() {
                     variant="default"
                     size="sm"
                     className={cn(
-                      'w-full justify-start font-display font-bold',
+                      'w-full justify-start font-semibold',
                       isDrawer && 'min-h-11 touch-manipulation'
                     )}
-                   >
+                  >
                     <Plus className="h-4 w-4 mr-2" />
                     {t('common.create')}
                   </Button>
@@ -420,7 +423,7 @@ export function AppSidebar() {
               )}
               <div className="space-y-1">
                 {!collapsed && (
-                  <h3 className="mb-1.5 px-3 text-2xs font-semibold uppercase tracking-[0.12em] text-sidebar-foreground/40">
+                  <h3 className="mb-1.5 px-3 text-2xs font-semibold uppercase tracking-[0.1em] text-foreground/45">
                     {section.title}
                   </h3>
                 )}
@@ -432,9 +435,8 @@ export function AppSidebar() {
                       asChild
                       variant="ghost"
                       className={cn(
-                        'relative w-full min-w-0 gap-2.5 text-[13px] font-medium text-sidebar-foreground/80 sidebar-menu-item',
-                        isActive &&
-                          'bg-popover font-semibold text-sidebar-foreground ring-1 ring-inset ring-border before:absolute before:-left-1.5 before:top-[7px] before:bottom-[7px] before:w-[3px] before:rounded-[2px] before:bg-fern',
+                        'relative w-full min-w-0 gap-2.5 rounded-md text-[13px] font-medium text-muted-foreground sidebar-menu-item hover:bg-sidebar-accent hover:text-foreground',
+                        isActive && 'bg-primary-tint font-semibold text-primary-ink hover:bg-primary-tint hover:text-primary-ink',
                         collapsed ? 'justify-center px-2' : 'justify-start',
                         isDrawer && 'min-h-11 touch-manipulation'
                       )}
@@ -444,7 +446,7 @@ export function AppSidebar() {
                         aria-current={isActive ? 'page' : undefined}
                         className="flex min-w-0 flex-1 items-center gap-2.5"
                       >
-                        <item.icon className={cn('h-4 w-4 opacity-85', item.iconClass)} />
+                        <item.icon className={cn('h-4 w-4', isActive ? 'text-primary-ink' : 'text-muted-foreground')} />
                         {!collapsed && <span className="min-w-0 truncate">{item.name}</span>}
                       </Link>
                     </Button>
@@ -479,19 +481,14 @@ export function AppSidebar() {
         >
           {/* Command Palette hint */}
           {!collapsed && !isDrawer && (
-            <div className="px-3 py-1.5 text-xs text-sidebar-foreground/60">
-              <div className="flex items-center justify-between">
-                 <span className="flex items-center gap-1.5">
-                  <Command className="h-3 w-3" />
-                  {t('common.quickActions')}
-                </span>
-                <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
-                  {isMac ? <span className="text-xs">⌘</span> : <span>Ctrl+</span>}K
-                </kbd>
-              </div>
-               <p className="mt-1 text-[10px] text-sidebar-foreground/40">
-                {t('common.quickActionsDesc')}
-              </p>
+            <div className="flex items-center justify-between rounded-md px-3 py-2 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1.5">
+                <Command className="h-3.5 w-3.5" />
+                {t('common.quickActions')}
+              </span>
+              <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
+                {isMac ? <span className="text-xs">⌘</span> : <span>Ctrl+</span>}K
+              </kbd>
             </div>
           )}
 

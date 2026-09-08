@@ -51,7 +51,6 @@ export function NotebookCard({ notebook }: NotebookCardProps) {
           <CardHeader className="grid-cols-1 pb-3">
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">
-                <span aria-hidden className="mb-2 block h-2 w-2 rounded-[3px] bg-teal" />
                 <CardTitle className="min-w-0 text-base truncate">
                   <Link
                     href={`/notebooks/${encodeURIComponent(notebook.id)}`}

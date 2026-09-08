@@ -64,7 +64,7 @@ export function CreateMenu({
           size={iconOnly ? 'icon' : 'sm'}
           aria-label={t('common.create')}
           className={cn(
-            'font-display font-bold',
+            'font-semibold',
             iconOnly ? 'h-11 w-11 shrink-0 touch-manipulation p-0' : 'w-full justify-start',
             className
           )}

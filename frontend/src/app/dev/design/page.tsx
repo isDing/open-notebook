@@ -1,6 +1,6 @@
 "use client"
 
-// Living styleguide for the "Quiet Green" design foundation.
+// Living styleguide for the "Signal on Neutral" design foundation (v2).
 // Dev-only: returns 404 in production builds. Not translated on purpose —
 // this is an internal spec artifact, not user-facing UI.
 
@@ -63,16 +63,43 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Progress } from "@/components/ui/progress"
 import { Checkbox } from "@/components/ui/checkbox"
 
-const HUES = [
-  ["fern", "acts — THE action green"],
-  ["sage", "web / gathering"],
-  ["gold", "notes & pdf"],
-  ["teal", "AI / system voice"],
-  ["plum", "video"],
-  ["mauve", "audio"],
-  ["slate", "paper / external"],
-  ["violet", "derived insight"],
-  ["clay", "warn / degraded"],
+const SEMANTIC = [
+  ["--primary", "primary — the one accent: actions, active, AI"],
+  ["--primary-hover", "primary-hover — pressed state"],
+  ["--primary-ink", "primary-ink — accent text (steps up in dark)"],
+  ["--primary-tint", "primary-tint — active washes"],
+  ["--danger", "danger — destructive only"],
+  ["--warn", "warn — pending, degraded, caution"],
+] as const
+
+const NEUTRALS = [
+  ["--ink", "ink — primary text"],
+  ["--ink-soft", "ink-soft — secondary text"],
+  ["--ink-faint", "ink-faint — metadata"],
+  ["--ink-faintest", "ink-faintest — disabled"],
+] as const
+
+const SURFACES = [
+  ["--bg", "bg — app canvas"],
+  ["--bg-deep", "bg-deep — rails"],
+  ["--surface", "surface — reading surface, cards"],
+  ["--surface-raised", "surface-raised — popovers, inputs"],
+  ["--surface-recessed", "surface-recessed — wells, chips"],
+  ["--surface-sunken", "surface-sunken — kbd, tracks"],
+] as const
+
+const SHADOWS = [
+  ["--shadow-soft", "soft — panels"],
+  ["--shadow-lift", "lift — hover"],
+  ["--shadow-pop", "pop — popovers & dropdowns own it"],
+  ["--shadow-overlay", "overlay — modal sheets"],
+] as const
+
+const RADII = [
+  ["--radius-sm", "sm 6px — chips, small buttons"],
+  ["--radius-md", "md 8px — controls, inputs"],
+  ["--radius-lg", "lg 10px — cards, popovers"],
+  ["--radius-xl", "xl 12px — dialogs, panels"],
 ] as const
 
 const TYPE_HUES = [
@@ -88,39 +115,9 @@ const TYPE_HUES = [
 
 const CITE_CLASSES = ["source", "note", "derived", "external"] as const
 
-const SURFACES = [
-  ["--bg", "bg — app canvas"],
-  ["--bg-deep", "bg-deep — rails, wells"],
-  ["--surface", "surface — reading surface"],
-  ["--surface-raised", "surface-raised — popovers, inputs"],
-  ["--surface-recessed", "surface-recessed"],
-  ["--surface-sunken", "surface-sunken — kbd, wells"],
-] as const
-
-const INKS = [
-  ["--ink", "ink — primary text"],
-  ["--ink-soft", "ink-soft — secondary"],
-  ["--ink-faint", "ink-faint — metadata"],
-  ["--ink-faintest", "ink-faintest — disabled"],
-] as const
-
-const SHADOWS = [
-  ["--shadow-soft", "soft — panels, cards"],
-  ["--shadow-lift", "lift — hover"],
-  ["--shadow-pop", "pop — popovers own it"],
-  ["--shadow-overlay", "overlay — modal sheets"],
-] as const
-
-const RADII = [
-  ["--radius-sm", "sm 4px — chips, small buttons"],
-  ["--radius-md", "md 5px — controls, inputs"],
-  ["--radius-lg", "lg 5px — cards"],
-  ["--radius-xl", "xl 6px — panels, overlays"],
-] as const
-
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="font-display text-xl font-bold tracking-tight mt-10 mb-4">
+    <h2 className="text-xl font-bold tracking-tight mt-10 mb-4">
       {children}
     </h2>
   )
@@ -130,7 +127,7 @@ function Swatch({ varName, label }: { varName: string; label: string }) {
   return (
     <div className="flex items-center gap-3">
       <div
-        className="size-9 shrink-0 rounded-sm border"
+        className="size-9 shrink-0 rounded-md border"
         style={{ backgroundColor: `var(${varName})` }}
       />
       <div className="min-w-0">
@@ -149,12 +146,14 @@ function Sheet() {
     <div className="bg-background text-foreground p-8">
       <header className="mb-2 flex items-start justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-bold tracking-tight">
-            Quiet Green — design foundation
+          <h1 className="text-2xl font-bold tracking-tight">
+            Signal on Neutral — design foundation v2
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            fern acts · teal speaks · red destroys · warn is clay · color never
-            washes a reading surface · popovers own the one real shadow
+            neutral carries the interface · one accent speaks (actions, active, AI) ·
+            red destroys · amber warns · nothing else is colored ·
+            hairline borders, near-zero shadows · 6–12px · one typeface ·
+            quick, quiet motion
           </p>
         </div>
         <Button
@@ -167,62 +166,53 @@ function Sheet() {
         </Button>
       </header>
 
-      <SectionTitle>Core palette</SectionTitle>
+      <SectionTitle>The accent</SectionTitle>
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-        {HUES.map(([hue, note]) => (
-          <div key={hue} className="flex items-center gap-2">
-            <div
-              className="size-9 shrink-0 rounded-sm border"
-              style={{ backgroundColor: `var(--${hue})` }}
-            />
-            <div
-              className="size-9 shrink-0 rounded-sm border"
-              style={{ backgroundColor: `var(--${hue}-tint)` }}
-            />
-            <div className="min-w-0">
-              <div className="font-mono text-xs">--{hue}</div>
-              <div className="text-xs text-muted-foreground truncate">
-                {note}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <SectionTitle>Surfaces &amp; ink</SectionTitle>
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-        {SURFACES.map(([v, label]) => (
+        {SEMANTIC.map(([v, label]) => (
           <Swatch key={v} varName={v} label={label} />
         ))}
       </div>
       <div className="mt-4 space-y-1">
-        {INKS.map(([v, label]) => (
+        {NEUTRALS.map(([v, label]) => (
           <div key={v} className="text-sm" style={{ color: `var(${v})` }}>
             The quick brown fox — <span className="font-mono text-xs">{label}</span>
           </div>
         ))}
       </div>
 
+      <SectionTitle>Surfaces</SectionTitle>
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+        {SURFACES.map(([v, label]) => (
+          <Swatch key={v} varName={v} label={label} />
+        ))}
+      </div>
+
       <SectionTitle>Typography</SectionTitle>
       <div className="space-y-3">
-        <div className="font-display text-2xl font-bold">
-          Display — Bricolage Grotesque 700
+        <div className="text-2xl font-bold tracking-tight">
+          Display — Instrument Sans 700
+        </div>
+        <div className="text-base font-semibold">
+          Headings &amp; emphasis — Instrument Sans 600
         </div>
         <div className="text-sm">
-          Body — Instrument Sans. Reading text stays on neutral surfaces;
-          color is information, never decoration.
+          Body — Instrument Sans 400. Hierarchy comes from weight, size and
+          spacing — not color. Reading text stays on neutral surfaces.
+        </div>
+        <div className="text-xs text-muted-foreground">
+          Metadata — 12–13px, muted ink
         </div>
         <div className="font-mono text-xs">
           Mono — Spline Sans Mono · for data, not prose · 128 chunks · 04:32
         </div>
       </div>
 
-      <SectionTitle>Content-type hues (dots, ticks, chips — never washes)</SectionTitle>
+      <SectionTitle>Content-type hues (dots, ticks, chips — monochrome; AI is the accent)</SectionTitle>
       <div className="flex flex-wrap gap-2">
         {TYPE_HUES.map((t) => (
           <span
             key={t}
-            className="inline-flex items-center gap-1.5 rounded-sm border bg-popover px-2 py-0.5 text-xs font-medium"
+            className="inline-flex items-center gap-1.5 rounded-md border bg-popover px-2 py-0.5 text-xs font-medium"
           >
             <span
               className="size-2 rounded-full"
@@ -238,7 +228,7 @@ function Sheet() {
         {CITE_CLASSES.map((c, i) => (
           <span
             key={c}
-            className="inline-flex items-center gap-1.5 rounded-sm border bg-popover px-1.5 py-0.5 font-mono text-[10.5px]"
+            className="inline-flex items-center gap-1.5 rounded-md border bg-popover px-1.5 py-0.5 font-mono text-[10.5px]"
           >
             <span
               className="size-1.5 rounded-full"
@@ -247,13 +237,13 @@ function Sheet() {
             {i + 1} · {c}
           </span>
         ))}
-        <span className="inline-flex items-center gap-1.5 rounded-sm border border-dashed bg-transparent px-1.5 py-0.5 font-mono text-[10.5px] text-muted-foreground">
+        <span className="inline-flex items-center gap-1.5 rounded-md border border-dashed bg-transparent px-1.5 py-0.5 font-mono text-[10.5px] text-muted-foreground">
           ◦ synthesis
         </span>
       </div>
       <div className="mt-3 rounded-md border p-3 text-sm" style={{ backgroundColor: "var(--excerpt-wash)" }}>
         Cited passage sits on the one sanctioned tinted background —{" "}
-        <mark className="rounded-[2px] px-0.5" style={{ backgroundColor: "var(--best-match)", color: "inherit" }}>
+        <mark className="rounded-sm px-0.5" style={{ backgroundColor: "var(--best-match)", color: "inherit" }}>
           the best-match sentence is a step stronger
         </mark>
         .
@@ -261,13 +251,13 @@ function Sheet() {
 
       <SectionTitle>Context states (per-source inclusion)</SectionTitle>
       <div className="flex flex-wrap gap-2">
-        <span className="inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 text-xs font-medium" style={{ backgroundColor: "var(--ctx-full-tint)", color: "var(--ctx-full)" }}>
+        <span className="inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-xs font-medium" style={{ backgroundColor: "var(--ctx-full-tint)", color: "var(--ctx-full)" }}>
           FULL
         </span>
-        <span className="inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 text-xs font-medium" style={{ backgroundColor: "var(--ctx-insights-tint)", color: "var(--ctx-insights)" }}>
+        <span className="inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-xs font-medium" style={{ backgroundColor: "var(--ctx-insights-tint)", color: "var(--ctx-insights)" }}>
           INSIGHTS
         </span>
-        <span className="inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 text-xs font-medium" style={{ backgroundColor: "var(--ctx-off-bg)", color: "var(--ctx-off-ink)" }}>
+        <span className="inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-xs font-medium" style={{ backgroundColor: "var(--ctx-off-bg)", color: "var(--ctx-off-ink)" }}>
           OFF
         </span>
       </div>
@@ -288,7 +278,7 @@ function Sheet() {
         {SHADOWS.map(([v, label]) => (
           <div
             key={v}
-            className="rounded-md border bg-card p-4 text-xs text-muted-foreground"
+            className="rounded-lg border bg-card p-4 text-xs text-muted-foreground"
             style={{ boxShadow: `var(${v})` }}
           >
             {label}
@@ -326,7 +316,7 @@ function Sheet() {
           PDF
         </Badge>
         <Badge variant="secondary">
-          <Sparkles className="text-teal" /> AI
+          <Sparkles className="text-primary-ink" /> AI
         </Badge>
       </div>
 
@@ -369,10 +359,10 @@ function Sheet() {
           <TabsTrigger value="chat">Chat</TabsTrigger>
         </TabsList>
         <TabsContent value="content" className="pt-3 text-sm text-muted-foreground">
-          Underline tabs — the active one carries a fern spine.
+          Underline tabs — the active one carries the accent spine.
         </TabsContent>
         <TabsContent value="insights" className="pt-3 text-sm text-muted-foreground">
-          Insights speak with the teal voice.
+          Insights speak with the accent voice.
         </TabsContent>
         <TabsContent value="chat" className="pt-3 text-sm text-muted-foreground">
           Chat content.
@@ -420,7 +410,7 @@ function Sheet() {
             <DialogHeader>
               <DialogTitle>Rename notebook</DialogTitle>
               <DialogDescription>
-                Overlays use the one real shadow and 6px corners.
+                Overlays use the one real shadow and 12px corners.
               </DialogDescription>
             </DialogHeader>
             <Input placeholder="Notebook name" />
@@ -482,7 +472,7 @@ function Sheet() {
       <Separator className="my-10" />
       <p className="text-xs text-muted-foreground">
         Canonical tokens: <span className="font-mono">frontend/src/app/globals.css</span> ·
-        laws &amp; component inventory: design foundation doc.
+        rationale: <span className="font-mono">docs/7-DEVELOPMENT/decisions/PDR-004-visual-language.md</span>
       </p>
     </div>
   )

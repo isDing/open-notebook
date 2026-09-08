@@ -134,7 +134,7 @@ export function convertSourceReferences(
           e.stopPropagation()
           onReferenceClick(match.type, match.id)
         }}
-        className="text-primary hover:underline cursor-pointer inline font-medium"
+        className="text-primary-ink hover:underline cursor-pointer inline font-medium"
         type="button"
       >
         {displayText}
@@ -303,7 +303,7 @@ export function createReferenceLinkComponent(
             e.stopPropagation()
             onReferenceClick(type, id)
           }}
-          className="text-primary hover:underline cursor-pointer inline font-medium"
+          className="text-primary-ink hover:underline cursor-pointer inline font-medium"
           type="button"
         >
           <IconComponent className="h-3 w-3 inline mr-1" aria-hidden="true" />
@@ -314,7 +314,7 @@ export function createReferenceLinkComponent(
 
     // Regular link - open in new tab
     return (
-      <a href={href} target="_blank" rel="noopener noreferrer" {...props} className="text-primary hover:underline">
+      <a href={href} target="_blank" rel="noopener noreferrer" {...props} className="text-primary-ink hover:underline">
         {children}
       </a>
     )
@@ -462,7 +462,7 @@ export function createCompactReferenceLinkComponent(
             e.stopPropagation()
             onReferenceClick(type, id)
           }}
-          className="text-primary hover:underline cursor-pointer inline font-medium"
+          className="text-primary-ink hover:underline cursor-pointer inline font-medium"
           type="button"
         >
           {children}
@@ -472,7 +472,7 @@ export function createCompactReferenceLinkComponent(
 
     // Regular link - open in new tab
     return (
-      <a href={href} target="_blank" rel="noopener noreferrer" {...props} className="text-primary hover:underline">
+      <a href={href} target="_blank" rel="noopener noreferrer" {...props} className="text-primary-ink hover:underline">
         {children}
       </a>
     )

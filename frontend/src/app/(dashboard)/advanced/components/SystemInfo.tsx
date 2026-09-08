@@ -86,7 +86,7 @@ export function SystemInfo() {
                 href="https://github.com/lfnovo/open-notebook"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-primary hover:underline inline-flex items-center gap-1"
+                className="text-sm text-primary-ink hover:underline inline-flex items-center gap-1"
               >
                 {t('advanced.viewOnGithub')}
                 <svg

@@ -4,7 +4,7 @@ import { Menu } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { CreateMenu } from '@/components/common/CreateMenu'
-import { LogoPebbles } from './AppSidebar'
+import { LogoMark } from './AppSidebar'
 import { useSidebarStore } from '@/lib/stores/sidebar-store'
 import { useTranslation } from '@/lib/hooks/use-translation'
 
@@ -46,8 +46,8 @@ export function MobileTopBar() {
         >
           <Menu className="h-5 w-5" />
         </Button>
-        <LogoPebbles />
-        <span className="truncate font-display text-[15px] font-bold tracking-tight text-sidebar-foreground">
+        <LogoMark />
+        <span className="truncate text-[15px] font-bold tracking-tight text-sidebar-foreground">
           {title}
         </span>
       </div>

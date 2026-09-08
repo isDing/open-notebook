@@ -1,9 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import {
-  Bricolage_Grotesque,
-  Instrument_Sans,
-  Spline_Sans_Mono,
-} from "next/font/google";
+import { Instrument_Sans, Spline_Sans_Mono } from "next/font/google";
 import "./globals.css";
 import "katex/dist/katex.min.css";
 import { Toaster } from "@/components/ui/sonner";
@@ -17,12 +13,6 @@ import { I18nProvider } from "@/components/providers/I18nProvider";
 const instrumentSans = Instrument_Sans({
   subsets: ["latin"],
   variable: "--font-instrument-sans",
-});
-
-const bricolageGrotesque = Bricolage_Grotesque({
-  subsets: ["latin"],
-  weight: ["600", "700"],
-  variable: "--font-bricolage",
 });
 
 const splineSansMono = Spline_Sans_Mono({
@@ -44,8 +34,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f5f5f2" },
-    { media: "(prefers-color-scheme: dark)", color: "#17181b" },
+    { media: "(prefers-color-scheme: light)", color: "#fafafa" },
+    { media: "(prefers-color-scheme: dark)", color: "#0f0f11" },
   ],
 };
 
@@ -66,7 +56,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </head>
       <body
-        className={`${instrumentSans.variable} ${bricolageGrotesque.variable} ${splineSansMono.variable} app-body font-sans`}
+        className={`${instrumentSans.variable} ${splineSansMono.variable} app-body font-sans`}
       >
         <ErrorBoundary>
           <ThemeProvider>

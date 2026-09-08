@@ -462,7 +462,7 @@ export default function SearchPage() {
                               <span aria-hidden className={cn('h-2 w-2 shrink-0 rounded-full', dotClass)} />
                               <button
                                 onClick={() => openModal(modalType, id)}
-                                className="min-h-11 max-w-full break-words text-left text-sm font-medium hover:text-primary hover:underline"
+                                className="min-h-11 max-w-full break-words text-left text-sm font-medium hover:text-primary-ink hover:underline"
                               >
                                 {result.title}
                               </button>

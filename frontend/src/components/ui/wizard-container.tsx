@@ -41,7 +41,7 @@ function StepIndicator({ currentStep, steps, onStepClick }: {
                   isCompleted 
                     ? 'bg-primary border-primary text-primary-foreground' 
                     : isCurrent 
-                      ? 'border-primary text-primary bg-primary/10'
+                      ? 'border-primary text-primary-ink bg-primary/10'
                       : 'border-border text-muted-foreground bg-card'
                 )}
               >

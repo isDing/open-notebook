@@ -109,7 +109,7 @@ export function ConnectionErrorOverlay({
             href="https://github.com/lfnovo/open-notebook"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-primary hover:underline inline-flex items-center gap-1"
+            className="text-primary-ink hover:underline inline-flex items-center gap-1"
           >
             {t('connectionErrors.docLink')}
             <ExternalLink className="w-4 h-4" />

@@ -19,11 +19,11 @@ export function PageHeader({ title, description, actions, className }: PageHeade
       )}
     >
       <div className="min-w-0">
-        <h1 className="font-display text-xl font-bold leading-tight tracking-tight sm:text-2xl">
+        <h1 className="text-xl font-bold leading-tight tracking-tight sm:text-2xl">
           {title}
         </h1>
         {description ? (
-          <p className="mt-1 text-xs leading-5 text-muted-foreground">{description}</p>
+          <p className="mt-1 text-sm leading-6 text-muted-foreground">{description}</p>
         ) : null}
       </div>
       {actions ? (

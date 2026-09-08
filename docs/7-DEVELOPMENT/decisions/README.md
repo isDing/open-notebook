@@ -52,3 +52,4 @@ What this makes easier, what it makes harder, what to watch. (bullets)
 | [PDR-001](PDR-001-single-user-first.md) | Single-user first; don't preclude multi-user | Accepted |
 | [PDR-002](PDR-002-provider-agnostic-core.md) | Provider-agnostic core by default | Accepted |
 | [PDR-003](PDR-003-mobile-layout.md) | Mobile-capable layout by default; desktop (lg+) is the reference experience | Accepted |
+| [PDR-004](PDR-004-visual-language.md) | Visual language v2 — neutral surfaces, one accent, typography-led hierarchy | Accepted |

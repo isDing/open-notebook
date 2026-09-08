@@ -223,7 +223,7 @@ export function CredentialFormDialog({
               </div>
               {isEditing && <p className="text-xs text-muted-foreground">{t('apiKeys.apiKeyEditHint')}</p>}
               {docsUrl && (
-                <a href={docsUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline">
+                <a href={docsUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary-ink hover:underline">
                   {t('apiKeys.getApiKey')} &rarr;
                 </a>
               )}
