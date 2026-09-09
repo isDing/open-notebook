@@ -488,6 +488,14 @@
     min-height: 100dvh;
   }
 
+  /* App pages fill the viewport exactly and scroll internally. The document
+     itself must never become a second scroll container: with
+     body { min-height: 100dvh } above, the page-level scrollbar appears
+     whenever 100dvh exceeds the layout viewport (e.g. mobile URL bars). */
+  html:has(.app-shell) {
+    overflow: hidden;
+  }
+
   /* Ensure proper theme inheritance for popovers and dropdowns */
   .dark {
     color-scheme: dark;

@@ -42,7 +42,7 @@ export default function SourceDetailPage() {
             className="min-h-11 max-w-full justify-start touch-manipulation sm:min-h-8"
           >
             <ArrowLeft className="h-4 w-4" />
-            <span className="truncate">{navigation.getReturnLabel()}</span>
+            <span className="truncate">{navigation.returnTo?.label || t('sources.backToSources')}</span>
           </Button>
         </div>
 
@@ -65,7 +65,7 @@ export default function SourceDetailPage() {
         <div className="grid min-h-0 min-w-0 flex-1 overflow-hidden px-4 pb-4 sm:px-6 lg:grid-cols-[minmax(0,2fr)_minmax(300px,1fr)] lg:gap-6">
           {/* Left column - Source detail */}
           <div className={cn(
-            'min-h-0 min-w-0 overflow-y-auto pb-4 lg:block lg:px-4 lg:pb-6',
+            'min-h-0 min-w-0 overflow-y-auto overscroll-contain pb-4 lg:block lg:px-4 lg:pb-6',
             mobilePane === 'content' ? 'block' : 'hidden'
           )}>
             <SourceDetailContent

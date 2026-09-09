@@ -160,7 +160,7 @@ export default function SearchPage() {
 
   return (
     <AppShell>
-      <div className="flex-1 overflow-y-auto px-4 py-5 sm:px-6 sm:py-6">
+      <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 py-5 sm:px-6 sm:py-6">
         <PageHeader
           title={t('searchPage.pageTitle')}
           description={t('searchPage.pageDescription')}

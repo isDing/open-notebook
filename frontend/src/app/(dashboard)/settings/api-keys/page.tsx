@@ -89,7 +89,7 @@ export default function ApiKeysPage() {
 
   return (
     <AppShell>
-      <div className="flex-1 min-h-0 overflow-y-auto">
+      <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
         <div className="space-y-6 px-4 py-5 sm:px-6 sm:py-6">
           <PageHeader
             title={t('apiKeys.pageTitle')}

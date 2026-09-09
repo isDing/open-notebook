@@ -212,7 +212,7 @@ export function SourcesColumn({
             </div>
           </CardHeader>
 
-          <CardContent ref={scrollContainerRef} className="flex-1 overflow-y-auto min-h-0">
+          <CardContent ref={scrollContainerRef} className="flex-1 overflow-y-auto overscroll-contain min-h-0">
             {isLoading ? (
               <div className="flex items-center justify-center py-8">
                 <LoadingSpinner />

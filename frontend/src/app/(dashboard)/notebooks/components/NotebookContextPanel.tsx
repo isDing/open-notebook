@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { FileText, PanelLeftClose, PanelLeftOpen, StickyNote } from 'lucide-react'
 import { useTranslation } from '@/lib/hooks/use-translation'
+import { cn } from '@/lib/utils'
 import { useNotebookColumnsStore } from '@/lib/stores/notebook-columns-store'
 import type { NoteResponse, SourceListResponse } from '@/lib/types/api'
 import type {
@@ -67,27 +68,34 @@ export function NotebookContextPanel({
   const isCollapsed = collapsible && hasHydrated && contextPanelCollapsed
 
   if (isCollapsed) {
+    const railLabel = t('notebooks.contextTab')
+    const isCJK = /[\u4e00-\u9fa5\u3040-\u30ff\uac00-\ud7af]/.test(railLabel)
+
     return (
-      <div
-        data-testid="context-panel-rail"
-        className="flex h-full w-12 min-h-0 items-center justify-center rounded-lg border border-border bg-card"
-      >
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-10 w-10"
-              aria-label={t('notebooks.expandContext')}
-              aria-expanded={false}
-              onClick={toggleContextPanel}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            data-testid="context-panel-rail"
+            onClick={toggleContextPanel}
+            aria-label={t('notebooks.expandContext')}
+            aria-expanded={false}
+            className={cn(
+              'group flex h-full w-12 min-h-0 flex-col items-center justify-center gap-3',
+              'rounded-lg border border-border bg-card py-6',
+              'transition-colors duration-150 hover:bg-accent/50'
+            )}
+          >
+            <PanelLeftOpen className="h-5 w-5 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground" />
+            <div
+              className="text-xs font-medium text-muted-foreground transition-colors group-hover:text-foreground whitespace-nowrap"
+              style={{ writingMode: 'vertical-rl', transform: isCJK ? 'none' : 'rotate(180deg)', textOrientation: 'mixed' }}
             >
-              <PanelLeftOpen className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="right">{t('notebooks.expandContext')}</TooltipContent>
-        </Tooltip>
-      </div>
+              {railLabel}
+            </div>
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="right">{t('notebooks.expandContext')}</TooltipContent>
+      </Tooltip>
     )
   }
 

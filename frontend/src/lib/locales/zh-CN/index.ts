@@ -220,7 +220,7 @@ export const zhCN = {
   },
   notes: {
     reading: "阅读",
-    pageTitle: "笔记",
+    pageTitle: "阅读",
     pageDescription: "你的阅读笔记，按笔记本分组。",
     listTitle: "笔记列表",
     unfiled: "未归类",
@@ -309,6 +309,7 @@ export const zhCN = {
     excludeAllFromContext: "全部移出上下文",
     title: "来源",
     pageDescription: "你收集的链接、文件与文本。",
+    backToSources: "返回来源列表",
     add: "添加来源",
     addNew: "添加新来源",
     addExisting: "添加现有来源",

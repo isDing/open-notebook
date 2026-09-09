@@ -217,7 +217,7 @@ export default function NotesPage() {
                   </span>
                 </div>
 
-                <div className="min-h-0 flex-1 overflow-y-auto">
+                <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
                   {isLoading ? (
                     <div className="flex h-full items-center justify-center p-8"><LoadingSpinner /></div>
                   ) : isError ? (
@@ -308,7 +308,7 @@ export default function NotesPage() {
                   </div>
                 </div>
 
-                <div className="min-h-0 flex-1 overflow-y-auto">
+                <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
                   <div className="mx-auto w-full max-w-3xl px-5 py-8 md:px-10 md:py-12">
                     <h2 className="break-words font-display text-3xl font-semibold tracking-tight md:text-4xl">{selectedNote.title || t('notebooks.untitledNote')}</h2>
                     <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">

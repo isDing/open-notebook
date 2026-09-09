@@ -701,8 +701,8 @@ export default function SourcesPage() {
                     <col className="w-auto" />
                     <col className="hidden w-[140px] sm:table-column" />
                     <col className="hidden w-[140px] sm:table-column" />
-                    <col className="hidden w-[100px] md:table-column" />
-                    <col className="hidden w-[100px] lg:table-column" />
+                    <col className="hidden w-[110px] md:table-column" />
+                    <col className="hidden w-[150px] lg:table-column" />
                     <col className="w-[52px] sm:w-[100px]" />
                   </colgroup>
                   <thead className="sticky top-0 bg-background z-10">

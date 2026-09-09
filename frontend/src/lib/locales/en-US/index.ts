@@ -301,6 +301,7 @@ export const enUS = {
   sources: {
     title: "Sources",
     pageDescription: "The links, files, and text you have collected.",
+    backToSources: "Back to Sources",
     newSource: "New Source",
     bulkContext: "Context",
     includeAllInContext: "Include all in context",
