@@ -582,14 +582,6 @@ export default function SourcesPage() {
               }
             />
           </div>
-        ) : displayedSources.length === 0 ? (
-          <div className="flex flex-1 items-center justify-center">
-            <EmptyState
-              icon={Search}
-              title={t('common.noMatches')}
-              description={t('common.tryDifferentSearch')}
-            />
-          </div>
         ) : (
           <div className="flex min-h-0 flex-1 flex-col">
             <div className="flex items-baseline gap-2">
@@ -668,7 +660,15 @@ export default function SourcesPage() {
                 viewMode === 'list' && 'rounded-md border'
               )}
             >
-              {viewMode === 'tile' ? (
+              {displayedSources.length === 0 ? (
+                <div className="flex h-full min-h-[20rem] items-center justify-center">
+                  <EmptyState
+                    icon={Search}
+                    title={t('common.noMatches')}
+                    description={t('common.tryDifferentSearch')}
+                  />
+                </div>
+              ) : viewMode === 'tile' ? (
                 <>
                   <div className="grid grid-cols-1 gap-5 md:grid-cols-2 min-[1800px]:grid-cols-3">
                     {displayedSources.map((source) => (

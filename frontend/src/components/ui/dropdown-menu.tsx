@@ -6,10 +6,37 @@ import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+interface DropdownMenuState {
+  open: boolean
+  setOpen: (open: boolean) => void
+}
+
+const DropdownMenuStateContext = React.createContext<DropdownMenuState | null>(null)
+
 function DropdownMenu({
+  open: controlledOpen,
+  onOpenChange,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Root>) {
-  return <DropdownMenuPrimitive.Root data-slot="dropdown-menu" {...props} />
+  const isControlled = controlledOpen !== undefined
+  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false)
+  const open = isControlled ? Boolean(controlledOpen) : uncontrolledOpen
+
+  const setOpen = (nextOpen: boolean) => {
+    if (!isControlled) setUncontrolledOpen(nextOpen)
+    onOpenChange?.(nextOpen)
+  }
+
+  return (
+    <DropdownMenuStateContext.Provider value={{ open, setOpen }}>
+      <DropdownMenuPrimitive.Root
+        data-slot="dropdown-menu"
+        {...props}
+        open={open}
+        onOpenChange={setOpen}
+      />
+    </DropdownMenuStateContext.Provider>
+  )
 }
 
 function DropdownMenuPortal({
@@ -20,14 +47,36 @@ function DropdownMenuPortal({
   )
 }
 
-function DropdownMenuTrigger({
-  ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.Trigger>) {
+function DropdownMenuTrigger(
+  props: React.ComponentProps<typeof DropdownMenuPrimitive.Trigger>
+) {
+  const menu = React.useContext(DropdownMenuStateContext)
+
+  if (!menu) {
+    return <DropdownMenuPrimitive.Trigger data-slot="dropdown-menu-trigger" {...props} />
+  }
+
+  const { asChild, onClick, children, ...rest } = props
+
   return (
     <DropdownMenuPrimitive.Trigger
       data-slot="dropdown-menu-trigger"
-      {...props}
-    />
+      asChild={asChild ?? true}
+      {...rest}
+      onPointerDownCapture={(event) => {
+        // Radix opens the menu on pointerdown (mouse/touch down), which
+        // triggers the menu on press+drag; the menu opens on a completed
+        // click/tap instead, so stop this pointerdown before it reaches
+        // the Radix trigger handler.
+        event.stopPropagation()
+      }}
+      onClick={(event) => {
+        menu.setOpen(!menu.open)
+        onClick?.(event)
+      }}
+    >
+      {children}
+    </DropdownMenuPrimitive.Trigger>
   )
 }
 

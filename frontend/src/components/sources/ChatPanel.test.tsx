@@ -1,6 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { act } from 'react'
 import { ChatPanel } from './ChatPanel'
 
 // useTranslation is mocked globally in setup.ts (t returns the key string)
@@ -154,21 +153,10 @@ describe('ChatPanel composer', () => {
       />
     )
 
-    // Radix toggles the menu on a primary pointerdown (button 0, no ctrl).
-    // jsdom has no PointerEvent, so fireEvent builds a bare Event that drops
-    // `button`/`ctrlKey`; dispatch a MouseEvent that carries both instead.
-    // Wrapped in act so the re-render that mounts the menu is flushed.
+    // The trigger opens the menu on a completed click rather than on
+    // pointerdown (mouse/touch down).
     const trigger = screen.getByRole('button', { name: 'chat.presetLabel' })
-    act(() => {
-      trigger.dispatchEvent(
-        new MouseEvent('pointerdown', {
-          button: 0,
-          ctrlKey: false,
-          bubbles: true,
-          cancelable: true,
-        }),
-      )
-    })
+    fireEvent.click(trigger)
 
     // The selector shows the preset title; selecting it fills the box with the
     // prompt.
