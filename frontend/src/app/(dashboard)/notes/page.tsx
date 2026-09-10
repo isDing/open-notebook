@@ -1,10 +1,8 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   AlertCircle,
-  ArrowDownAZ,
-  ArrowUpAZ,
   BookOpen,
   ChevronLeft,
   ChevronDown,
@@ -22,18 +20,14 @@ import { EmptyState } from '@/components/common/EmptyState'
 import { PageHeader } from '@/components/common/PageHeader'
 import { LoadingSpinner } from '@/components/common/LoadingSpinner'
 import { MarkdownRenderer } from '@/components/ui/markdown-renderer'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useAllNotes, useNote } from '@/lib/hooks/use-notes'
 import { useIsDesktop } from '@/lib/hooks/use-media-query'
 import { useTranslation } from '@/lib/hooks/use-translation'
 import { getDateLocale } from '@/lib/utils/date-locale'
 import { cn } from '@/lib/utils'
 import { CollapsibleColumn, createCollapseButton } from '@/components/notebooks/CollapsibleColumn'
-
-type NoteSort = 'updated-desc' | 'updated-asc'
 
 function normalizeNoteId(id: string) {
   return id.includes(':') ? id : `note:${id}`
@@ -63,7 +57,6 @@ function noteStats(content: string | null) {
 export default function NotesPage() {
   const { t, language } = useTranslation()
   const [query, setQuery] = useState('')
-  const [sort, setSort] = useState<NoteSort>('updated-desc')
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null)
   const [expandedGroupId, setExpandedGroupId] = useState<string | null>(null)
   const [listCollapsed, setListCollapsed] = useState(false)
@@ -81,9 +74,9 @@ export default function NotesPage() {
     return result.sort((a, b) => {
       const first = new Date(a.updated).getTime()
       const second = new Date(b.updated).getTime()
-      return sort === 'updated-desc' ? second - first : first - second
+      return second - first
     })
-  }, [normalizedQuery, notes, sort])
+  }, [normalizedQuery, notes])
 
   const noteGroups = useMemo(() => {
     const groups = new Map<string, { id: string; name: string; notes: typeof filteredNotes }>()
@@ -108,24 +101,37 @@ export default function NotesPage() {
       }
     }
 
+    // Groups by most recent activity (newest note in the group), most
+    // recent first; "unfiled" stays last; ties fall back to name.
+    const latestIn = (group: { notes: typeof filteredNotes }) =>
+      group.notes.reduce((latest, note) => Math.max(latest, new Date(note.updated).getTime()), 0)
+
     return [...groups.values()].sort((a, b) => {
       if (a.id === unfiledGroup.id) return 1
       if (b.id === unfiledGroup.id) return -1
-      return a.name.localeCompare(b.name)
+      const latestA = latestIn(a)
+      const latestB = latestIn(b)
+      return latestA !== latestB ? latestB - latestA : a.name.localeCompare(b.name)
     })
   }, [filteredNotes, t])
 
+  // At most one group open at a time; zero is a valid resting state —
+  // re-clicking an open group collapses it and nothing auto-reopens.
   const toggleGroup = (groupId: string) => {
     setExpandedGroupId((current) => (current === groupId ? null : groupId))
   }
 
-  // Accordion: exactly one group expanded at a time. Default to the first
-  // group, and fall back to it if the expanded one is filtered out.
+  // Initial state only: open the group holding the most recently updated
+  // note (filteredNotes[0] — the list is sorted by updated, desc). Fires
+  // once, so a later user collapse is never undone.
+  const autoExpandedInitial = useRef(false)
   useEffect(() => {
-    if (noteGroups.length === 0) return
-    if (expandedGroupId && noteGroups.some((group) => group.id === expandedGroupId)) return
-    setExpandedGroupId(noteGroups[0].id)
-  }, [noteGroups, expandedGroupId])
+    if (autoExpandedInitial.current || noteGroups.length === 0) return
+    autoExpandedInitial.current = true
+    const mostRecentNoteId = filteredNotes[0]?.id
+    const group = noteGroups.find((item) => item.notes.some((note) => note.id === mostRecentNoteId))
+    if (group) setExpandedGroupId(group.id)
+  }, [noteGroups, filteredNotes])
 
   useEffect(() => {
     if (filteredNotes.length === 0) {
@@ -158,42 +164,22 @@ export default function NotesPage() {
 
   const listVisibleOnMobile = !selectedNoteId
   const isListCollapsed = listCollapsed && isDesktop
+  // Mobile gives the reading pane the full viewport: the page header only
+  // makes sense above the list, not above an open note.
+  const showPageHeader = isDesktop || !selectedNoteId
 
   return (
-    <AppShell>
+    <AppShell hideMobileTopBar={Boolean(selectedNoteId)}>
       <div className="flex min-h-0 flex-1 flex-col">
-        <header className="shrink-0 border-b border-border bg-background px-4 py-4 sm:px-6 sm:py-5">
-          <PageHeader
-            className="mb-4"
-            title={t('notes.pageTitle')}
-            description={t('notes.pageDescription')}
-            actions={
-              <Select value={sort} onValueChange={(value) => setSort(value as NoteSort)}>
-                <SelectTrigger className="h-11 w-full lg:h-9 lg:w-44" aria-label={t('notes.sortLabel')}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="updated-desc">
-                    <span className="flex items-center gap-2"><ArrowDownAZ className="h-3.5 w-3.5" />{t('notes.sortRecent')}</span>
-                  </SelectItem>
-                  <SelectItem value="updated-asc">
-                    <span className="flex items-center gap-2"><ArrowUpAZ className="h-3.5 w-3.5" />{t('notes.sortOldest')}</span>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            }
-          />
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder={t('notes.searchPlaceholder')}
-              aria-label={t('notes.searchPlaceholder')}
-              className="h-11 pl-9 sm:h-9"
+        {showPageHeader ? (
+          <header className="shrink-0 border-b border-border bg-background px-4 py-3 sm:px-6 sm:py-4">
+            <PageHeader
+              className="mb-0 sm:mb-0"
+              title={t('notes.pageTitle')}
+              description={t('notes.pageDescription')}
             />
-          </div>
-        </header>
+          </header>
+        ) : null}
 
         <div
           className={cn(
@@ -215,6 +201,19 @@ export default function NotesPage() {
                     <span className="font-mono text-xs text-muted-foreground">{filteredNotes.length}</span>
                     {createCollapseButton(() => setListCollapsed(true), t('notes.listTitle'))}
                   </span>
+                </div>
+
+                <div className="shrink-0 border-b border-border px-4 py-3">
+                  <div className="relative">
+                    <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      value={query}
+                      onChange={(event) => setQuery(event.target.value)}
+                      placeholder={t('notes.searchPlaceholder')}
+                      aria-label={t('notes.searchPlaceholder')}
+                      className="h-10 pl-9"
+                    />
+                  </div>
                 </div>
 
                 <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
@@ -243,10 +242,10 @@ export default function NotesPage() {
                             aria-controls={`notes-group-items-${group.id}`}
                           >
                               <span id={`notes-group-${group.id}`} className="flex min-w-0 items-center gap-2 text-2xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                              {group.id === 'unfiled' ? <StickyNote className="h-3.5 w-3.5 text-gold" /> : <BookOpen className="h-3.5 w-3.5 text-teal" />}
+                              {group.id === 'unfiled' ? <StickyNote className="h-3.5 w-3.5 text-muted-foreground" /> : <BookOpen className="h-3.5 w-3.5 text-primary-ink" />}
                               <span className="truncate">{group.name}</span>
                             </span>
-                            <span className="flex shrink-0 items-center gap-2 font-mono text-[11px] text-muted-foreground">
+                            <span className="flex shrink-0 items-center gap-2 font-mono text-2xs text-muted-foreground">
                               {group.notes.length}
                               {expandedGroupId === group.id ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
                             </span>
@@ -262,18 +261,18 @@ export default function NotesPage() {
                                     onClick={() => setSelectedNoteId(note.id)}
                                     aria-current={isSelected ? 'true' : undefined}
                                     className={cn(
-                                      'group min-h-[116px] h-auto w-full overflow-hidden border-b border-border px-4 py-4 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
-                                      isSelected ? 'border-l-2 border-l-teal bg-teal-tint/40 pl-[14px]' : 'border-l-2 border-l-transparent hover:bg-accent'
+                                       'group min-h-[116px] h-auto w-full overflow-hidden border-b border-border px-4 py-4 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
+                                       isSelected ? 'border-l-2 border-l-primary-ink bg-primary-tint/50 pl-[14px]' : 'border-l-2 border-l-transparent hover:bg-accent'
                                     )}
                                   >
                                     <div className="flex items-start gap-3">
-                                      <span className={cn('mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-sm', isAi ? 'bg-teal-tint text-teal' : 'bg-gold-tint text-gold-deep')}>
+                                       <span className={cn('mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-sm', isAi ? 'bg-primary-tint text-primary-ink' : 'bg-muted text-muted-foreground')}>
                                         {isAi ? <Sparkles className="h-3.5 w-3.5" /> : <UserRound className="h-3.5 w-3.5" />}
                                       </span>
                                       <span className="min-w-0 flex-1">
                                         <span className="block truncate text-sm font-semibold text-foreground">{note.title || t('notebooks.untitledNote')}</span>
                                         <span className="mt-1 line-clamp-2 text-xs leading-5 text-muted-foreground">{notePreview(note.content) || t('notes.noContent')}</span>
-                                        <span className="mt-2 block text-[11px] text-muted-foreground">
+                                        <span className="mt-2 block text-2xs text-muted-foreground">
                                           {formatDistanceToNow(new Date(note.updated), { addSuffix: true, locale: getDateLocale(language) })}
                                         </span>
                                       </span>
@@ -295,17 +294,11 @@ export default function NotesPage() {
           <article className={cn('min-h-0 flex-col', listVisibleOnMobile ? 'hidden lg:flex' : 'flex')}>
             {selectedNote ? (
               <>
-                <div className="flex shrink-0 items-center gap-3 border-b border-border px-4 py-3 md:px-8">
-                  <Button variant="ghost" size="sm" className="min-h-11 touch-manipulation lg:hidden" onClick={() => setSelectedNoteId(null)}>
+                <div className="flex shrink-0 items-center px-2 py-1.5 lg:hidden">
+                  <Button variant="ghost" size="sm" className="min-h-11 touch-manipulation" onClick={() => setSelectedNoteId(null)}>
                     <ChevronLeft className="h-4 w-4" />
                     {t('common.back')}
                   </Button>
-                  <div className="hidden h-4 w-px bg-border lg:block" />
-                  <div className="flex min-w-0 items-center gap-2 text-xs text-muted-foreground">
-                    {selectedNote.note_type === 'ai' ? <Sparkles className="h-3.5 w-3.5 text-teal" /> : <UserRound className="h-3.5 w-3.5 text-gold" />}
-                    <Badge variant="outline">{selectedNote.note_type === 'ai' ? t('common.aiGenerated') : t('common.human')}</Badge>
-                    <span className="hidden sm:inline">{t('common.updated', { time: formatDistanceToNow(new Date(selectedNote.updated), { addSuffix: true, locale: getDateLocale(language) }) })}</span>
-                  </div>
                 </div>
 
                 <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
