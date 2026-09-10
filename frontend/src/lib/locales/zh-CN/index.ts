@@ -332,6 +332,7 @@ export const zhCN = {
     filterRecent: "最近添加",
     filterFile: "文件",
     filterLink: "链接",
+    filterText: "文本",
     sortLabel: "排序",
     sortAsc: "升序",
     sortDesc: "降序",

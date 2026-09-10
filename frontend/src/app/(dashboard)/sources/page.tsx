@@ -47,7 +47,7 @@ const PAGE_SIZE = 30
 const RECENT_WINDOW_MS = 30 * 24 * 60 * 60 * 1000
 
 type SourceType = 'link' | 'file' | 'text'
-type SourceFilter = 'all' | 'recent' | 'file' | 'link'
+type SourceFilter = 'all' | 'recent' | 'file' | 'link' | 'text'
 type ViewMode = 'tile' | 'list'
 
 const SORT_FIELDS: SourceSortField[] = [
@@ -73,6 +73,7 @@ const FILTERS: Array<{ id: SourceFilter; labelKey: string }> = [
   { id: 'recent', labelKey: 'sources.filterRecent' },
   { id: 'file', labelKey: 'sources.filterFile' },
   { id: 'link', labelKey: 'sources.filterLink' },
+  { id: 'text', labelKey: 'sources.filterText' },
 ]
 
 const TYPE_LABEL_KEYS: Record<SourceType, string> = {
@@ -211,7 +212,7 @@ export default function SourcesPage() {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [sortBy, setSortBy] = useState<SourceSortField>('updated')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
-  const [viewMode, setViewMode] = useState<ViewMode>('tile')
+  const [viewMode, setViewMode] = useState<ViewMode>('list')
   const [searchTerm, setSearchTerm] = useState('')
   const [filter, setFilter] = useState<SourceFilter>('all')
   const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; source: SourceListResponse | null }>({
@@ -239,6 +240,7 @@ export default function SourcesPage() {
       }
       if (filter === 'file' && !source.asset?.file_path) return false
       if (filter === 'link' && !source.asset?.url) return false
+      if (filter === 'text' && (source.asset?.url || source.asset?.file_path)) return false
       if (recentCutoff) {
         const created = new Date(source.created).getTime()
         if (Number.isNaN(created) || created < recentCutoff) return false
@@ -694,7 +696,7 @@ export default function SourcesPage() {
                   ref={tableRef}
                   tabIndex={0}
                   aria-label={t('sources.allSources')}
-                  className="w-full sm:min-w-[920px] outline-none table-fixed"
+                  className="w-full sm:min-w-[950px] outline-none table-fixed"
                 >
                   <colgroup>
                     <col className="w-[80px] sm:w-[120px]" />
@@ -702,7 +704,7 @@ export default function SourcesPage() {
                     <col className="hidden w-[140px] sm:table-column" />
                     <col className="hidden w-[140px] sm:table-column" />
                     <col className="hidden w-[110px] md:table-column" />
-                    <col className="hidden w-[150px] lg:table-column" />
+                    <col className="hidden w-[180px] lg:table-column" />
                     <col className="w-[52px] sm:w-[100px]" />
                   </colgroup>
                   <thead className="sticky top-0 bg-background z-10">

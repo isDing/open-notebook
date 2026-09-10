@@ -65,7 +65,7 @@ export default function NotesPage() {
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState<NoteSort>('updated-desc')
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null)
-  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set())
+  const [expandedGroupId, setExpandedGroupId] = useState<string | null>(null)
   const [listCollapsed, setListCollapsed] = useState(false)
 
   const { data: notes = [], isLoading, isError, refetch } = useAllNotes()
@@ -116,16 +116,16 @@ export default function NotesPage() {
   }, [filteredNotes, t])
 
   const toggleGroup = (groupId: string) => {
-    setCollapsedGroups((current) => {
-      const next = new Set(current)
-      if (next.has(groupId)) {
-        next.delete(groupId)
-      } else {
-        next.add(groupId)
-      }
-      return next
-    })
+    setExpandedGroupId((current) => (current === groupId ? null : groupId))
   }
+
+  // Accordion: exactly one group expanded at a time. Default to the first
+  // group, and fall back to it if the expanded one is filtered out.
+  useEffect(() => {
+    if (noteGroups.length === 0) return
+    if (expandedGroupId && noteGroups.some((group) => group.id === expandedGroupId)) return
+    setExpandedGroupId(noteGroups[0].id)
+  }, [noteGroups, expandedGroupId])
 
   useEffect(() => {
     if (filteredNotes.length === 0) {
@@ -239,7 +239,7 @@ export default function NotesPage() {
                             type="button"
                             className="sticky top-0 z-10 flex min-h-11 w-full items-center justify-between border-b border-border bg-background/95 px-4 text-left backdrop-blur-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:h-10 sm:min-h-0"
                             onClick={() => toggleGroup(group.id)}
-                            aria-expanded={!collapsedGroups.has(group.id)}
+                            aria-expanded={expandedGroupId === group.id}
                             aria-controls={`notes-group-items-${group.id}`}
                           >
                               <span id={`notes-group-${group.id}`} className="flex min-w-0 items-center gap-2 text-2xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
@@ -248,10 +248,10 @@ export default function NotesPage() {
                             </span>
                             <span className="flex shrink-0 items-center gap-2 font-mono text-[11px] text-muted-foreground">
                               {group.notes.length}
-                              {collapsedGroups.has(group.id) ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                              {expandedGroupId === group.id ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
                             </span>
                           </button>
-                          <div id={`notes-group-items-${group.id}`} hidden={collapsedGroups.has(group.id)}>
+                          <div id={`notes-group-items-${group.id}`} hidden={expandedGroupId !== group.id}>
                             {group.notes.map((note) => {
                               const isSelected = note.id === selectedNoteId
                               const isAi = note.note_type === 'ai'

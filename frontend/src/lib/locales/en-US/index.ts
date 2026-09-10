@@ -330,6 +330,7 @@ export const enUS = {
     filterRecent: "Recently added",
     filterFile: "Files",
     filterLink: "Links",
+    filterText: "Text",
     sortLabel: "Sort",
     sortAsc: "Ascending",
     sortDesc: "Descending",
