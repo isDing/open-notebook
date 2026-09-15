@@ -78,6 +78,10 @@ class ModelCreate(BaseModel):
     credential: Optional[str] = Field(
         None, description="Credential ID to link this model to"
     )
+    thinking_level: Optional[str] = Field(
+        None,
+        description="Thinking strength (low, medium, high, xhigh, max, ultra); null for provider default",
+    )
 
 
 class ModelResponse(BaseModel):
@@ -86,8 +90,16 @@ class ModelResponse(BaseModel):
     provider: str
     type: str
     credential: Optional[str] = None
+    thinking_level: Optional[str] = None
     created: str
     updated: str
+
+
+class ModelThinkingUpdate(BaseModel):
+    thinking_level: Optional[str] = Field(
+        None,
+        description="Thinking strength (low, medium, high, xhigh, max, ultra); null to clear and use the provider default",
+    )
 
 
 class DefaultModelsResponse(BaseModel):

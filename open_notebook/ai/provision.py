@@ -3,6 +3,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from loguru import logger
 
 from open_notebook.ai.models import model_manager
+from open_notebook.ai.thinking import apply_thinking_to_langchain
 from open_notebook.exceptions import ConfigurationError
 from open_notebook.utils import token_count
 
@@ -58,4 +59,13 @@ async def provision_langchain_model(
             f"Please check that the model configured for '{default_type}' is a language model, not an embedding or speech model."
         )
 
-    return model.to_langchain()
+    langchain_model = model.to_langchain()
+
+    # Apply the per-model thinking level to the LangChain instance (to_langchain
+    # only forwards a fixed field set, so provider-specific thinking
+    # parameters must be attached here).
+    row = getattr(model, "model_row", None)
+    if row is not None and getattr(row, "thinking_level", None):
+        apply_thinking_to_langchain(langchain_model, row.provider, row.thinking_level)
+
+    return langchain_model

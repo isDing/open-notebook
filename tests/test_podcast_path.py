@@ -91,7 +91,9 @@ class TestResolveModelConfigMaxTokens:
         fake_model = SimpleNamespace(
             provider="anthropic",
             name="claude-sonnet-4",
+            type="language",
             credential=None,
+            thinking_level=None,
         )
 
         with (
@@ -117,7 +119,9 @@ class TestResolveModelConfigMaxTokens:
         fake_model = SimpleNamespace(
             provider="anthropic",
             name="claude-sonnet-4",
+            type="language",
             credential=None,
+            thinking_level=None,
         )
 
         with (

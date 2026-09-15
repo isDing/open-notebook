@@ -546,6 +546,21 @@
     .touch-reveal:focus-visible {
       opacity: 1;
     }
+
+    /* Action clusters that overlay their parent's right edge on hover
+       (model badges) instead of reserving space while idle. On touch
+       devices they stay in normal flow, always visible. */
+    .action-overlay {
+      position: absolute;
+      inset-block: 0;
+      inset-inline-end: 0;
+      pointer-events: none;
+    }
+
+    .group\/model:hover .action-overlay,
+    .action-overlay:focus-within {
+      pointer-events: auto;
+    }
   }
 
   .sidebar-menu-item:hover {

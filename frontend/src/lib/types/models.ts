@@ -1,9 +1,12 @@
+export type ThinkingLevel = 'low' | 'medium' | 'high' | 'xhigh' | 'max' | 'ultra'
+
 export interface Model {
   id: string
   name: string
   provider: string
   type: 'language' | 'embedding' | 'text_to_speech' | 'speech_to_text'
   credential?: string | null
+  thinking_level?: ThinkingLevel | null
   created: string
   updated: string
 }
@@ -13,6 +16,7 @@ export interface CreateModelRequest {
   provider: string
   type: 'language' | 'embedding' | 'text_to_speech' | 'speech_to_text'
   credential?: string
+  thinking_level?: ThinkingLevel | null
 }
 
 export interface ModelDefaults {

@@ -11,6 +11,7 @@ from api.models import (
     DefaultModelsResponse,
     ModelCreate,
     ModelResponse,
+    ModelThinkingUpdate,
     ProviderAvailabilityResponse,
 )
 from open_notebook.ai.connection_tester import test_individual_model
@@ -22,6 +23,7 @@ from open_notebook.ai.model_discovery import (
     sync_provider_models,
 )
 from open_notebook.ai.models import DefaultModels, Model
+from open_notebook.ai.thinking import validate_thinking_level
 from open_notebook.domain.credential import Credential
 from open_notebook.exceptions import (
     InvalidInputError,
@@ -188,6 +190,7 @@ async def get_models(
                 provider=model.provider,
                 type=model.type,
                 credential=model.credential,
+                thinking_level=model.thinking_level,
                 created=str(model.created),
                 updated=str(model.updated),
             )
@@ -214,6 +217,9 @@ async def create_model(model_data: ModelCreate):
                 detail=f"Invalid model type. Must be one of: {valid_types}",
             )
 
+        # Validate thinking level (None passes through)
+        thinking_level = validate_thinking_level(model_data.thinking_level)
+
         # Check for duplicate model name under the same provider and type (case-insensitive)
         from open_notebook.database.repository import repo_query
 
@@ -236,6 +242,7 @@ async def create_model(model_data: ModelCreate):
             provider=model_data.provider,
             type=model_data.type,
             credential=model_data.credential,
+            thinking_level=thinking_level,
         )
         await new_model.save()
 
@@ -245,6 +252,7 @@ async def create_model(model_data: ModelCreate):
             provider=new_model.provider,
             type=new_model.type,
             credential=new_model.credential,
+            thinking_level=new_model.thinking_level,
             created=str(new_model.created),
             updated=str(new_model.updated),
         )
@@ -257,6 +265,44 @@ async def create_model(model_data: ModelCreate):
     except Exception as e:
         logger.error(f"Error creating model: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error creating model: {str(e)}")
+
+
+@router.put("/models/{model_id}/thinking", response_model=ModelResponse)
+async def update_model_thinking(model_id: str, data: ModelThinkingUpdate):
+    """Set (or clear, with null) the thinking strength for a model."""
+    try:
+        model = await Model.get(model_id)
+    except HTTPException:
+        raise
+    except NotFoundError:
+        raise HTTPException(status_code=404, detail="Model not found")
+    except OpenNotebookError:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching model {model_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error fetching model: {str(e)}")
+
+    try:
+        model.thinking_level = validate_thinking_level(data.thinking_level)
+        await model.save()
+    except InvalidInputError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except OpenNotebookError:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating thinking level for model {model_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error updating model: {str(e)}")
+
+    return ModelResponse(
+        id=model.id,
+        name=model.name,
+        provider=model.provider,
+        type=model.type,
+        credential=model.credential,
+        thinking_level=model.thinking_level,
+        created=str(model.created),
+        updated=str(model.updated),
+    )
 
 
 @router.delete("/models/{model_id}")
@@ -688,6 +734,7 @@ async def get_models_by_provider(provider: str):
                 provider=model.get("provider", ""),
                 type=model.get("type", ""),
                 credential=model.get("credential"),
+                thinking_level=model.get("thinking_level"),
                 created=str(model.get("created", "")),
                 updated=str(model.get("updated", "")),
             )

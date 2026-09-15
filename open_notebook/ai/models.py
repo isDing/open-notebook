@@ -54,11 +54,14 @@ async def _revalidate_config_urls(config: dict, provider: str) -> None:
 
 class Model(ObjectModel):
     table_name: ClassVar[str] = "model"
-    nullable_fields: ClassVar[set[str]] = {"credential"}
+    nullable_fields: ClassVar[set[str]] = {"credential", "thinking_level"}
     name: str
     provider: str
     type: str
     credential: Optional[str] = None
+    # Per-model thinking strength: one of open_notebook.ai.thinking.THINKING_LEVELS
+    # ("low" | "medium" | "high" | "xhigh" | "max" | "ultra") or None.
+    thinking_level: Optional[str] = None
 
     @classmethod
     async def get_models_by_type(cls, model_type):
@@ -236,6 +239,22 @@ class ModelManager:
         # Merge any additional kwargs (e.g. temperature)
         config.update(kwargs)
 
+        # Per-model thinking level → provider-specific request parameters.
+        # Applied to the Esperanto config (native call path); the LangChain
+        # path is handled in provision_langchain_model via model_row.
+        if model.type == "language" and model.thinking_level:
+            from open_notebook.ai.thinking import (
+                min_max_tokens_for,
+                thinking_api_params,
+            )
+
+            config.update(thinking_api_params(model.provider, model.thinking_level))
+            min_max = min_max_tokens_for(model.provider, model.thinking_level)
+            if min_max:
+                config["max_tokens"] = max(
+                    int(config.get("max_tokens") or 0), min_max
+                )
+
         # Require base_url + api_key and normalize the URL for anthropic_compatible.
         if model.provider == "anthropic_compatible" and (
             not str(config.get("api_key", "")).strip()
@@ -258,11 +277,17 @@ class ModelManager:
 
         # Create model based on type (Esperanto will cache the instance)
         if model.type == "language":
-            return AIFactory.create_language(
+            esp_model = AIFactory.create_language(
                 model_name=model.name,
                 provider=provider,
                 config=config,
             )
+            # Expose the domain row so callers (provision_langchain_model)
+            # can apply DB-level settings like the thinking level to the
+            # LangChain instance (setattr: not part of the esperanto
+            # LanguageModel dataclass schema).
+            setattr(esp_model, "model_row", model)
+            return esp_model
         elif model.type == "embedding":
             return AIFactory.create_embedding(
                 model_name=model.name,

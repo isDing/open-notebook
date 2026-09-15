@@ -1,0 +1,7 @@
+-- Migration 25: Per-model thinking level (reasoning strength)
+-- Optional "low" | "medium" | "high" | "xhigh" | "max" | "ultra" on the
+-- model table; unset means the provider default. Mapped to
+-- provider-specific parameters at call time (see
+-- open_notebook/ai/thinking.py).
+
+DEFINE FIELD IF NOT EXISTS thinking_level ON TABLE model TYPE option<string>;

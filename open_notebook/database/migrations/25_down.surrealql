@@ -1,0 +1,2 @@
+-- Migration 25 rollback: remove the per-model thinking level field
+REMOVE FIELD IF EXISTS thinking_level ON TABLE model;

@@ -10,6 +10,7 @@ import {
   ProviderModelCount,
   AutoAssignResult,
   ModelTestResult,
+  ThinkingLevel,
 } from '@/lib/types/models'
 
 export const modelsApi = {
@@ -101,6 +102,16 @@ export const modelsApi = {
    */
   testModel: async (modelId: string): Promise<ModelTestResult> => {
     const response = await apiClient.post<ModelTestResult>(`/models/${modelId}/test`)
+    return response.data
+  },
+
+  /**
+   * Set (or clear with null) the thinking strength for a model
+   */
+  updateThinking: async (modelId: string, thinkingLevel: ThinkingLevel | null): Promise<Model> => {
+    const response = await apiClient.put<Model>(`/models/${modelId}/thinking`, {
+      thinking_level: thinkingLevel,
+    })
     return response.data
   },
 }

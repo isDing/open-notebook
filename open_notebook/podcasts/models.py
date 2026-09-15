@@ -30,6 +30,16 @@ async def _resolve_model_config(
         await provision_provider_keys(model.provider)
     if max_tokens is not None:
         config = {**config, "max_tokens": max_tokens}
+    if model.type == "language" and model.thinking_level:
+        from open_notebook.ai.thinking import (
+            min_max_tokens_for,
+            thinking_api_params,
+        )
+
+        config.update(thinking_api_params(model.provider, model.thinking_level))
+        min_max = min_max_tokens_for(model.provider, model.thinking_level)
+        if min_max:
+            config["max_tokens"] = max(int(config.get("max_tokens") or 0), min_max)
     return (model.provider, model.name, config)
 
 

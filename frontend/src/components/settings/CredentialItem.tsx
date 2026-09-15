@@ -14,12 +14,31 @@ import {
   Check,
   X,
   Bot,
+  Brain,
 } from 'lucide-react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { useTranslation } from '@/lib/hooks/use-translation'
-import { useDeleteModel, useTestModel } from '@/lib/hooks/use-models'
+import { useDeleteModel, useTestModel, useUpdateModelThinking } from '@/lib/hooks/use-models'
 import { useCredential, useTestCredential } from '@/lib/hooks/use-credentials'
 import { Credential } from '@/lib/api/credentials'
-import { Model, ModelDefaults } from '@/lib/types/models'
+import { Model, ModelDefaults, ThinkingLevel } from '@/lib/types/models'
+
+const THINKING_LEVELS: ThinkingLevel[] = ['low', 'medium', 'high', 'xhigh', 'max', 'ultra']
+
+const THINKING_LEVEL_I18N_KEYS: Record<ThinkingLevel, string> = {
+  low: 'models.thinkingLow',
+  medium: 'models.thinkingMedium',
+  high: 'models.thinkingHigh',
+  xhigh: 'models.thinkingXhigh',
+  max: 'models.thinkingMax',
+  ultra: 'models.thinkingUltra',
+}
 import {
   MODEL_TYPES,
   getTypeIcon,
@@ -49,6 +68,7 @@ export function CredentialItem({
   const { testCredential, isPending: isTestPending, testResults } = useTestCredential()
   const { testModel, isPending: isModelTestPending, testingModelId, testResult: modelTestResult, testedModelName, clearResult: clearModelTestResult } = useTestModel()
   const deleteModel = useDeleteModel()
+  const updateThinking = useUpdateModelThinking()
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [discoverOpen, setDiscoverOpen] = useState(false)
@@ -169,34 +189,83 @@ export function CredentialItem({
                   <div className="flex flex-wrap gap-1">
                     {linkedModels.filter(m => m.type === type).map(model => {
                       const defaultSlot = defaultSlots[model.id]
+                      const badgeVariant = defaultSlot ? 'default' : 'secondary'
                       return (
                         <Badge
                           key={model.id}
-                          variant={defaultSlot ? 'default' : 'secondary'}
-                          className="font-mono text-[11px] gap-1 pr-0.5 group/model"
+                          variant={badgeVariant}
+                          className="relative font-mono text-[11px] gap-1 pr-0.5 group/model"
                         >
                           {model.name}
                           {defaultSlot && <span className="ml-0.5 opacity-75">({defaultSlot})</span>}
-                          <button
-                            className="ml-0.5 min-h-7 min-w-7 touch-reveal group-hover/model:opacity-60 hover:!opacity-100 transition-opacity"
-                            onClick={() => testModel(model.id, model.name)}
-                            disabled={isModelTestPending && testingModelId === model.id}
-                            title={t('models.testModel')}
-                            aria-label={t('models.testModel')}
+                          {model.type === 'language' && model.thinking_level && (
+                            <span className="ml-0.5 text-fern">
+                              · {t(THINKING_LEVEL_I18N_KEYS[model.thinking_level])}
+                            </span>
+                          )}
+                          {/* Actions overlay the badge's right edge on hover instead
+                              of reserving space, keeping idle badges compact
+                              (.action-overlay in globals.css; in-flow on touch) */}
+                          <div
+                            className={`action-overlay z-10 flex items-center gap-0.5 pl-2 pr-1 ${badgeVariant === 'default' ? 'bg-primary-tint' : 'bg-popover'} touch-reveal group-hover/model:opacity-60 hover:!opacity-100 transition-opacity`}
                           >
-                            {isModelTestPending && testingModelId === model.id
-                              ? <Loader2 className="h-3 w-3 animate-spin" />
-                              : <Plug className="h-3 w-3" />
-                            }
-                          </button>
-                          <button
-                            className="min-h-7 min-w-7 touch-reveal group-hover/model:opacity-60 hover:!opacity-100 hover:text-destructive transition-opacity"
-                            onClick={() => deleteModel.mutate(model.id)}
-                            title={t('models.deleteModel')}
-                            aria-label={t('models.deleteModel')}
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
+                            {model.type === 'language' && (
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <button
+                                    className="min-h-7 min-w-7"
+                                    title={
+                                      model.thinking_level
+                                        ? `${t('models.thinkingTitle')}: ${t(THINKING_LEVEL_I18N_KEYS[model.thinking_level])}`
+                                        : t('models.thinkingTitle')
+                                    }
+                                    aria-label={t('models.thinkingTitle')}
+                                  >
+                                    <Brain className={`h-3 w-3 ${model.thinking_level ? 'text-fern' : ''}`} />
+                                  </button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="min-w-40">
+                                  <DropdownMenuRadioGroup
+                                    value={model.thinking_level ?? 'default'}
+                                    onValueChange={(value) =>
+                                      updateThinking.mutate({
+                                        modelId: model.id,
+                                        thinkingLevel: value === 'default' ? null : (value as ThinkingLevel),
+                                      })
+                                    }
+                                  >
+                                    <DropdownMenuRadioItem value="default">
+                                      {t('models.thinkingDefault')}
+                                    </DropdownMenuRadioItem>
+                                    {THINKING_LEVELS.map((level) => (
+                                      <DropdownMenuRadioItem key={level} value={level}>
+                                        {t(THINKING_LEVEL_I18N_KEYS[level])}
+                                      </DropdownMenuRadioItem>
+                                    ))}
+                                  </DropdownMenuRadioGroup>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            )}
+                            <button
+                              className="min-h-7 min-w-7"
+                              onClick={() => testModel(model.id, model.name)}
+                              disabled={isModelTestPending && testingModelId === model.id}
+                              title={t('models.testModel')}
+                              aria-label={t('models.testModel')}
+                            >
+                              {isModelTestPending && testingModelId === model.id
+                                ? <Loader2 className="h-3 w-3 animate-spin" />
+                                : <Plug className="h-3 w-3" />}
+                            </button>
+                            <button
+                              className="min-h-7 min-w-7 hover:text-destructive"
+                              onClick={() => deleteModel.mutate(model.id)}
+                              title={t('models.deleteModel')}
+                              aria-label={t('models.deleteModel')}
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </div>
                         </Badge>
                       )
                     })}
