@@ -577,6 +577,34 @@
   .prose blockquote p::after {
     content: none !important;
   }
+
+  /* Scrollbars — thin rounded slate, transparent track (both themes).
+     Thumb uses the faintest ink step; hover nudges toward text ink. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--ink-faintest) transparent;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track,
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--ink-faintest);
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: color-mix(in srgb, var(--ink-faintest) 70%, var(--text));
+  }
 }
 
 /* @uiw/react-md-editor hard-codes a 14px editor font (with !important).
