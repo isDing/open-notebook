@@ -489,6 +489,7 @@ export const zhCN = {
     deleteSessionDesc: "确定要删除此聊天会话吗？此操作无法撤销。",
     sendPlaceholder: "向您的来源提问...",
     sessionsTitle: "对话列表",
+    addSession: "添加会话",
     chatWith: "与{{name}}对话",
     startConversation: "开始针对{{type}}进行对话",
     askQuestions: "提出问题以更好地理解内容",

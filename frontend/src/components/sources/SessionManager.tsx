@@ -2,7 +2,8 @@
 
 import { useState, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
+import { DialogClose } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
@@ -103,23 +104,27 @@ export function SessionManager({
 
   return (
     <>
-      <Card className="h-full flex flex-col">
-        <CardHeader className="pb-3">
-          <CardTitle className="flex min-w-0 items-center justify-between gap-2">
-            <span className="flex min-w-0 items-center gap-2 truncate">
-              <MessageSquare className="h-5 w-5" />
-              {t('chat.sessions')}
-            </span>
+      <Card className="relative h-full flex flex-col border-0">
+        <div className="relative flex flex-shrink-0 items-center justify-center px-16">
+          <Button
+            variant="outline"
+            onClick={() => setIsCreating(true)}
+            className="h-11 gap-2 px-4 sm:h-10"
+          >
+            <Plus className="h-5 w-5" />
+            {t('chat.addSession')}
+          </Button>
+          <DialogClose asChild>
             <Button
-              size="sm"
+              size="icon"
               variant="outline"
-              onClick={() => setIsCreating(true)}
-              className="h-10 w-10 p-0 sm:h-8 sm:w-8"
+              className="absolute right-3 top-1/2 h-10 w-10 -translate-y-1/2 sm:h-9 sm:w-9"
+              aria-label={t('common.close')}
             >
-              <Plus className="h-4 w-4" />
+              <X className="h-5 w-5" />
             </Button>
-          </CardTitle>
-        </CardHeader>
+          </DialogClose>
+        </div>
         <CardContent className="flex-1 p-0 min-h-0">
           <ScrollArea className="h-full px-4">
             {isCreating && (

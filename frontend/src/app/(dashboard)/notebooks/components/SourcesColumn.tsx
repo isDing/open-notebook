@@ -172,7 +172,6 @@ export function SourcesColumn({
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="sm" className="h-10 w-10 p-0 text-muted-foreground sm:h-8 sm:w-8" title={t('sources.bulkContext')} aria-label={t('sources.bulkContext')}>
                         <ListChecks className="h-4 w-4" />
-                        <ChevronDown className="h-4 w-4 ml-1" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
