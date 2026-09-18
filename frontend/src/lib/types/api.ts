@@ -193,12 +193,34 @@ export interface SendMessageRequest {
   model_override?: string
 }
 
-export interface SourceChatStreamEvent {
-  type: 'user_message' | 'ai_message' | 'context_indicators' | 'complete' | 'error'
+// --- Streaming generation jobs -------------------------------------------
+
+export type ChatJobStatus = 'running' | 'completed' | 'failed'
+
+export interface JobSubmitResponse {
+  session_id: string
+  job_id: string
+  status: ChatJobStatus
+}
+
+export interface ChatJobResponse {
+  job_id: string
+  status: ChatJobStatus
+}
+
+export type ChatStreamEventType =
+  | 'delta'
+  | 'context_indicators'
+  | 'complete'
+  | 'error'
+
+export interface ChatStreamEvent {
+  type: ChatStreamEventType
   content?: string
   data?: unknown
   message?: string
-  timestamp?: string
+  message_id?: string
+  context_indicators?: SourceChatContextIndicator
 }
 
 // Notebook Chat Types

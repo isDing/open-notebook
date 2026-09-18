@@ -34,6 +34,17 @@ class SuccessResponse(BaseModel):
     message: str = Field(..., description="Success message")
 
 
+class JobSubmitResponse(BaseModel):
+    session_id: str = Field(..., description="Chat session ID")
+    job_id: str = Field(..., description="Generation job ID")
+    status: str = Field(..., description="Job status (running | completed | failed)")
+
+
+class ChatJobResponse(BaseModel):
+    job_id: str = Field(..., description="Generation job ID")
+    status: str = Field(..., description="Job status (running | completed | failed)")
+
+
 def normalize_record_id(table: str, record_id: str) -> str:
     """Ensure a record ID carries its table prefix (`table:id`)."""
     prefix = f"{table}:"

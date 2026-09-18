@@ -5,13 +5,15 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { getApiErrorMessage } from '@/lib/utils/error-handler'
 import { useTranslation } from '@/lib/hooks/use-translation'
+import { chatApi } from '@/lib/api/chat'
 import { sourceChatApi } from '@/lib/api/source-chat'
 import {
   SourceChatSession,
   SourceChatMessage,
   SourceChatContextIndicator,
   CreateSourceChatSessionRequest,
-  UpdateSourceChatSessionRequest
+  UpdateSourceChatSessionRequest,
+  ChatStreamEvent
 } from '@/lib/types/api'
 
 export function useSourceChat(sourceId: string) {
@@ -21,6 +23,9 @@ export function useSourceChat(sourceId: string) {
   const [messages, setMessages] = useState<SourceChatMessage[]>([])
   const [isStreaming, setIsStreaming] = useState(false)
   const [contextIndicators, setContextIndicators] = useState<SourceChatContextIndicator | null>(null)
+
+  // The job the UI is currently attached to (guards against double-attach)
+  const activeJobRef = useRef<{ jobId: string; sessionId: string } | null>(null)
   const abortControllerRef = useRef<AbortController | null>(null)
 
   // Fetch sessions
@@ -31,18 +36,23 @@ export function useSourceChat(sourceId: string) {
   })
 
   // Fetch current session with messages
-  const { data: currentSession, refetch: refetchCurrentSession } = useQuery({
+  const { data: currentSession } = useQuery({
     queryKey: ['sourceChatSession', sourceId, currentSessionId],
     queryFn: () => sourceChatApi.getSession(sourceId, currentSessionId!),
     enabled: !!sourceId && !!currentSessionId
   })
 
-  // Update messages when session changes
+  // Update messages when session changes. Skip while a generation for THIS
+  // session is streaming (the local state carries the in-progress message).
   useEffect(() => {
-    if (currentSession?.messages) {
-      setMessages(currentSession.messages)
+    if (!currentSession?.messages) return
+    const active = activeJobRef.current
+    if (active && active.sessionId === currentSessionId) return
+    setMessages(currentSession.messages)
+    if (currentSession.context_indicators) {
+      setContextIndicators(currentSession.context_indicators)
     }
-  }, [currentSession])
+  }, [currentSession, currentSessionId])
 
   // Auto-select most recent session when sessions are loaded
   useEffect(() => {
@@ -52,6 +62,109 @@ export function useSourceChat(sourceId: string) {
       setCurrentSessionId(mostRecentSession.id)
     }
   }, [sessions, currentSessionId])
+
+  // Attach to a generation job: replay buffered tokens, then follow live.
+  // The job keeps running server-side regardless of this attachment.
+  const attachToJob = useCallback(async (jobId: string, sessionId: string) => {
+    // Already attached to this job (e.g. re-attach effect racing sendMessage)
+    if (activeJobRef.current?.jobId === jobId) return
+
+    const controller = new AbortController()
+    activeJobRef.current = { jobId, sessionId }
+    abortControllerRef.current = controller
+    setIsStreaming(true)
+
+    // Accumulated streaming AI message for this attachment
+    const aiMessageId = `stream-${jobId}`
+    let appended = false
+
+    const handleEvent = (event: ChatStreamEvent) => {
+      if (event.type === 'delta') {
+        const piece = event.content || ''
+        if (!appended) {
+          appended = true
+          setMessages(prev => [...prev, {
+            id: aiMessageId,
+            type: 'ai',
+            content: piece,
+            timestamp: new Date().toISOString()
+          }])
+        } else {
+          setMessages(prev => prev.map(msg =>
+            msg.id === aiMessageId ? { ...msg, content: msg.content + piece } : msg
+          ))
+        }
+      } else if (event.type === 'context_indicators') {
+        setContextIndicators(event.data as SourceChatContextIndicator)
+      } else if (event.type === 'error') {
+        throw new Error(event.message || 'Stream error')
+      }
+      // 'complete' is terminal; the final message is persisted server-side
+      // and picked up by the session refetch below. Its payload may also
+      // carry context_indicators (source chat).
+      if (event.type === 'complete' && event.context_indicators) {
+        setContextIndicators(event.context_indicators)
+      }
+    }
+
+    try {
+      await chatApi.streamJob(jobId, handleEvent, controller.signal)
+
+      // Replace the streamed placeholder with the persisted message
+      queryClient.invalidateQueries({ queryKey: ['sourceChatSession', sourceId, sessionId] })
+      queryClient.invalidateQueries({ queryKey: ['sourceChatSessions', sourceId] })
+    } catch (err: unknown) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        // User cancelled the attachment; the job keeps running server-side
+        return
+      }
+      const error = err as { response?: { data?: { detail?: string } }, message?: string };
+      console.error('Error streaming response:', error)
+      toast.error(getApiErrorMessage(
+        error.response?.data?.detail || error.message,
+        (key) => t(key),
+        'apiErrors.failedToSendMessage'
+      ))
+      // Drop the optimistic user message and partial AI placeholder
+      setMessages(prev => prev.filter(
+        msg => !msg.id.startsWith('temp-') && msg.id !== aiMessageId
+      ))
+    } finally {
+      if (abortControllerRef.current === controller) {
+        abortControllerRef.current = null
+      }
+      if (activeJobRef.current?.jobId === jobId) {
+        activeJobRef.current = null
+      }
+      setIsStreaming(false)
+    }
+  }, [sourceId, queryClient, t])
+
+  // Re-attach after a page refresh: if this session has a live (or recently
+  // finished) job, resume its stream or pick up the persisted result.
+  useEffect(() => {
+    if (!currentSessionId) return
+    let cancelled = false
+
+    const tryReattach = async () => {
+      const job = await chatApi.getActiveJob(currentSessionId)
+      if (cancelled || !job) return
+      if (activeJobRef.current?.jobId === job.job_id) return
+      if (job.status === 'running') {
+        await attachToJob(job.job_id, currentSessionId)
+      } else if (job.status === 'completed') {
+        queryClient.invalidateQueries({ queryKey: ['sourceChatSession', sourceId, currentSessionId] })
+      }
+    }
+
+    tryReattach().catch((err) => {
+      console.error('Failed to re-attach to active job:', err)
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [currentSessionId, attachToJob, queryClient, sourceId])
 
   // Create session mutation
   const createSessionMutation = useMutation({
@@ -101,7 +214,7 @@ export function useSourceChat(sourceId: string) {
     }
   })
 
-  // Send message with streaming
+  // Send message: submit the generation job, then attach to its stream
   const sendMessage = useCallback(async (message: string, modelOverride?: string) => {
     let sessionId = currentSessionId
 
@@ -129,87 +242,28 @@ export function useSourceChat(sourceId: string) {
       timestamp: new Date().toISOString()
     }
     setMessages(prev => [...prev, userMessage])
-    setIsStreaming(true)
+    setContextIndicators(null)
 
     try {
-      const response = await sourceChatApi.sendMessage(sourceId, sessionId, {
+      const job = await sourceChatApi.sendMessage(sourceId, sessionId, {
         message,
         model_override: modelOverride
       })
 
-      if (!response) {
-        throw new Error('No response body')
-      }
-
-      const reader = response.getReader()
-      const decoder = new TextDecoder()
-      let aiMessage: SourceChatMessage | null = null
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-
-        const text = decoder.decode(value)
-        const lines = text.split('\n')
-
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            try {
-              const data = JSON.parse(line.slice(6))
-              
-              if (data.type === 'ai_message') {
-                // Create AI message on first content chunk to avoid empty bubble
-                if (!aiMessage) {
-                  aiMessage = {
-                    id: `ai-${Date.now()}`,
-                    type: 'ai',
-                    content: data.content || '',
-                    timestamp: new Date().toISOString()
-                  }
-                  setMessages(prev => [...prev, aiMessage!])
-                } else {
-                  aiMessage.content += data.content || ''
-                  setMessages(prev =>
-                    prev.map(msg => msg.id === aiMessage!.id
-                      ? { ...msg, content: aiMessage!.content }
-                      : msg
-                    )
-                  )
-                }
-              } else if (data.type === 'context_indicators') {
-                setContextIndicators(data.data)
-              } else if (data.type === 'error') {
-                throw new Error(data.message || 'Stream error')
-              }
-            } catch (e) {
-              if (e instanceof SyntaxError) {
-                console.error('Error parsing SSE data:', e)
-              } else {
-                throw e
-              }
-            }
-          }
-        }
-      }
+      await attachToJob(job.job_id, job.session_id)
     } catch (err: unknown) {
       const error = err as { response?: { data?: { detail?: string } }, message?: string };
       console.error('Error sending message:', error)
       toast.error(getApiErrorMessage(error.response?.data?.detail || error.message, (key) => t(key), 'apiErrors.failedToSendMessage'))
       // Remove optimistic messages on error
       setMessages(prev => prev.filter(msg => !msg.id.startsWith('temp-')))
-    } finally {
-      setIsStreaming(false)
-      // Refetch session to get persisted messages
-      refetchCurrentSession()
     }
-  }, [sourceId, currentSessionId, refetchCurrentSession, queryClient, t])
+  }, [sourceId, currentSessionId, attachToJob, queryClient, t])
 
-  // Cancel streaming
+  // Cancel streaming: detaches from the job; generation continues server-side
+  // and the final message is persisted (re-attach after refresh to see it).
   const cancelStreaming = useCallback(() => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort()
-      setIsStreaming(false)
-    }
+    abortControllerRef.current?.abort()
   }, [])
 
   // Switch session

@@ -5,7 +5,10 @@ Extracted from main utils to avoid circular imports.
 
 import re
 import unicodedata
-from typing import Tuple
+from typing import TYPE_CHECKING, Tuple
+
+if TYPE_CHECKING:
+    from langchain_core.messages import AIMessage
 
 # Patterns for matching thinking content in AI responses
 # Standard pattern: <think>...</think>
@@ -117,6 +120,45 @@ def clean_thinking_content(content: str) -> str:
     """
     _, cleaned_content = parse_thinking_content(content)
     return cleaned_content
+
+
+def combine_message_chunks(chunks) -> "AIMessage":
+    """Combine streamed message chunks into a single normalized AIMessage.
+
+    `chunk + chunk` is the idiomatic LangChain way to fold streamed chunks and
+    preserve metadata. An empty stream yields an empty AIMessage.
+    """
+    from langchain_core.messages import AIMessage
+
+    if not chunks:
+        return AIMessage(content="")
+    combined = chunks[0]
+    for chunk in chunks[1:]:
+        combined = combined + chunk
+    return as_ai_message(combined)
+
+
+def as_ai_message(message) -> "AIMessage":
+    """Normalize a (possibly chunked) AI message to a plain AIMessage.
+
+    Concatenated `AIMessageChunk`s keep `type == "AIMessageChunk"` in
+    langchain-core 1.x, which breaks the `human|ai` message-type contract used
+    by the chat APIs. Chat-graph nodes must persist the normalized message.
+    """
+    from langchain_core.messages import AIMessage
+
+    if isinstance(message, AIMessage) and type(message) is AIMessage:
+        return message
+    return AIMessage(
+        content=message.content,
+        id=message.id,
+        name=message.name,
+        additional_kwargs=message.additional_kwargs,
+        response_metadata=message.response_metadata,
+        tool_calls=message.tool_calls,
+        invalid_tool_calls=message.invalid_tool_calls,
+        usage_metadata=message.usage_metadata,
+    )
 
 
 def extract_text_content(content) -> str:

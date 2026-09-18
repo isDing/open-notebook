@@ -1,9 +1,7 @@
 import asyncio
-import json
-from typing import AsyncGenerator, List, Optional
+from typing import List, Optional
 
 from fastapi import APIRouter, HTTPException, Path
-from fastapi.responses import StreamingResponse
 from langchain_core.messages import HumanMessage
 from langchain_core.runnables import RunnableConfig
 from loguru import logger
@@ -11,6 +9,7 @@ from pydantic import BaseModel, Field
 
 from api.routers._chat_shared import (
     ChatMessage,
+    JobSubmitResponse,
     SuccessResponse,
     extract_chat_messages,
     get_source_or_404,
@@ -23,6 +22,7 @@ from open_notebook.exceptions import (
     OpenNotebookError,
 )
 from open_notebook.graphs.source_chat import source_chat_graph as source_chat_graph
+from open_notebook.jobs import manager as job_manager
 from open_notebook.utils.graph_utils import get_session_message_count
 
 router = APIRouter()
@@ -329,88 +329,19 @@ async def delete_source_chat_session(
         )
 
 
-async def stream_source_chat_response(
-    session_id: str, source_id: str, message: str, model_override: Optional[str] = None
-) -> AsyncGenerator[str, None]:
-    """Stream the source chat response as Server-Sent Events."""
-    try:
-        # Get current state
-        # Use sync get_state() in a thread since SqliteSaver doesn't support async
-        current_state = await asyncio.to_thread(
-            source_chat_graph.get_state,
-            config=RunnableConfig(configurable={"thread_id": session_id}),
-        )
-
-        # Prepare state for execution
-        state_values = current_state.values if current_state else {}
-        state_values["messages"] = state_values.get("messages", [])
-        state_values["source_id"] = source_id
-        state_values["model_override"] = model_override
-
-        # Add user message to state
-        user_message = HumanMessage(content=message)
-        state_values["messages"].append(user_message)
-
-        # Send user message event
-        user_event = {"type": "user_message", "content": message, "timestamp": None}
-        yield f"data: {json.dumps(user_event)}\n\n"
-
-        # Run the synchronous LangGraph invoke in a thread so it doesn't block the
-        # event loop. While blocked, even the already-yielded SSE events can't
-        # flush and every other request stalls until the LLM finishes. Mirrors the
-        # get_state() calls above.
-        # The lambda pins down which `invoke` overload is used; asyncio.to_thread
-        # can't resolve overloaded callables on its own. The ignore is a langgraph
-        # typing limitation: it accepts a partial state dict at runtime, but the
-        # signature requires the full state type.
-        result = await asyncio.to_thread(
-            lambda: source_chat_graph.invoke(
-                input=state_values,  # type: ignore[arg-type]
-                config=RunnableConfig(
-                    configurable={"thread_id": session_id, "model_id": model_override}
-                ),
-            )
-        )
-
-        # Stream the complete AI response
-        if "messages" in result:
-            for msg in result["messages"]:
-                if hasattr(msg, "type") and msg.type == "ai":
-                    ai_event = {
-                        "type": "ai_message",
-                        "content": msg.content if hasattr(msg, "content") else str(msg),
-                        "timestamp": None,
-                    }
-                    yield f"data: {json.dumps(ai_event)}\n\n"
-
-        # Stream context indicators
-        if "context_indicators" in result:
-            context_event = {
-                "type": "context_indicators",
-                "data": result["context_indicators"],
-            }
-            yield f"data: {json.dumps(context_event)}\n\n"
-
-        # Send completion signal
-        completion_event = {"type": "complete"}
-        yield f"data: {json.dumps(completion_event)}\n\n"
-
-    except Exception as e:
-        from open_notebook.utils.error_classifier import classify_error
-
-        _, error_message = classify_error(e)
-        logger.error(f"Error in source chat streaming: {str(e)}")
-        error_event = {"type": "error", "message": error_message}
-        yield f"data: {json.dumps(error_event)}\n\n"
-
-
 @router.post("/sources/{source_id}/chat/sessions/{session_id}/messages")
 async def send_message_to_source_chat(
     request: SendMessageRequest,
     source_id: str = Path(..., description="Source ID"),
     session_id: str = Path(..., description="Session ID"),
 ):
-    """Send a message to source chat session with SSE streaming response."""
+    """Send a message to a source chat session; response streams as a background job.
+
+    The response body carries the job handle; tokens stream over
+    `GET /chat/jobs/{job_id}/stream` (SSE) and the final message is persisted
+    via the LangGraph checkpoint. The job survives client disconnects, so a
+    page refresh can re-attach and resume.
+    """
     try:
         # Verify source + session exist and are related (404s otherwise)
         full_source_id, _source, full_session_id, session = (
@@ -425,23 +356,37 @@ async def send_message_to_source_chat(
             session, "model_override", None
         )
 
+        # Get current state
+        # Use sync get_state() in a thread since SqliteSaver doesn't support async
+        current_state = await asyncio.to_thread(
+            source_chat_graph.get_state,
+            config=RunnableConfig(configurable={"thread_id": full_session_id}),
+        )
+
+        # Prepare state for execution
+        state_values = current_state.values if current_state else {}
+        state_values["messages"] = state_values.get("messages", [])
+        state_values["source_id"] = full_source_id
+        state_values["model_override"] = model_override
+
+        # Add user message to state
+        user_message = HumanMessage(content=request.message)
+        state_values["messages"].append(user_message)
+
+        # Run as a detached job so the generation survives client disconnects
+        # (page refresh); the client attaches via /chat/jobs/{job_id}/stream.
+        job = job_manager.submit(
+            kind="source_chat",
+            session_id=full_session_id,
+            input_state=state_values,
+            model_override=model_override,
+        )
+
         # Update session timestamp
         await session.save()
 
-        # Return streaming response
-        return StreamingResponse(
-            stream_source_chat_response(
-                session_id=full_session_id,
-                source_id=full_source_id,
-                message=request.message,
-                model_override=model_override,
-            ),
-            media_type="text/event-stream",
-            headers={
-                "Cache-Control": "no-cache",
-                "Connection": "keep-alive",
-                "X-Accel-Buffering": "no",
-            },
+        return JobSubmitResponse(
+            session_id=full_session_id, job_id=job.job_id, status=job.status
         )
 
     except HTTPException:

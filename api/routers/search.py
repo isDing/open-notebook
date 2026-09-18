@@ -6,6 +6,7 @@ from fastapi.responses import StreamingResponse
 from loguru import logger
 
 from api.models import AskRequest, AskResponse, SearchRequest, SearchResponse
+from api.sse import SSE_HEADERS
 from open_notebook.ai.models import Model, model_manager
 from open_notebook.domain.notebook import text_search, vector_search
 from open_notebook.exceptions import (
@@ -158,11 +159,7 @@ async def ask_knowledge_base(ask_request: AskRequest):
                 ask_request.question, strategy_model, answer_model, final_answer_model
             ),
             media_type="text/event-stream",
-            headers={
-                "Cache-Control": "no-cache",
-                "Connection": "keep-alive",
-                "X-Accel-Buffering": "no",
-            },
+            headers=SSE_HEADERS,
         )
 
     except HTTPException:

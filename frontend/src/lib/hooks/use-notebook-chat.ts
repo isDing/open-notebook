@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { getApiErrorMessage } from '@/lib/utils/error-handler'
@@ -12,7 +12,8 @@ import {
   CreateNotebookChatSessionRequest,
   UpdateNotebookChatSessionRequest,
   SourceListResponse,
-  NoteResponse
+  NoteResponse,
+  ChatStreamEvent
 } from '@/lib/types/api'
 import type { ContextSelections } from '@/lib/types/notebook-context'
 
@@ -34,6 +35,10 @@ export function useNotebookChat({ notebookId, sources, notes, contextSelections 
   // Pending model override for when user changes model before a session exists
   const [pendingModelOverride, setPendingModelOverride] = useState<string | null>(null)
 
+  // The job the UI is currently attached to (guards against double-attach)
+  const activeJobRef = useRef<{ jobId: string; sessionId: string } | null>(null)
+  const abortControllerRef = useRef<AbortController | null>(null)
+
   // Fetch sessions for this notebook
   const {
     data: sessions = [],
@@ -47,20 +52,22 @@ export function useNotebookChat({ notebookId, sources, notes, contextSelections 
 
   // Fetch current session with messages
   const {
-    data: currentSession,
-    refetch: refetchCurrentSession
+    data: currentSession
   } = useQuery({
     queryKey: QUERY_KEYS.notebookChatSession(currentSessionId!),
     queryFn: () => chatApi.getSession(currentSessionId!),
     enabled: !!notebookId && !!currentSessionId
   })
 
-  // Update messages when current session changes
+  // Update messages when current session changes. Skip while a generation
+  // for THIS session is streaming (the local state carries the in-progress
+  // message); a switch to another session still loads that session's history.
   useEffect(() => {
-    if (currentSession?.messages) {
-      setMessages(currentSession.messages)
-    }
-  }, [currentSession])
+    if (!currentSession?.messages) return
+    const active = activeJobRef.current
+    if (active && active.sessionId === currentSessionId) return
+    setMessages(currentSession.messages)
+  }, [currentSession, currentSessionId])
 
   // Auto-select most recent session when sessions are loaded
   useEffect(() => {
@@ -70,6 +77,109 @@ export function useNotebookChat({ notebookId, sources, notes, contextSelections 
       setCurrentSessionId(mostRecentSession.id)
     }
   }, [sessions, currentSessionId])
+
+  // Attach to a generation job: replay buffered tokens, then follow live.
+  // The job keeps running server-side regardless of this attachment.
+  const attachToJob = useCallback(async (jobId: string, sessionId: string) => {
+    // Already attached to this job (e.g. re-attach effect racing sendMessage)
+    if (activeJobRef.current?.jobId === jobId) return
+
+    const controller = new AbortController()
+    activeJobRef.current = { jobId, sessionId }
+    abortControllerRef.current = controller
+    setIsSending(true)
+
+    // Accumulated streaming AI message for this attachment
+    const aiMessageId = `stream-${jobId}`
+    let appended = false
+
+    const handleEvent = (event: ChatStreamEvent) => {
+      if (event.type === 'delta') {
+        const piece = event.content || ''
+        if (!appended) {
+          appended = true
+          setMessages(prev => [...prev, {
+            id: aiMessageId,
+            type: 'ai',
+            content: piece,
+            timestamp: new Date().toISOString()
+          }])
+        } else {
+          setMessages(prev => prev.map(msg =>
+            msg.id === aiMessageId ? { ...msg, content: msg.content + piece } : msg
+          ))
+        }
+      } else if (event.type === 'error') {
+        throw new Error(event.message || 'Generation failed')
+      }
+      // 'complete' is terminal; the final message is persisted server-side
+      // and picked up by the session refetch below.
+    }
+
+    try {
+      await chatApi.streamJob(jobId, handleEvent, controller.signal)
+
+      // Replace the streamed placeholder with the persisted message
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.notebookChatSession(sessionId)
+      })
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.notebookChatSessions(notebookId)
+      })
+    } catch (err: unknown) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        // User cancelled the attachment; the job keeps running server-side
+        return
+      }
+      const error = err as { response?: { data?: { detail?: string } }, message?: string }
+      console.error('Error streaming response:', error)
+      toast.error(getApiErrorMessage(
+        error.response?.data?.detail || error.message,
+        (key) => t(key),
+        'apiErrors.failedToSendMessage'
+      ))
+      // Drop the optimistic user message and partial AI placeholder
+      setMessages(prev => prev.filter(
+        msg => !msg.id.startsWith('temp-') && msg.id !== aiMessageId
+      ))
+    } finally {
+      if (abortControllerRef.current === controller) {
+        abortControllerRef.current = null
+      }
+      if (activeJobRef.current?.jobId === jobId) {
+        activeJobRef.current = null
+      }
+      setIsSending(false)
+    }
+  }, [notebookId, queryClient, t])
+
+  // Re-attach after a page refresh: if this session has a live (or recently
+  // finished) job, resume its stream or pick up the persisted result.
+  useEffect(() => {
+    if (!currentSessionId) return
+    let cancelled = false
+
+    const tryReattach = async () => {
+      const job = await chatApi.getActiveJob(currentSessionId)
+      if (cancelled || !job) return
+      if (activeJobRef.current?.jobId === job.job_id) return
+      if (job.status === 'running') {
+        await attachToJob(job.job_id, currentSessionId)
+      } else if (job.status === 'completed') {
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.notebookChatSession(currentSessionId)
+        })
+      }
+    }
+
+    tryReattach().catch((err) => {
+      console.error('Failed to re-attach to active job:', err)
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [currentSessionId, attachToJob, queryClient])
 
   // Create session mutation
   const createSessionMutation = useMutation({
@@ -172,7 +282,7 @@ export function useNotebookChat({ notebookId, sources, notes, contextSelections 
     return response.context
   }, [notebookId, sources, notes, contextSelections])
 
-  // Send message (synchronous, no streaming)
+  // Send message: submit the generation job, then attach to its stream
   const sendMessage = useCallback(async (message: string, modelOverride?: string) => {
     let sessionId = currentSessionId
 
@@ -210,31 +320,24 @@ export function useNotebookChat({ notebookId, sources, notes, contextSelections 
       timestamp: new Date().toISOString()
     }
     setMessages(prev => [...prev, userMessage])
-    setIsSending(true)
 
     try {
-      // Build context and send message
+      // Build context and submit the generation job
       const context = await buildContext()
-      const response = await chatApi.sendMessage({
+      const job = await chatApi.sendMessage({
         session_id: sessionId,
         message,
         context,
         model_override: modelOverride ?? (currentSession?.model_override ?? undefined)
       })
 
-      // Update messages with API response
-      setMessages(response.messages)
-
-      // Refetch current session to get updated data
-      await refetchCurrentSession()
+      await attachToJob(job.job_id, job.session_id)
     } catch (err: unknown) {
       const error = err as { response?: { data?: { detail?: string } }, message?: string };
       console.error('Error sending message:', error)
       toast.error(getApiErrorMessage(error.response?.data?.detail || error.message, (key) => t(key), 'apiErrors.failedToSendMessage'))
       // Remove optimistic message on error
       setMessages(prev => prev.filter(msg => !msg.id.startsWith('temp-')))
-    } finally {
-      setIsSending(false)
     }
   }, [
     notebookId,
@@ -242,10 +345,16 @@ export function useNotebookChat({ notebookId, sources, notes, contextSelections 
     currentSession,
     pendingModelOverride,
     buildContext,
-    refetchCurrentSession,
+    attachToJob,
     queryClient,
     t
   ])
+
+  // Cancel streaming: detaches from the job; generation continues server-side
+  // and the final message is persisted (re-attach after refresh to see it).
+  const cancelStreaming = useCallback(() => {
+    abortControllerRef.current?.abort()
+  }, [])
 
   // Switch session
   const switchSession = useCallback((sessionId: string) => {
@@ -317,6 +426,7 @@ export function useNotebookChat({ notebookId, sources, notes, contextSelections 
     deleteSession,
     switchSession,
     sendMessage,
+    cancelStreaming,
     setModelOverride,
     refetchSessions
   }

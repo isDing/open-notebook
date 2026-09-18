@@ -1,14 +1,15 @@
 'use client'
 
-import { memo, useCallback, useState, useRef, useEffect, useId } from 'react'
+import { memo, useCallback, useMemo, useState, useRef, useEffect, useId } from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
-import { Bot, User, Send, Loader2, FileText, Lightbulb, StickyNote, Clock, Wand2, ChevronDown } from 'lucide-react'
+import { Bot, User, Send, Loader2, FileText, Lightbulb, StickyNote, Clock, Wand2, ChevronDown, Sparkles } from 'lucide-react'
 import { MarkdownRenderer } from '@/components/ui/markdown-renderer'
+import { splitThinking } from '@/lib/utils/thinking'
 import {
   SourceChatMessage,
   SourceChatContextIndicator,
@@ -168,16 +169,19 @@ export function ChatPanel({
                 <p className="text-xs mt-2">{t('chat.askQuestions')}</p>
               </div>
             ) : (
-              messages.map((message) => (
+              messages.map((message, index) => (
                 <ChatMessage
                   key={message.id}
                   message={message}
                   notebookId={notebookId}
+                  isStreaming={isStreaming}
+                  isLast={index === messages.length - 1}
                   onReferenceClick={handleReferenceClick}
                 />
               ))
             )}
-            {isStreaming && (
+            {/* Waiting spinner: only until the first AI token lands */}
+            {isStreaming && !(messages.length > 0 && messages[messages.length - 1].type === 'ai') && (
               <div className="flex gap-3 justify-start">
                 <div className="flex-shrink-0">
                   <div className="h-8 w-8 rounded-full bg-teal-tint flex items-center justify-center">
@@ -378,14 +382,24 @@ function ChatComposer({
 interface ChatMessageProps {
   message: SourceChatMessage
   notebookId?: string
+  isStreaming: boolean
+  isLast: boolean
   onReferenceClick: (type: string, id: string) => void
 }
 
 const ChatMessage = memo(function ChatMessage({
   message,
   notebookId,
+  isStreaming,
+  isLast,
   onReferenceClick
 }: ChatMessageProps) {
+  // Split thinking blocks from the visible answer (AI messages only).
+  const { thinking, content } = useMemo(
+    () => (message.type === 'ai' ? splitThinking(message.content) : { thinking: '', content: message.content }),
+    [message.type, message.content]
+  )
+
   return (
     <div
       className={`flex gap-3 ${
@@ -408,17 +422,25 @@ const ChatMessage = memo(function ChatMessage({
           }`}
         >
           {message.type === 'ai' ? (
-            <AIMessageContent
-              content={message.content}
-              onReferenceClick={onReferenceClick}
-            />
+            <>
+              {thinking && (
+                <ThinkingBlock
+                  content={thinking}
+                  active={isStreaming && isLast}
+                />
+              )}
+              <AIMessageContent
+                content={content}
+                onReferenceClick={onReferenceClick}
+              />
+            </>
           ) : (
             <p className="break-all text-sm">{message.content}</p>
           )}
         </div>
-        {message.type === 'ai' && (
+        {message.type === 'ai' && content && (
           <MessageActions
-            content={message.content}
+            content={content}
             notebookId={notebookId}
           />
         )}
@@ -433,6 +455,35 @@ const ChatMessage = memo(function ChatMessage({
     </div>
   )
 })
+
+// Collapsed "thinking" section for AI messages. Defaults to collapsed; expands
+// on click. Shows a spinner while the thinking block is still streaming in.
+function ThinkingBlock({ content, active }: { content: string; active?: boolean }) {
+  const { t } = useTranslation()
+  const [open, setOpen] = useState(false)
+
+  return (
+    <div className="mb-2 border-b pb-2">
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <ChevronDown
+          className={`h-3.5 w-3.5 transition-transform ${open ? '' : '-rotate-90'}`}
+        />
+        <Sparkles className="h-3 w-3" />
+        <span>{t('chat.thinking')}</span>
+        {active && !open && <Loader2 className="h-3 w-3 animate-spin" />}
+      </button>
+      {open && (
+        <pre className="mt-2 max-h-48 overflow-y-auto whitespace-pre-wrap font-sans text-xs leading-relaxed text-muted-foreground">
+          {content}
+        </pre>
+      )}
+    </div>
+  )
+}
 
 // Helper component to render AI messages with clickable references
 function AIMessageContent({

@@ -61,6 +61,13 @@ async def provision_langchain_model(
 
     langchain_model = model.to_langchain()
 
+    # Enable token streaming. Providers default `streaming` off (e.g.
+    # ChatOpenAI), and with it off `astream()` degrades to one non-streamed
+    # chunk, which silently kills real-time token streaming in the chat
+    # graphs (and langgraph's stream_mode="messages" events).
+    if getattr(langchain_model, "streaming", None) is False:
+        langchain_model.streaming = True
+
     # Apply the per-model thinking level to the LangChain instance (to_langchain
     # only forwards a fixed field set, so provider-specific thinking
     # parameters must be attached here).

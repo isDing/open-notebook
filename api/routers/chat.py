@@ -3,16 +3,20 @@ import traceback
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException, Query
+from fastapi.responses import StreamingResponse
 from langchain_core.runnables import RunnableConfig
 from loguru import logger
 from pydantic import BaseModel, Field
 
 from api.routers._chat_shared import (
+    ChatJobResponse,
     ChatMessage,
+    JobSubmitResponse,
     SuccessResponse,
     extract_chat_messages,
     get_session_or_404,
 )
+from api.sse import SSE_HEADERS
 from open_notebook.database.repository import ensure_record_id, repo_query
 from open_notebook.domain.notebook import ChatSession, Notebook
 from open_notebook.exceptions import (
@@ -20,6 +24,8 @@ from open_notebook.exceptions import (
     OpenNotebookError,
 )
 from open_notebook.graphs.chat import graph as chat_graph
+from open_notebook.jobs import SSE_KEEPALIVE_SECONDS
+from open_notebook.jobs import manager as job_manager
 from open_notebook.utils import token_count
 from open_notebook.utils.context_builder import build_notebook_context
 from open_notebook.utils.graph_utils import get_session_message_count
@@ -74,9 +80,9 @@ class ExecuteChatRequest(BaseModel):
     )
 
 
-class ExecuteChatResponse(BaseModel):
-    session_id: str = Field(..., description="Session ID")
-    messages: List[ChatMessage] = Field(..., description="Updated message list")
+# execute_chat submits a background generation job; the response carries the
+# job handle. Tokens stream over `GET /chat/jobs/{job_id}/stream` (SSE), and
+# the final message lands in the session via the LangGraph checkpoint.
 
 
 class BuildContextRequest(BaseModel):
@@ -301,9 +307,9 @@ async def delete_session(session_id: str):
         raise HTTPException(status_code=500, detail=f"Error deleting session: {str(e)}")
 
 
-@router.post("/chat/execute", response_model=ExecuteChatResponse)
+@router.post("/chat/execute", response_model=JobSubmitResponse)
 async def execute_chat(request: ExecuteChatRequest):
-    """Execute a chat request and get AI response."""
+    """Submit a chat request; the AI response streams as a background job."""
     try:
         # Verify session exists (normalizes the ID and 404s if missing)
         full_session_id, session = await get_session_or_404(request.session_id)
@@ -344,33 +350,21 @@ async def execute_chat(request: ExecuteChatRequest):
         user_message = HumanMessage(content=request.message)
         state_values["messages"].append(user_message)
 
-        # Execute chat graph in a thread so the synchronous LangGraph invoke
-        # (SqliteSaver checkpoints are sync) doesn't block the event loop and
-        # freeze the rest of the API while the LLM responds. Mirrors the
-        # get_state() calls above.
-        # The lambda pins down which `invoke` overload is used; asyncio.to_thread
-        # can't resolve overloaded callables on its own. The ignore is a langgraph
-        # typing limitation: it accepts a partial state dict at runtime, but the
-        # signature requires the full state type.
-        result = await asyncio.to_thread(
-            lambda: chat_graph.invoke(
-                input=state_values,  # type: ignore[arg-type]
-                config=RunnableConfig(
-                    configurable={
-                        "thread_id": full_session_id,
-                        "model_id": model_override,
-                    }
-                ),
-            )
+        # Run as a detached job so the generation survives client disconnects
+        # (page refresh); the client attaches via /chat/jobs/{job_id}/stream.
+        job = job_manager.submit(
+            kind="notebook_chat",
+            session_id=full_session_id,
+            input_state=state_values,
+            model_override=model_override,
         )
 
         # Update session timestamp
         await session.save()
 
-        # Convert messages to response format
-        messages = extract_chat_messages(result.get("messages", []))
-
-        return ExecuteChatResponse(session_id=request.session_id, messages=messages)
+        return JobSubmitResponse(
+            session_id=full_session_id, job_id=job.job_id, status=job.status
+        )
     except NotFoundError:
         raise HTTPException(status_code=404, detail="Session not found")
     except HTTPException:
@@ -386,6 +380,76 @@ async def execute_chat(request: ExecuteChatRequest):
             f"  Traceback:\n{traceback.format_exc()}"
         )
         raise HTTPException(status_code=500, detail=f"Error executing chat: {str(e)}")
+
+
+@router.get("/chat/sessions/{session_id}/job", response_model=ChatJobResponse)
+async def get_session_job(session_id: str):
+    """Most recent generation job for a session (for re-attaching after a refresh)."""
+    try:
+        full_session_id, _session = await get_session_or_404(session_id)
+        job = job_manager.latest_for_session(full_session_id)
+        if job is None:
+            raise HTTPException(
+                status_code=404, detail="No generation job for this session"
+            )
+        return ChatJobResponse(job_id=job.job_id, status=job.status)
+    except HTTPException:
+        raise
+    except OpenNotebookError:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching session job: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error fetching job: {str(e)}")
+
+
+@router.get("/chat/jobs/{job_id}/stream")
+async def stream_job(job_id: str):
+    """Attach to a generation job: replay buffered events, then follow live.
+
+    SSE. Terminal events: ``complete`` (with the final message) or ``error``.
+    """
+    job = job_manager.get(job_id)
+    if job is None:
+        raise HTTPException(status_code=404, detail="Job not found")
+
+    queue, buffered_count = job.subscribe()
+    buffered = list(job.events)
+
+    async def generator():
+        try:
+            for line in buffered:
+                yield line
+            if job.status != "running":
+                # Terminal event is the last one published; drain anything that
+                # landed after the snapshot, then stop.
+                while not queue.empty():
+                    seq, line = queue.get_nowait()
+                    if seq >= buffered_count:
+                        yield line
+                return
+            while True:
+                try:
+                    seq, line = await asyncio.wait_for(
+                        queue.get(), timeout=SSE_KEEPALIVE_SECONDS
+                    )
+                except asyncio.TimeoutError:
+                    if job.status != "running":
+                        break
+                    yield ": keepalive\n\n"
+                    continue
+                if seq < buffered_count:
+                    continue
+                yield line
+                if job.status != "running":
+                    break
+        finally:
+            job.unsubscribe(queue)
+
+    return StreamingResponse(
+        generator(),
+        media_type="text/event-stream",
+        headers=SSE_HEADERS,
+    )
 
 
 @router.post("/chat/context", response_model=BuildContextResponse)

@@ -18,24 +18,26 @@ Normative rules for working on the Python backend. Architecture and design ratio
 - Errors: raise typed exceptions from `open_notebook.exceptions` — global handlers map them to HTTP status codes (`NotFoundError`→404, `InvalidInputError`→400, `AuthenticationError`→401, `RateLimitError`→429, `ConfigurationError`→422, `NetworkError`/`ExternalServiceError`→502, `OpenNotebookError`→500). Don't raise bare `HTTPException` for domain errors.
 - Requests over `OPEN_NOTEBOOK_MAX_UPLOAD_SIZE_MB` (default 100) are rejected by `MaxBodySizeMiddleware` before auth/routing.
 - CORS is open by default (`CORS_ORIGINS`); `allow_credentials` flips to `True` only when origins are explicit. No rate limiting built in.
+- SSE endpoints must send `SSE_HEADERS` (`api/sse.py`), which includes `Cache-Control: no-transform`. Without it, the Next.js proxy (or any gzip/brotli layer) compresses the stream and buffers chunks until it ends — the whole answer arrives at once and per-token streaming silently dies in the browser. The backend streams fine on its own; the header is what keeps intermediaries from buffering.
 
 ## AI / model provisioning (`open_notebook/ai/`)
 
 - All LLM calls in graph nodes go through `provision_langchain_model()` — never instantiate provider clients directly. It auto-upgrades to `large_context_model` above 105,000 tokens (hard-coded threshold).
+- `provision_langchain_model()` forces `streaming=True` on the LangChain model. Providers default it off (e.g. ChatOpenAI), and with it off `astream()` returns one non-streamed chunk — silently killing real-time token streaming and langgraph `stream_mode="messages"` events. Don't remove that.
 - Missing/unconfigured model → raise `ConfigurationError` (not `ValueError`) so the API returns 422.
 - Credential-linked models are preferred; `provision_provider_keys()` is the env-var fallback and **mutates `os.environ`** — be aware in tests.
 - `DefaultModels.get_instance()` intentionally bypasses the singleton cache (fresh DB fetch each call).
 
 ## Graphs (`open_notebook/graphs/`)
 
-- Sync nodes that need async calls use the `asyncio.new_event_loop()` / ThreadPool workaround (see `chat.py`) — fragile, follow the existing pattern exactly.
+- Chat/source-chat nodes are `async`; the graphs run the async path (`astream`/`ainvoke`) and are compiled with `ThreadedSqliteSaver` (`open_notebook/utils/graph_utils.py`), which serves the async checkpointer interface by running the sync `SqliteSaver` methods in a thread executor — `AsyncSqliteSaver` can't be built at import time (needs a running loop). See [ADR-008](../docs/7-DEVELOPMENT/decisions/ADR-008-streaming-chat-jobs.md).
 - Every node wraps LLM calls with `classify_error()`:
   ```python
   except Exception as e:
       exc_class, message = classify_error(e)
       raise exc_class(message) from e
   ```
-- Strip extended-thinking output with `clean_thinking_content()` before using model responses.
+- Non-chat graphs (ask, prompt, transformation) strip extended-thinking output with `clean_thinking_content()`; chat/source-chat **keep it verbatim** (ADR-008) — the frontend renders it collapsed.
 - Chat checkpoints (SqliteSaver) live at the path in `LANGGRAPH_CHECKPOINT_FILE`.
 
 ## Domain (`open_notebook/domain/`)

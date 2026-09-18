@@ -1,11 +1,9 @@
-import asyncio
 import sqlite3
 from typing import Annotated, Optional
 
 from ai_prompter import Prompter
 from langchain_core.messages import SystemMessage
 from langchain_core.runnables import RunnableConfig
-from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.message import add_messages
 from typing_extensions import TypedDict
@@ -14,9 +12,12 @@ from open_notebook.ai.provision import provision_langchain_model
 from open_notebook.config import LANGGRAPH_CHECKPOINT_FILE
 from open_notebook.domain.notebook import Notebook
 from open_notebook.exceptions import OpenNotebookError
-from open_notebook.utils import clean_thinking_content
 from open_notebook.utils.error_classifier import classify_error
-from open_notebook.utils.text_utils import extract_text_content
+from open_notebook.utils.graph_utils import ThreadedSqliteSaver
+from open_notebook.utils.text_utils import (
+    combine_message_chunks,
+    extract_text_content,
+)
 
 
 class ThreadState(TypedDict):
@@ -27,7 +28,15 @@ class ThreadState(TypedDict):
     model_override: Optional[str]
 
 
-def call_model_with_messages(state: ThreadState, config: RunnableConfig) -> dict:
+async def call_model_with_messages(state: ThreadState, config: RunnableConfig) -> dict:
+    """Stream the model response and store the aggregated message.
+
+    The node is async so `graph.astream(..., stream_mode="messages")` can
+    surface LLM tokens in real time; the aggregated message returned here is
+    what the checkpointer persists. Thinking content (e.g. `think` blocks)
+    is preserved verbatim — the frontend renders it as a collapsed section
+    instead of stripping it.
+    """
     try:
         system_prompt = Prompter(prompt_template="chat/system").render(data=state)  # type: ignore[arg-type]
         payload = [SystemMessage(content=system_prompt)] + state.get("messages", [])
@@ -35,49 +44,19 @@ def call_model_with_messages(state: ThreadState, config: RunnableConfig) -> dict
             "model_override"
         )
 
-        # Handle async model provisioning from sync context
-        def run_in_new_loop():
-            """Run the async function in a new event loop"""
-            new_loop = asyncio.new_event_loop()
-            try:
-                asyncio.set_event_loop(new_loop)
-                return new_loop.run_until_complete(
-                    provision_langchain_model(
-                        str(payload), model_id, "chat", max_tokens=8192
-                    )
-                )
-            finally:
-                new_loop.close()
-                asyncio.set_event_loop(None)
+        model = await provision_langchain_model(
+            str(payload), model_id, "chat", max_tokens=8192
+        )
 
-        try:
-            # Try to get the current event loop
-            asyncio.get_running_loop()
-            # If we're in an event loop, run in a thread with a new loop
-            import concurrent.futures
+        chunks = []
+        async for chunk in model.astream(payload):
+            chunks.append(chunk)
+        message = combine_message_chunks(chunks)
 
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                future = executor.submit(run_in_new_loop)
-                model = future.result()
-        except RuntimeError:
-            # No event loop running, safe to use asyncio.run()
-            model = asyncio.run(
-                provision_langchain_model(
-                    str(payload),
-                    model_id,
-                    "chat",
-                    max_tokens=8192,
-                )
-            )
-
-        ai_message = model.invoke(payload)
-
-        # Clean thinking content from AI response (e.g., <think>...</think> tags)
-        content = extract_text_content(ai_message.content)
-        cleaned_content = clean_thinking_content(content)
-        cleaned_message = ai_message.model_copy(update={"content": cleaned_content})
-
-        return {"messages": cleaned_message}
+        # Normalize structured content (e.g. Gemini's part lists) to a plain
+        # string; keep thinking blocks intact for the UI's collapsed view.
+        content = extract_text_content(message.content)
+        return {"messages": message.model_copy(update={"content": content})}
     except OpenNotebookError:
         raise
     except Exception as e:
@@ -89,7 +68,7 @@ conn = sqlite3.connect(
     LANGGRAPH_CHECKPOINT_FILE,
     check_same_thread=False,
 )
-memory = SqliteSaver(conn)
+memory = ThreadedSqliteSaver(conn)
 
 agent_state = StateGraph(ThreadState)
 agent_state.add_node("agent", call_model_with_messages)
