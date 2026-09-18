@@ -14,16 +14,12 @@ from loguru import logger
 from surreal_commands import CommandInput, CommandOutput, command, submit_command
 
 from open_notebook.ai.models import model_manager
-from open_notebook.database.repository import ensure_record_id, repo_insert, repo_query
+from open_notebook.database.repository import ensure_record_id, repo_query
 from open_notebook.domain.notebook import Note, Source, SourceInsight
 from open_notebook.exceptions import ConfigurationError
 from open_notebook.utils.chunking import ContentType, chunk_text, detect_content_type
 from open_notebook.utils.embedding import generate_embedding, generate_embeddings
 
-# NOTE: `stop_on` below can never trigger in practice — each command catches
-# ValueError internally and returns success=False instead of raising, so the
-# retry layer never sees it. Kept as-is on purpose; to be revisited in a
-# dedicated error-handling PR.
 EMBED_RETRY_CONFIG = {
     "max_attempts": 5,
     "wait_strategy": "exponential_jitter",
@@ -63,10 +59,11 @@ async def _embed_record(
             Returns (extra_output_fields, success_log_detail).
 
     Returns:
-        (extra_output_fields, processing_time, error_message)
-        extra_output_fields is None and error_message is set on permanent
-        (ValueError) failure. Transient failures re-raise so the retry layer
-        can handle them.
+        (extra_output_fields, processing_time, None) on success.
+
+    Raises:
+        ValueError: Permanent failures propagate so the worker marks the command
+            failed without retrying. Other failures propagate for automatic retry.
     """
     start_time = time.time()
 
@@ -82,11 +79,10 @@ async def _embed_record(
         return extra_fields, processing_time, None
 
     except ValueError as e:
-        # Permanent failure - don't retry
-        processing_time = time.time() - start_time
+        # Propagate permanent failure so the worker marks the command failed.
         cmd_id = get_command_id(input_data)
         logger.error(f"Failed to embed {kind} {record_id} (command: {cmd_id}): {e}")
-        return None, processing_time, str(e)
+        raise
     except Exception as e:
         # Transient failure - will be retried (surreal-commands logs final failure)
         cmd_id = get_command_id(input_data)
@@ -310,11 +306,10 @@ async def embed_source_command(input_data: EmbedSourceInput) -> EmbedSourceOutpu
 
     Flow:
     1. Load Source by ID
-    2. DELETE existing source_embedding records for this source
-    3. Detect content type from file path or content
-    4. Chunk text using appropriate splitter
-    5. Generate embeddings for all chunks in batches
-    6. Bulk INSERT source_embedding records
+    2. Detect content type from file path or content
+    3. Chunk text using appropriate splitter
+    4. Generate and validate embeddings for all chunks in batches
+    5. Atomically replace existing source_embedding records
 
     Retry Strategy:
     - Retries up to 5 times for transient failures (network, timeout, etc.)
@@ -331,19 +326,12 @@ async def embed_source_command(input_data: EmbedSourceInput) -> EmbedSourceOutpu
         if not source.full_text or not source.full_text.strip():
             raise ValueError(f"Source '{input_data.source_id}' has no text to embed")
 
-        # 2. DELETE existing embeddings (idempotency)
-        logger.debug(f"Deleting existing embeddings for source {input_data.source_id}")
-        await repo_query(
-            "DELETE source_embedding WHERE source = $source_id",
-            {"source_id": ensure_record_id(input_data.source_id)},
-        )
-
-        # 3. Detect content type from file path if available
+        # 2. Detect content type from file path if available
         file_path = source.asset.file_path if source.asset else None
         content_type = detect_content_type(source.full_text, file_path)
         logger.debug(f"Detected content type: {content_type.value}")
 
-        # 4. Chunk text using appropriate splitter
+        # 3. Chunk text using appropriate splitter
         chunks = chunk_text(source.full_text, content_type=content_type)
         total_chunks = len(chunks)
 
@@ -359,7 +347,7 @@ async def embed_source_command(input_data: EmbedSourceInput) -> EmbedSourceOutpu
         if total_chunks == 0:
             raise ValueError("No chunks created after splitting text")
 
-        # 5. Generate embeddings for all chunks in batches
+        # 4. Generate embeddings for all chunks in batches
         cmd_id = get_command_id(input_data)
         logger.debug(f"Generating embeddings for {total_chunks} chunks")
         embeddings = await generate_embeddings(chunks, command_id=cmd_id)
@@ -371,7 +359,6 @@ async def embed_source_command(input_data: EmbedSourceInput) -> EmbedSourceOutpu
                 f"for {len(chunks)} chunks"
             )
 
-        # 6. Bulk INSERT source_embedding records
         records = [
             {
                 "source": ensure_record_id(input_data.source_id),
@@ -382,8 +369,22 @@ async def embed_source_command(input_data: EmbedSourceInput) -> EmbedSourceOutpu
             for idx, (chunk, embedding) in enumerate(zip(chunks, embeddings))
         ]
 
-        logger.debug(f"Inserting {len(records)} source_embedding records")
-        await repo_insert("source_embedding", records)
+        # 5. Roll back the deletion if inserting the replacement fails.
+        logger.debug(
+            f"Replacing {len(records)} embeddings for source {input_data.source_id}"
+        )
+        await repo_query(
+            """
+            BEGIN TRANSACTION;
+            DELETE source_embedding WHERE source = $source_id;
+            INSERT INTO source_embedding $records RETURN NONE;
+            COMMIT TRANSACTION;
+            """,
+            {
+                "source_id": ensure_record_id(input_data.source_id),
+                "records": records,
+            },
+        )
 
         return {"chunks_created": total_chunks}, f": {total_chunks} chunks"
 

@@ -22,6 +22,7 @@ def _build_text_exceeding_tokens(fragment: str, threshold_tokens: int) -> str:
         text += fragment
     return text
 
+
 # ============================================================================
 # TEST SUITE 1: Mean Pooling
 # ============================================================================
@@ -65,6 +66,7 @@ class TestMeanPoolEmbeddings:
         # Result should be same direction, just normalized
         # Original is already normalized if we normalize it
         import numpy as np
+
         orig_norm = np.linalg.norm(embedding)
         expected = [v / orig_norm for v in embedding]
         for i in range(4):
@@ -86,6 +88,7 @@ class TestMeanPoolEmbeddings:
         result = await mean_pool_embeddings(embeddings)
         # Check result is unit length
         import numpy as np
+
         norm = np.linalg.norm(result)
         assert abs(norm - 1.0) < 0.001
 
@@ -93,6 +96,7 @@ class TestMeanPoolEmbeddings:
     async def test_high_dimensional(self):
         """Test mean pooling with high-dimensional embeddings."""
         import numpy as np
+
         # Create random embeddings of dimension 768 (typical embedding size)
         np.random.seed(42)
         embeddings = [
@@ -194,27 +198,26 @@ class TestGenerateEmbedding:
         """Test that long text is chunked and mean pooled."""
         from unittest.mock import AsyncMock, MagicMock, patch
 
-        long_text = _build_text_exceeding_tokens("This is a sentence. ", CHUNK_SIZE)
+        long_text = _build_text_exceeding_tokens("This is a sentence. ", CHUNK_SIZE * 2)
+        chunks = ["First chunk", "Second chunk"]
 
         mock_model = MagicMock()
         # Return multiple embeddings (one per chunk)
-        mock_model.aembed = AsyncMock(
-            return_value=[
-                [1.0, 0.0, 0.0],
-                [0.0, 1.0, 0.0],
-            ]
-        )
+        mock_model.aembed = AsyncMock(return_value=[[1.0, 0.0, 0.0], [0.0, 1.0, 0.0]])
 
-        with patch(
-            "open_notebook.ai.models.model_manager.get_embedding_model",
-            new_callable=AsyncMock,
-            return_value=mock_model,
+        with (
+            patch(
+                "open_notebook.ai.models.model_manager.get_embedding_model",
+                new_callable=AsyncMock,
+                return_value=mock_model,
+            ),
+            patch("open_notebook.utils.embedding.chunk_text", return_value=chunks),
         ):
             result = await generate_embedding(long_text)
             # Should return mean pooled result
-            assert len(result) == 3
+            assert result == pytest.approx([2**-0.5, 2**-0.5, 0.0])
             # Model should have been called with multiple chunks
-            assert mock_model.aembed.called
+            mock_model.aembed.assert_awaited_once_with(chunks)
 
     @pytest.mark.asyncio
     async def test_content_type_parameter(self):
@@ -236,7 +239,6 @@ class TestGenerateEmbedding:
                 content_type=ContentType.MARKDOWN,
             )
             assert len(result) == 3
-
 
     @pytest.mark.asyncio
     async def test_batching(self):
@@ -266,8 +268,12 @@ class TestGenerateEmbedding:
             assert len(result) == num_texts
             # 120 texts / 50 batch size = 3 batches (50, 50, 20)
             assert mock_model.aembed.call_count == 3
-            assert len(mock_model.aembed.call_args_list[0][0][0]) == EMBEDDING_BATCH_SIZE
-            assert len(mock_model.aembed.call_args_list[1][0][0]) == EMBEDDING_BATCH_SIZE
+            assert (
+                len(mock_model.aembed.call_args_list[0][0][0]) == EMBEDDING_BATCH_SIZE
+            )
+            assert (
+                len(mock_model.aembed.call_args_list[1][0][0]) == EMBEDDING_BATCH_SIZE
+            )
             assert len(mock_model.aembed.call_args_list[2][0][0]) == 20
 
     @pytest.mark.asyncio

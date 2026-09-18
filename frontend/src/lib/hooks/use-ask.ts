@@ -52,6 +52,7 @@ export function useAsk() {
   const mountedRef = useRef(true)
 
   useEffect(() => {
+    mountedRef.current = true
     return () => {
       mountedRef.current = false
       if (streamTimeoutRef.current) {
@@ -112,8 +113,13 @@ export function useAsk() {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort()
     }
-    abortControllerRef.current = new AbortController()
-    const signal = abortControllerRef.current.signal
+    const controller = new AbortController()
+    abortControllerRef.current = controller
+    const signal = controller.signal
+    const isCurrentRequest = () => (
+      mountedRef.current && abortControllerRef.current === controller && !signal.aborted
+    )
+    let reader: ReadableStreamDefaultReader<Uint8Array> | undefined
 
     // Reset state
     setState({
@@ -135,17 +141,22 @@ export function useAsk() {
         final_answer_model: models.finalAnswer
       }, signal)
 
-      if (!response) {
+      reader = response?.getReader()
+      if (!isCurrentRequest()) return
+
+      if (!reader) {
         stopStreaming()
         throw new Error('No response body received from server')
       }
 
-      const reader = response.getReader()
       const decoder = new TextDecoder()
       let buffer = ''
 
       while (true) {
         const { done, value } = await reader.read()
+
+        // Cancellation can race a read that has already resolved.
+        if (!isCurrentRequest()) return
 
         if (done) {
           break
@@ -206,6 +217,8 @@ export function useAsk() {
       stopStreaming()
 
     } catch (error) {
+      if (!isCurrentRequest()) return
+
       // If aborted by the safety timeout, don't show an error toast
       if (error instanceof DOMException && error.name === 'AbortError') {
         return
@@ -226,8 +239,18 @@ export function useAsk() {
       toast.error(t('apiErrors.askFailed'), {
         description: getApiErrorMessage(errorMessage, (key) => t(key))
       })
+    } finally {
+      // A superseded request must never clear the new request's watchdog.
+      if (abortControllerRef.current === controller) {
+        clearStreamTimeout()
+        abortControllerRef.current = null
+      }
+      if (reader) {
+        await reader.cancel().catch(() => {})
+        reader.releaseLock()
+      }
     }
-  }, [t, stopStreaming, armStreamTimeout])
+  }, [t, stopStreaming, armStreamTimeout, clearStreamTimeout])
 
   const reset = useCallback(() => {
     clearStreamTimeout()

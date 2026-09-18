@@ -43,7 +43,10 @@ class SourceProcessingOutput(CommandOutput):
         "wait_strategy": "exponential_jitter",
         "wait_min": 1,
         "wait_max": 120,  # Allow queue to drain
-        "stop_on": [ValueError, ConfigurationError],  # Don't retry validation/config errors
+        "stop_on": [
+            ValueError,
+            ConfigurationError,
+        ],  # Don't retry validation/config errors
         "retry_log_level": "debug",  # Avoid log noise during transaction conflicts
     },
 )
@@ -117,9 +120,7 @@ async def process_source_command(
         logger.info(
             f"Successfully processed source: {processed_source.id} in {processing_time:.2f}s"
         )
-        logger.info(
-            f"Created {insights_created} insights, embedding {embed_status}"
-        )
+        logger.info(f"Created {insights_created} insights, embedding {embed_status}")
 
         return SourceProcessingOutput(
             success=True,
@@ -140,9 +141,7 @@ async def process_source_command(
         raise
     except Exception as e:
         # Transient failure - will be retried (surreal-commands logs final failure)
-        logger.debug(
-            f"Transient error processing source {input_data.source_id}: {e}"
-        )
+        logger.debug(f"Transient error processing source {input_data.source_id}: {e}")
         raise
 
 
@@ -176,7 +175,10 @@ class RunTransformationOutput(CommandOutput):
         "wait_strategy": "exponential_jitter",
         "wait_min": 1,
         "wait_max": 60,
-        "stop_on": [ValueError, ConfigurationError],  # Don't retry validation/config errors
+        "stop_on": [
+            ValueError,
+            ConfigurationError,
+        ],  # Don't retry validation/config errors
         "retry_log_level": "debug",
     },
 )
@@ -241,19 +243,12 @@ async def run_transformation_command(
         )
 
     except ValueError as e:
-        # Validation errors are permanent failures - don't retry
-        processing_time = time.time() - start_time
+        # Re-raise so the worker marks the job failed; stop_on prevents retries.
         logger.error(
             f"Failed to run transformation {input_data.transformation_id} "
             f"on source {input_data.source_id}: {e}"
         )
-        return RunTransformationOutput(
-            success=False,
-            source_id=input_data.source_id,
-            transformation_id=input_data.transformation_id,
-            processing_time=processing_time,
-            error_message=str(e),
-        )
+        raise
     except Exception as e:
         # Transient failure - will be retried (surreal-commands logs final failure)
         logger.debug(

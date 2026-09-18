@@ -174,6 +174,11 @@ async def generate_embeddings(
         for attempt in range(1, EMBEDDING_MAX_RETRIES + 1):
             try:
                 batch_embeddings = await embedding_model.aembed(batch)
+                if len(batch_embeddings) != len(batch):
+                    raise RuntimeError(
+                        f"Embedding count mismatch: got {len(batch_embeddings)} "
+                        f"embeddings for {len(batch)} texts"
+                    )
                 all_embeddings.extend(batch_embeddings)
                 break
             except Exception as e:
@@ -197,7 +202,9 @@ async def generate_embeddings(
                         f"{len(batch)} texts): {e}"
                     ) from e
 
-    logger.debug(f"Generated {len(all_embeddings)} embeddings in {total_batches} batch(es)")
+    logger.debug(
+        f"Generated {len(all_embeddings)} embeddings in {total_batches} batch(es)"
+    )
     return all_embeddings
 
 

@@ -86,9 +86,7 @@ class TestTransformationGraphPropagatesFailure:
                 "open_notebook.graphs.transformation.DefaultPrompts",
                 return_value=MagicMock(transformation_instructions=None),
             ),
-            patch(
-                "open_notebook.graphs.transformation.Prompter"
-            ) as mock_prompter_cls,
+            patch("open_notebook.graphs.transformation.Prompter") as mock_prompter_cls,
             patch(
                 "open_notebook.graphs.transformation.provision_langchain_model",
                 new=AsyncMock(return_value=fake_chain),
@@ -130,9 +128,7 @@ class TestTransformationGraphPropagatesFailure:
                 "open_notebook.graphs.transformation.DefaultPrompts",
                 return_value=MagicMock(transformation_instructions=None),
             ),
-            patch(
-                "open_notebook.graphs.transformation.Prompter"
-            ) as mock_prompter_cls,
+            patch("open_notebook.graphs.transformation.Prompter") as mock_prompter_cls,
             patch(
                 "open_notebook.graphs.transformation.provision_langchain_model",
                 new=AsyncMock(return_value=fake_chain),
@@ -184,6 +180,47 @@ class TestSourceGraphTransformContentPropagatesFailure:
 
 class TestRunTransformationCommandDoesNotReportFalseSuccess:
     """commands/source_commands.py: run_transformation_command()."""
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("failure_stage", ["source", "transformation", "graph"])
+    async def test_permanent_failure_reaches_worker(self, failure_stage):
+        """Permanent failures must raise so the worker marks the job failed."""
+        from commands.source_commands import (
+            RunTransformationInput,
+            run_transformation_command,
+        )
+
+        source = None if failure_stage == "source" else make_source()
+        transformation = (
+            None if failure_stage == "transformation" else MagicMock(model_id=None)
+        )
+        graph_error = ValueError("invalid transformation content")
+
+        with (
+            patch(
+                "commands.source_commands.Source.get",
+                new=AsyncMock(return_value=source),
+            ),
+            patch(
+                "commands.source_commands.Transformation.get",
+                new=AsyncMock(return_value=transformation),
+            ),
+            patch(
+                "commands.source_commands.transform_graph.ainvoke",
+                new=AsyncMock(side_effect=graph_error),
+            ) as invoke,
+        ):
+            with pytest.raises(ValueError):
+                await run_transformation_command(
+                    RunTransformationInput(
+                        source_id="source:test123", transformation_id="transformation:1"
+                    )
+                )
+
+        if failure_stage == "graph":
+            invoke.assert_awaited_once()
+        else:
+            invoke.assert_not_awaited()
 
     @pytest.mark.asyncio
     async def test_add_insight_submission_failure_does_not_return_success_true(self):
