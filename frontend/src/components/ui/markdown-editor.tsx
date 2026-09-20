@@ -6,6 +6,16 @@ import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize'
 import type { PluggableList } from 'unified'
+import { useTranslation } from '@/lib/hooks/use-translation'
+import {
+  convertReferencesToCompactMarkdown,
+  type ReferenceType,
+} from '@/lib/utils/source-references'
+import { useNoteReferenceLink } from '@/lib/hooks/use-note-reference-link'
+
+const ignoreReference = () => {}
+
+const MarkdownPreview = dynamic(() => import('@uiw/react-markdown-preview'), { ssr: false })
 
 const MDEditor = dynamic(
   () => import('@uiw/react-md-editor').then((mod) => mod.default),
@@ -59,10 +69,13 @@ export interface MarkdownEditorProps {
   textareaId?: string
   name?: string
   className?: string
+  onReferenceClick?: (type: ReferenceType, id: string) => void
 }
 
 export const MarkdownEditor = forwardRef<HTMLDivElement, MarkdownEditorProps>(
-  ({ value = '', onChange, placeholder, height = 300, preview = 'live', hideToolbar = false, className, textareaId, name }, ref) => {
+  ({ value = '', onChange, placeholder, height = 300, preview = 'live', hideToolbar = false, className, textareaId, name, onReferenceClick }, ref) => {
+    const { t } = useTranslation()
+    const ReferenceLink = useNoteReferenceLink(onReferenceClick ?? ignoreReference)
     return (
       <div className={className} ref={ref}>
         <MDEditor
@@ -77,6 +90,15 @@ export const MarkdownEditor = forwardRef<HTMLDivElement, MarkdownEditorProps>(
             name: name,
           }}
           previewOptions={PREVIEW_OPTIONS}
+          components={onReferenceClick ? {
+            preview: (source) => (
+              <MarkdownPreview
+                {...PREVIEW_OPTIONS}
+                source={convertReferencesToCompactMarkdown(source, t('common.references'))}
+                components={{ a: ReferenceLink }}
+              />
+            ),
+          } : undefined}
           data-color-mode="light"
         />
       </div>

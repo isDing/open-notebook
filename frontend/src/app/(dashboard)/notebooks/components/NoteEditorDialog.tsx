@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { useTranslation } from '@/lib/hooks/use-translation'
 import { ContentUnavailable } from '@/components/common/ContentUnavailable'
 import { isNotFoundError } from '@/lib/utils/error-handler'
+import { useModalManager } from '@/lib/hooks/use-modal-manager'
 
 const createNoteSchema = z.object({
   title: z.string().optional(),
@@ -32,6 +33,7 @@ interface NoteEditorDialogProps {
 
 export function NoteEditorDialog({ open, onOpenChange, notebookId, note }: NoteEditorDialogProps) {
   const { t } = useTranslation()
+  const { openModal } = useModalManager()
   const createNote = useCreateNote()
   const updateNote = useUpdateNote()
   const queryClient = useQueryClient()
@@ -176,6 +178,7 @@ export function NoteEditorDialog({ open, onOpenChange, notebookId, note }: NoteE
                       textareaId="note-content"
                       value={field.value}
                       onChange={field.onChange}
+                      onReferenceClick={(type, id) => openModal(type === 'source_insight' ? 'insight' : type, id)}
                       height={420}
                       placeholder={t('sources.writeNotePlaceholder')}
                       className={cn(

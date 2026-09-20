@@ -438,7 +438,8 @@ export function convertReferencesToCompactMarkdown(text: string, referencesLabel
  * <ReactMarkdown components={{ a: LinkComponent }}>...</ReactMarkdown>
  */
 export function createCompactReferenceLinkComponent(
-  onReferenceClick: (type: ReferenceType, id: string) => void
+  onReferenceClick: (type: ReferenceType, id: string) => void,
+  renderReference?: (type: ReferenceType, id: string, children: React.ReactNode) => React.ReactNode
 ) {
   const CompactReferenceLinkComponent = ({
     href,
@@ -454,6 +455,9 @@ export function createCompactReferenceLinkComponent(
       const parts = href.substring(5).split('-') // Remove '#ref-'
       const type = parts[0] as ReferenceType
       const id = parts.slice(1).join('-') // Rejoin in case ID has dashes
+
+      const customReference = renderReference?.(type, id, children)
+      if (customReference != null) return customReference
 
       return (
         <button

@@ -4,7 +4,7 @@ import { useModalManager } from '@/lib/hooks/use-modal-manager'
 import dynamic from 'next/dynamic'
 import { DeferredMount } from '@/components/common/DeferredMount'
 
-const NoteEditorDialog = dynamic(() => import('@/app/(dashboard)/notebooks/components/NoteEditorDialog').then(m => m.NoteEditorDialog))
+const NoteReaderDialog = dynamic(() => import('@/components/notebooks/NoteReaderDialog').then(m => m.NoteReaderDialog))
 const SourceInsightDialog = dynamic(() => import('@/components/sources/SourceInsightDialog').then(m => m.SourceInsightDialog))
 const SourceDialog = dynamic(() => import('@/components/sources/SourceDialog').then(m => m.SourceDialog))
 
@@ -16,7 +16,7 @@ const SourceDialog = dynamic(() => import('@/components/sources/SourceDialog').t
  *
  * Supported modal types:
  * - source: Source detail modal
- * - note: Note editor modal
+ * - note: Read-only note modal
  * - insight: Source insight modal
  */
 export function ModalProvider() {
@@ -37,13 +37,12 @@ export function ModalProvider() {
 
       {/* Note Modal */}
       <DeferredMount active={modalType === 'note'}>
-        <NoteEditorDialog
+        <NoteReaderDialog
           open={modalType === 'note'}
           onOpenChange={(open) => {
             if (!open) closeModal()
           }}
-          notebookId="" // Will need to be fetched or handled in Phase 9
-          note={modalId ? { id: modalId, title: null, content: null } : undefined}
+          noteId={modalId}
         />
       </DeferredMount>
 

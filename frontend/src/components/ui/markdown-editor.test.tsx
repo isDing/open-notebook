@@ -1,8 +1,55 @@
-import { describe, it, expect } from 'vitest'
-import { render } from '@testing-library/react'
+import { describe, it, expect, vi } from 'vitest'
+import { fireEvent, render, screen } from '@testing-library/react'
+import { lazy, Suspense, type ComponentType } from 'react'
 import MarkdownPreview from '@uiw/react-markdown-preview'
 
-import { PREVIEW_OPTIONS } from './markdown-editor'
+import { MarkdownEditor, PREVIEW_OPTIONS } from './markdown-editor'
+
+vi.mock('@/lib/hooks/use-media-query', () => ({ useIsDesktop: () => true }))
+
+vi.mock('@/lib/hooks/use-notes', () => ({
+  useNote: () => ({ data: { title: 'Referenced note title' }, isLoading: false, isError: false }),
+}))
+
+vi.mock('next/dynamic', () => ({
+  default: (loader: () => Promise<{ default: ComponentType } | ComponentType>) => {
+    const Component = lazy(async () => {
+      const loaded = await loader()
+      return { default: 'default' in loaded ? loaded.default : loaded }
+    })
+    return function DynamicComponent(props: Record<string, unknown>) {
+      return <Suspense fallback={null}><Component {...props} /></Suspense>
+    }
+  },
+}))
+
+describe('MarkdownEditor note references', () => {
+  it('opens references from the real preview without changing or submitting the note', async () => {
+    const onReferenceClick = vi.fn()
+    const onChange = vi.fn()
+    const onSubmit = vi.fn((event) => event.preventDefault())
+    const source = 'Saved answer [note:abc] [source:xyz] [insight:def]\n\n[Website](https://example.com)'
+    render(
+      <form onSubmit={onSubmit}>
+        <MarkdownEditor value={source} onChange={onChange} onReferenceClick={onReferenceClick} />
+      </form>
+    )
+
+    fireEvent.click(await screen.findByRole('button', { name: '1' }))
+    expect(onReferenceClick).toHaveBeenLastCalledWith('note', 'abc')
+    fireEvent.click(screen.getByRole('button', { name: 'Referenced note title' }))
+    expect(onReferenceClick).toHaveBeenLastCalledWith('note', 'abc')
+    expect(screen.queryByRole('button', { name: 'note:abc' })).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: '2' }))
+    expect(onReferenceClick).toHaveBeenLastCalledWith('source', 'xyz')
+    fireEvent.click(screen.getByRole('button', { name: '3' }))
+    expect(onReferenceClick).toHaveBeenLastCalledWith('source_insight', 'def')
+    expect(screen.getByRole('textbox')).toHaveValue(source)
+    expect(screen.getByRole('link', { name: 'Website' })).toHaveAttribute('href', 'https://example.com')
+    expect(onChange).not.toHaveBeenCalled()
+    expect(onSubmit).not.toHaveBeenCalled()
+  })
+})
 
 // MarkdownEditor's live preview renders through @uiw/react-markdown-preview,
 // which parses raw HTML in the markdown source into real elements (its `raw`

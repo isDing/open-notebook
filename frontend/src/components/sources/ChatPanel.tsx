@@ -25,7 +25,8 @@ import {
 import { ContextIndicator } from '@/components/common/ContextIndicator'
 import { SessionManager } from '@/components/sources/SessionManager'
 import { MessageActions } from '@/components/sources/MessageActions'
-import { convertReferencesToCompactMarkdown, createCompactReferenceLinkComponent } from '@/lib/utils/source-references'
+import { convertReferencesToCompactMarkdown } from '@/lib/utils/source-references'
+import { useNoteReferenceLink } from '@/lib/hooks/use-note-reference-link'
 import { useModalManager } from '@/lib/hooks/use-modal-manager'
 import { toast } from 'sonner'
 import { useTranslation } from '@/lib/hooks/use-translation'
@@ -498,7 +499,7 @@ function AIMessageContent({
   const markdownWithCompactRefs = convertReferencesToCompactMarkdown(content, t('common.references'))
 
   // Create custom link component for compact references
-  const LinkComponent = createCompactReferenceLinkComponent(onReferenceClick)
+  const LinkComponent = useNoteReferenceLink(onReferenceClick)
 
   return (
     <MarkdownRenderer components={{

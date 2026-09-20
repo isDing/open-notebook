@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   AlertCircle,
   BookOpen,
@@ -23,9 +23,13 @@ import { MarkdownRenderer } from '@/components/ui/markdown-renderer'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useAllNotes, useNote } from '@/lib/hooks/use-notes'
+import { useModalManager } from '@/lib/hooks/use-modal-manager'
+import { useNoteReferenceLink } from '@/lib/hooks/use-note-reference-link'
+import { convertReferencesToCompactMarkdown, type ReferenceType } from '@/lib/utils/source-references'
 import { useIsDesktop } from '@/lib/hooks/use-media-query'
 import { useTranslation } from '@/lib/hooks/use-translation'
 import { getDateLocale } from '@/lib/utils/date-locale'
+import { noteStats } from '@/lib/utils/note-stats'
 import { cn } from '@/lib/utils'
 import { CollapsibleColumn, createCollapseButton } from '@/components/notebooks/CollapsibleColumn'
 
@@ -42,20 +46,20 @@ function notePreview(content: string | null) {
     .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
     .replace(/^\s{0,3}#{1,6}\s+/gm, ' ')
     .replace(/^\s*[-*+]\s+/gm, ' ')
+    .replace(/^\s*\d+[.)]\s+/gm, ' ')
     .replace(/^\s*>\s?/gm, ' ')
     .replace(/[*_~]/g, '')
     .replace(/\s+/g, ' ')
     .trim()
 }
 
-function noteStats(content: string | null) {
-  const plainText = notePreview(content)
-  const words = plainText ? plainText.split(/\s+/).length : 0
-  return { words, minutes: Math.max(1, Math.ceil(words / 220)) }
-}
-
 export default function NotesPage() {
   const { t, language } = useTranslation()
+  const { openModal } = useModalManager()
+  const onReferenceClick = useCallback((type: ReferenceType, id: string) => {
+    openModal(type === 'source_insight' ? 'insight' : type, id)
+  }, [openModal])
+  const ReferenceLink = useNoteReferenceLink(onReferenceClick)
   const [query, setQuery] = useState('')
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null)
   const [expandedGroupId, setExpandedGroupId] = useState<string | null>(null)
@@ -160,7 +164,7 @@ export default function NotesPage() {
     refetch: refetchDetail,
   } = useNote(normalizedSelectedId, { enabled: Boolean(normalizedSelectedId) })
   const selectedNote = selectedDetail ?? selectedSummary
-  const stats = noteStats(selectedNote?.content ?? null)
+  const stats = useMemo(() => noteStats(notePreview(selectedNote?.content ?? null)), [selectedNote?.content])
 
   const listVisibleOnMobile = !selectedNoteId
   const isListCollapsed = listCollapsed && isDesktop
@@ -319,7 +323,9 @@ export default function NotesPage() {
                           action={<Button variant="outline" size="sm" onClick={() => refetchDetail()}>{t('common.retry')}</Button>}
                         />
                       ) : selectedNote.content ? (
-                        <MarkdownRenderer>{selectedNote.content}</MarkdownRenderer>
+                        <MarkdownRenderer components={{ a: ReferenceLink }}>
+                          {convertReferencesToCompactMarkdown(selectedNote.content, t('common.references'))}
+                        </MarkdownRenderer>
                       ) : (
                         <p className="text-sm text-muted-foreground">{t('notes.noContent')}</p>
                       )}

@@ -4,8 +4,16 @@ import { ChatPanel } from './ChatPanel'
 
 // useTranslation is mocked globally in setup.ts (t returns the key string)
 
+const { openModal } = vi.hoisted(() => ({ openModal: vi.fn() }))
+
+vi.mock('@/lib/hooks/use-media-query', () => ({ useIsDesktop: () => true }))
+
 vi.mock('@/lib/hooks/use-modal-manager', () => ({
-  useModalManager: () => ({ openModal: vi.fn() }),
+  useModalManager: () => ({ openModal }),
+}))
+
+vi.mock('@/lib/hooks/use-notes', () => ({
+  useNote: () => ({ data: { title: '研究笔记' }, isLoading: false, isError: false }),
 }))
 
 // Keep the message-content deps light for this composer-focused test.
@@ -21,6 +29,23 @@ describe('ChatPanel composer', () => {
   })
 
   const getTextarea = () => screen.getByRole('textbox') as HTMLTextAreaElement
+
+  it('shows the referenced note title and opens the note from its name or citation number', () => {
+    render(
+      <ChatPanel
+        messages={[{ id: 'answer', type: 'ai', content: '结论 [note:abc]。' }]}
+        isStreaming={false}
+        contextIndicators={null}
+        onSendMessage={vi.fn()}
+      />
+    )
+
+    expect(screen.queryByText('note:abc')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: '研究笔记' }))
+    expect(openModal).toHaveBeenLastCalledWith('note', 'abc')
+    fireEvent.click(screen.getByRole('button', { name: '1' }))
+    expect(openModal).toHaveBeenLastCalledWith('note', 'abc')
+  })
 
   it('sends the typed message and clears the input on send-button click', () => {
     const onSendMessage = vi.fn()

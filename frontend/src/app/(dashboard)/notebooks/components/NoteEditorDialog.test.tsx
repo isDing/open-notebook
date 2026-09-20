@@ -1,8 +1,11 @@
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { NoteEditorDialog } from './NoteEditorDialog'
 import { useNote } from '@/lib/hooks/use-notes'
+import { useModalManager } from '@/lib/hooks/use-modal-manager'
+
+vi.mock('@/lib/hooks/use-modal-manager', () => ({ useModalManager: vi.fn() }))
 
 // useTranslation is mocked globally in setup.ts (t returns the key string)
 
@@ -13,8 +16,12 @@ vi.mock('@/lib/hooks/use-notes', () => ({
 }))
 
 vi.mock('@/components/ui/markdown-editor', () => ({
-  MarkdownEditor: ({ value }: { value: string }) => (
-    <textarea data-testid="markdown-editor" defaultValue={value} />
+  MarkdownEditor: ({ value, onReferenceClick }: { value: string; onReferenceClick: (type: string, id: string) => void }) => (
+    <>
+      <textarea data-testid="markdown-editor" defaultValue={value} />
+      <button type="button" onClick={() => onReferenceClick('note', 'referenced')}>Note citation</button>
+      <button type="button" onClick={() => onReferenceClick('source_insight', 'insight1')}>Insight citation</button>
+    </>
   ),
 }))
 
@@ -52,6 +59,7 @@ function renderDialog(props: Partial<Parameters<typeof NoteEditorDialog>[0]> = {
 describe('NoteEditorDialog', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.mocked(useModalManager).mockReturnValue({ openModal: vi.fn() } as unknown as ReturnType<typeof useModalManager>)
   })
 
   it('shows the shared not-found state instead of the editor when the note returns 404', () => {
@@ -113,5 +121,9 @@ describe('NoteEditorDialog', () => {
     expect(screen.getByTestId('markdown-editor')).toBeInTheDocument()
     expect(screen.getByText('sources.saveNote')).toBeInTheDocument()
     expect(screen.queryByTestId('content-unavailable')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Note citation' }))
+    expect(useModalManager().openModal).toHaveBeenCalledWith('note', 'referenced')
+    fireEvent.click(screen.getByRole('button', { name: 'Insight citation' }))
+    expect(useModalManager().openModal).toHaveBeenCalledWith('insight', 'insight1')
   })
 })
