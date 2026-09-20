@@ -45,7 +45,7 @@ async def call_model_with_messages(state: ThreadState, config: RunnableConfig) -
         )
 
         model = await provision_langchain_model(
-            str(payload), model_id, "chat", max_tokens=8192
+            str(payload), model_id, "chat", max_tokens=32768
         )
 
         chunks = []

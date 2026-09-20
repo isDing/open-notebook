@@ -136,7 +136,7 @@ async def _call_model_with_source_context_inner(
         config.get("configurable", {}).get("model_id")
         or state.get("model_override"),
         "chat",
-        max_tokens=8192,
+        max_tokens=32768,
     )
 
     chunks = []
