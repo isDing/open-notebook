@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
+import { NavigationLink as Link } from '@/components/common/NavigationLink'
 import { NotebookResponse } from '@/lib/types/api'
 import { Card, CardDescription, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -44,7 +44,7 @@ export function NotebookCard({ notebook }: NotebookCardProps) {
   return (
     <>
       <Card
-        className="group card-hover gap-0 p-5 sm:p-6"
+        className="notebook-item group card-hover min-w-0 gap-0 p-5 sm:p-6"
         onClick={handleCardClick}
         style={{ cursor: 'pointer' }}
       >
@@ -120,7 +120,7 @@ export function NotebookCard({ notebook }: NotebookCardProps) {
           </div>
         </div>
 
-        <div className="mt-4 flex items-center justify-between gap-3 text-xs text-muted-foreground">
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t pt-4 text-xs text-muted-foreground">
           <div className="flex min-w-0 items-center gap-3.5">
             <span className="flex items-center gap-1.5">
               <FileText className="h-3.5 w-3.5" aria-hidden="true" />
@@ -142,12 +142,12 @@ export function NotebookCard({ notebook }: NotebookCardProps) {
         </div>
       </Card>
 
-      <NotebookDeleteDialog
+      {showDeleteDialog && <NotebookDeleteDialog
         open={showDeleteDialog}
         onOpenChange={setShowDeleteDialog}
         notebookId={notebook.id}
         notebookName={notebook.name}
-      />
+      />}
     </>
   )
 }

@@ -6,10 +6,12 @@ import { useTranslation } from '@/lib/hooks/use-translation'
 import { getApiErrorKey } from '@/lib/utils/error-handler'
 import { CreateNotebookRequest, UpdateNotebookRequest } from '@/lib/types/api'
 
-export function useNotebooks(archived?: boolean) {
+export function useNotebooks(archived?: boolean, enabled = true) {
   return useQuery({
     queryKey: [...QUERY_KEYS.notebooks, { archived }],
     queryFn: () => notebooksApi.list({ archived, order_by: 'updated desc' }),
+    enabled,
+    retry: false,
   })
 }
 

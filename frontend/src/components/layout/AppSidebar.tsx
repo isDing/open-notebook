@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import Link from 'next/link'
+import { NavigationLink as Link } from '@/components/common/NavigationLink'
 import { usePathname } from 'next/navigation'
 
 import { cn } from '@/lib/utils'

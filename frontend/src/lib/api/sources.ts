@@ -19,8 +19,8 @@ export const sourcesApi = {
     offset?: number
     sort_by?: SourceSortField
     sort_order?: 'asc' | 'desc'
-  }) => {
-    const response = await apiClient.get<SourceListResponse[]>('/sources', { params })
+  }, signal?: AbortSignal) => {
+    const response = await apiClient.get<SourceListResponse[]>('/sources', { params, signal })
     return response.data
   },
 

@@ -151,7 +151,7 @@
      spec palette — cool slate + blue accent (PDR-007)
      -------------------------------------------------------------- */
   --bg: #fafbfd;
-  --surface: #f7fafd;
+  --surface: #ffffff;
   --text: #0f172a;
   --text-secondary: #5d6a84;
   --text-muted: #7d889f;
@@ -567,15 +567,41 @@
     background-color: var(--sidebar-accent) !important;
   }
 
-  /* Cards separate with hairlines, not shadows; hover raises the surface */
+  /* A small surface lift also marks keyboard focus; no layout-changing motion. */
   .card-hover {
-    @apply transition-colors duration-150 cursor-pointer;
+    @apply transition-[background-color,border-color,box-shadow] duration-150 cursor-pointer;
   }
 
-  .card-hover:hover {
-    background-color: var(--surface-raised) !important;
-    border-color: var(--border);
+  .card-hover:focus-within {
+    border-color: var(--ring);
     box-shadow: var(--shadow-lift);
+  }
+
+  @media (hover: hover) {
+    .card-hover:hover {
+      background-color: var(--surface-raised);
+      border-color: color-mix(in srgb, var(--primary-ink) 25%, var(--border));
+      box-shadow: var(--shadow-lift);
+    }
+  }
+
+  /* Long lists skip off-screen painting while retaining browser find and focus. */
+  .notebook-item {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 180px;
+  }
+
+  .notebook-item-row {
+    contain-intrinsic-size: auto 90px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 
   /* Ensure clickable cards show pointer cursor */

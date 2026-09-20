@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import { NavigationLink as Link } from '@/components/common/NavigationLink'
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { formatDistanceToNow } from 'date-fns'
@@ -50,6 +50,7 @@ export function RecentlyViewed({ limit = 12 }: RecentlyViewedProps) {
   const { data: items, isLoading, isError } = useQuery({
     queryKey: ['recently-viewed', limit],
     queryFn: () => notebooksApi.recentlyViewed(limit),
+    retry: false,
   })
 
   if (isLoading || isError || !items || items.length === 0) {
@@ -80,7 +81,7 @@ export function RecentlyViewed({ limit = 12 }: RecentlyViewedProps) {
       </div>
 
       <CollapsibleContent>
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 2xl:grid-cols-4">
           {items.map((item) => {
             const Icon = item.type === 'notebook' ? BookOpen : FileText
             const typeLabel =
@@ -96,7 +97,7 @@ export function RecentlyViewed({ limit = 12 }: RecentlyViewedProps) {
               <Link
                 key={`${item.type}-${item.id}`}
                 href={getItemHref(item)}
-                className="group flex items-center gap-3 rounded-md border bg-card px-3 py-2 card-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="group flex min-w-0 items-center gap-3 rounded-xl border bg-card px-4 py-3 card-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <div
                   className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-muted ${

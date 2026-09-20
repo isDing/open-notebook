@@ -69,7 +69,7 @@ export function CommandPalette() {
   const router = useRouter()
   const { openSourceDialog, openNotebookDialog, openPodcastDialog } = useCreateDialogs()
   const { setTheme } = useTheme()
-  const { data: notebooks, isLoading: notebooksLoading } = useNotebooks(false)
+  const { data: notebooks, isLoading: notebooksLoading } = useNotebooks(false, open)
 
   // Global keyboard listener for ⌘K / Ctrl+K
   useEffect(() => {

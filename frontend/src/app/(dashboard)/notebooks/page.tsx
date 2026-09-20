@@ -1,18 +1,21 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useCallback, useDeferredValue, useMemo, useState } from 'react'
+import dynamic from 'next/dynamic'
 
 import { AppShell } from '@/components/layout/AppShell'
 import { NotebookList } from './components/NotebookList'
 import { RecentlyViewed } from './components/RecentlyViewed'
 import { PageHeader } from '@/components/common/PageHeader'
 import { Button } from '@/components/ui/button'
-import { Plus, LayoutGrid, List, Search } from 'lucide-react'
+import { Plus, LayoutGrid, List } from 'lucide-react'
 import { useNotebooks } from '@/lib/hooks/use-notebooks'
-import { CreateNotebookDialog } from '@/components/notebooks/CreateNotebookDialog'
-import { Input } from '@/components/ui/input'
+import { DeferredMount } from '@/components/common/DeferredMount'
+import { SearchInput } from '@/components/common/SearchInput'
 import { useTranslation } from '@/lib/hooks/use-translation'
 import { useNotebookViewStore } from '@/lib/stores/notebook-view-store'
+
+const CreateNotebookDialog = dynamic(() => import('@/components/notebooks/CreateNotebookDialog').then(m => m.CreateNotebookDialog))
 
 export default function NotebooksPage() {
   const { t } = useTranslation()
@@ -20,10 +23,13 @@ export default function NotebooksPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const viewMode = useNotebookViewStore((state) => state.viewMode)
   const setViewMode = useNotebookViewStore((state) => state.setViewMode)
-  const { data: notebooks, isLoading } = useNotebooks(false)
-  const { data: archivedNotebooks } = useNotebooks(true)
+  const { data: notebooks, isLoading, isError, refetch } = useNotebooks(false)
+  const archived = useNotebooks(true)
+  const archivedNotebooks = archived.data
+  const openCreateDialog = useCallback(() => setCreateDialogOpen(true), [])
 
-  const normalizedQuery = searchTerm.trim().toLowerCase()
+  const deferredSearch = useDeferredValue(searchTerm)
+  const normalizedQuery = deferredSearch.trim().toLowerCase()
 
   const filteredActive = useMemo(() => {
     if (!notebooks) {
@@ -33,7 +39,7 @@ export default function NotebooksPage() {
       return notebooks
     }
     return notebooks.filter((notebook) =>
-      notebook.name.toLowerCase().includes(normalizedQuery)
+      `${notebook.name} ${notebook.description ?? ''}`.toLowerCase().includes(normalizedQuery)
     )
   }, [notebooks, normalizedQuery])
 
@@ -45,7 +51,7 @@ export default function NotebooksPage() {
       return archivedNotebooks
     }
     return archivedNotebooks.filter((notebook) =>
-      notebook.name.toLowerCase().includes(normalizedQuery)
+      `${notebook.name} ${notebook.description ?? ''}`.toLowerCase().includes(normalizedQuery)
     )
   }, [archivedNotebooks, normalizedQuery])
 
@@ -55,93 +61,85 @@ export default function NotebooksPage() {
   return (
     <AppShell>
       <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
-        <div className="px-4 py-6 sm:px-8 sm:py-8">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <div className="relative flex-1">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              id="notebook-search"
-              name="notebook-search"
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder={t('notebooks.searchPlaceholder')}
-              autoComplete="off"
-              aria-label={t('common.accessibility.searchNotebooks')}
-              className="h-11 pl-9"
-            />
-          </div>
-          <div className="flex items-center gap-3">
-            <Button
-              className="h-11 px-5"
-              onClick={() => setCreateDialogOpen(true)}
-            >
-              <Plus className="h-4 w-4" />
-              {t('notebooks.newNotebook')}
-            </Button>
-            <div className="flex w-fit items-center rounded-md border p-0.5">
-              <Button
-                variant={viewMode === 'tile' ? 'secondary' : 'ghost'}
-                size="sm"
-                className="h-10 w-10 p-0"
-                onClick={() => setViewMode('tile')}
-                aria-label={t('notebooks.tileView')}
-                aria-pressed={viewMode === 'tile'}
-                title={t('notebooks.tileView')}
-              >
-                <LayoutGrid className="h-4 w-4" />
-              </Button>
-              <Button
-                variant={viewMode === 'list' ? 'secondary' : 'ghost'}
-                size="sm"
-                className="h-10 w-10 p-0"
-                onClick={() => setViewMode('list')}
-                aria-label={t('notebooks.listView')}
-                aria-pressed={viewMode === 'list'}
-                title={t('notebooks.listView')}
-              >
-                <List className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        <PageHeader
-          title={t('notebooks.title')}
-          description={t('notebooks.pageDescription')}
-          className="mt-6 sm:mt-8"
-        />
-
-        <div className="space-y-8">
-          {!isSearching && <RecentlyViewed limit={4} />}
-
-          <NotebookList 
-            notebooks={filteredActive} 
-            isLoading={isLoading}
-            title={t('notebooks.activeNotebooks')}
-            emptyTitle={isSearching ? t('common.noMatches') : undefined}
-            emptyDescription={isSearching ? t('common.tryDifferentSearch') : undefined}
-            onAction={!isSearching ? () => setCreateDialogOpen(true) : undefined}
-            actionLabel={!isSearching ? t('notebooks.newNotebook') : undefined}
+        <div className="mx-auto w-full max-w-[1600px] px-4 py-6 sm:px-8 sm:py-10 lg:px-10">
+          <PageHeader
+            title={t('notebooks.title')}
+            description={t('notebooks.pageDescription')}
+            actions={<Button className="h-11 px-5" onClick={openCreateDialog}>
+              <Plus className="h-4 w-4" />{t('notebooks.newNotebook')}
+            </Button>}
           />
-          
-          {hasArchived && (
-            <NotebookList 
-              notebooks={filteredArchived} 
-              isLoading={false}
-              title={t('notebooks.archivedNotebooks')}
-              collapsible
+          <div className="mb-8 flex items-center gap-3 rounded-xl border bg-card p-2 shadow-soft sm:p-3">
+              <SearchInput
+                id="notebook-search"
+                value={searchTerm}
+                onChange={setSearchTerm}
+                placeholder={t('notebooks.searchPlaceholder')}
+                label={t('common.accessibility.searchNotebooks')}
+              />
+              <div className="flex shrink-0 items-center rounded-lg bg-muted p-0.5">
+                <Button
+                  variant={viewMode === 'tile' ? 'secondary' : 'ghost'}
+                  size="sm"
+                  className="h-10 w-10 p-0"
+                  onClick={() => setViewMode('tile')}
+                  aria-label={t('notebooks.tileView')}
+                  aria-pressed={viewMode === 'tile'}
+                  title={t('notebooks.tileView')}
+                >
+                  <LayoutGrid className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={viewMode === 'list' ? 'secondary' : 'ghost'}
+                  size="sm"
+                  className="h-10 w-10 p-0"
+                  onClick={() => setViewMode('list')}
+                  aria-label={t('notebooks.listView')}
+                  aria-pressed={viewMode === 'list'}
+                  title={t('notebooks.listView')}
+                >
+                  <List className="h-4 w-4" />
+                </Button>
+              </div>
+          </div>
+
+          <div className="space-y-8" aria-busy={searchTerm !== deferredSearch}>
+            {!isSearching && <RecentlyViewed limit={4} />}
+
+            <NotebookList
+              notebooks={filteredActive}
+              isLoading={isLoading}
+              isError={isError}
+              onRetry={refetch}
+              title={t('notebooks.activeNotebooks')}
               emptyTitle={isSearching ? t('common.noMatches') : undefined}
               emptyDescription={isSearching ? t('common.tryDifferentSearch') : undefined}
+              onAction={!isSearching ? openCreateDialog : undefined}
+              actionLabel={!isSearching ? t('notebooks.newNotebook') : undefined}
             />
-          )}
-        </div>
+
+            {(hasArchived || archived.isError) && (
+              <NotebookList
+                notebooks={filteredArchived}
+                isLoading={false}
+                isError={archived.isError}
+                onRetry={archived.refetch}
+                title={t('notebooks.archivedNotebooks')}
+                collapsible
+                emptyTitle={isSearching ? t('common.noMatches') : undefined}
+                emptyDescription={isSearching ? t('common.tryDifferentSearch') : undefined}
+              />
+            )}
+          </div>
         </div>
       </div>
 
-      <CreateNotebookDialog
-        open={createDialogOpen}
-        onOpenChange={setCreateDialogOpen}
-      />
+      <DeferredMount active={createDialogOpen}>
+        <CreateNotebookDialog
+          open={createDialogOpen}
+          onOpenChange={setCreateDialogOpen}
+        />
+      </DeferredMount>
     </AppShell>
   )
 }

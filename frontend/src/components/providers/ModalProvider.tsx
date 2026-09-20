@@ -1,9 +1,12 @@
 'use client'
 
 import { useModalManager } from '@/lib/hooks/use-modal-manager'
-import { NoteEditorDialog } from '@/app/(dashboard)/notebooks/components/NoteEditorDialog'
-import { SourceInsightDialog } from '@/components/sources/SourceInsightDialog'
-import { SourceDialog } from '@/components/sources/SourceDialog'
+import dynamic from 'next/dynamic'
+import { DeferredMount } from '@/components/common/DeferredMount'
+
+const NoteEditorDialog = dynamic(() => import('@/app/(dashboard)/notebooks/components/NoteEditorDialog').then(m => m.NoteEditorDialog))
+const SourceInsightDialog = dynamic(() => import('@/components/sources/SourceInsightDialog').then(m => m.SourceInsightDialog))
+const SourceDialog = dynamic(() => import('@/components/sources/SourceDialog').then(m => m.SourceDialog))
 
 /**
  * Modal Provider Component
@@ -22,32 +25,38 @@ export function ModalProvider() {
   return (
     <>
       {/* Source Modal */}
-      <SourceDialog
-        open={modalType === 'source'}
-        onOpenChange={(open) => {
-          if (!open) closeModal()
-        }}
-        sourceId={modalId}
-      />
+      <DeferredMount active={modalType === 'source'}>
+        <SourceDialog
+          open={modalType === 'source'}
+          onOpenChange={(open) => {
+            if (!open) closeModal()
+          }}
+          sourceId={modalId}
+        />
+      </DeferredMount>
 
       {/* Note Modal */}
-      <NoteEditorDialog
-        open={modalType === 'note'}
-        onOpenChange={(open) => {
-          if (!open) closeModal()
-        }}
-        notebookId="" // Will need to be fetched or handled in Phase 9
-        note={modalId ? { id: modalId, title: null, content: null } : undefined}
-      />
+      <DeferredMount active={modalType === 'note'}>
+        <NoteEditorDialog
+          open={modalType === 'note'}
+          onOpenChange={(open) => {
+            if (!open) closeModal()
+          }}
+          notebookId="" // Will need to be fetched or handled in Phase 9
+          note={modalId ? { id: modalId, title: null, content: null } : undefined}
+        />
+      </DeferredMount>
 
       {/* Source Insight Modal */}
-      <SourceInsightDialog
-        open={modalType === 'insight'}
-        onOpenChange={(open) => {
-          if (!open) closeModal()
-        }}
-        insight={modalId ? { id: modalId, insight_type: '', content: '' } : undefined}
-      />
+      <DeferredMount active={modalType === 'insight'}>
+        <SourceInsightDialog
+          open={modalType === 'insight'}
+          onOpenChange={(open) => {
+            if (!open) closeModal()
+          }}
+          insight={modalId ? { id: modalId, insight_type: '', content: '' } : undefined}
+        />
+      </DeferredMount>
     </>
   )
 }

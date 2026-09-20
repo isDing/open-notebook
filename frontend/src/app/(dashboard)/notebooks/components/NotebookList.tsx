@@ -4,16 +4,18 @@ import { NotebookResponse } from '@/lib/types/api'
 import { NotebookCard } from './NotebookCard'
 import { NotebookRow } from './NotebookRow'
 import { useNotebookViewStore } from '@/lib/stores/notebook-view-store'
-import { LoadingSpinner } from '@/components/common/LoadingSpinner'
+import { CollectionSkeleton } from '@/components/common/CollectionSkeleton'
 import { EmptyState } from '@/components/common/EmptyState'
-import { Book, ChevronDown, ChevronRight, Plus } from 'lucide-react'
+import { AlertCircle, Book, ChevronDown, ChevronRight, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { useTranslation } from '@/lib/hooks/use-translation'
 
 interface NotebookListProps {
   notebooks?: NotebookResponse[]
   isLoading: boolean
+  isError?: boolean
+  onRetry?: () => void
   title: string
   collapsible?: boolean
   emptyTitle?: string
@@ -22,9 +24,11 @@ interface NotebookListProps {
   actionLabel?: string
 }
 
-export function NotebookList({ 
+export const NotebookList = memo(function NotebookList({
   notebooks, 
   isLoading, 
+  isError,
+  onRetry,
   title, 
   collapsible = false,
   emptyTitle,
@@ -37,11 +41,13 @@ export function NotebookList({
   const [isExpanded, setIsExpanded] = useState(!collapsible)
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <LoadingSpinner size="lg" />
-      </div>
-    )
+    return <CollectionSkeleton view={viewMode} />
+  }
+
+  if (isError) {
+    return <EmptyState icon={AlertCircle} title={t('common.contentUnavailable.errorTitle')}
+      description={t('common.contentUnavailable.errorDescription')}
+      action={onRetry && <Button variant="outline" onClick={onRetry}>{t('common.retry')}</Button>} />
   }
 
   if (!notebooks || notebooks.length === 0) {
@@ -81,7 +87,7 @@ export function NotebookList({
           </Button>
         )}
         <h2 className="min-w-0 truncate font-display text-lg font-semibold tracking-tight">{title}</h2>
-        <span className="text-sm text-muted-foreground">({notebooks.length})</span>
+        <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">{notebooks.length}</span>
       </div>
 
       {isExpanded && (
@@ -92,7 +98,7 @@ export function NotebookList({
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
             {notebooks.map((notebook) => (
               <NotebookCard key={notebook.id} notebook={notebook} />
             ))}
@@ -101,4 +107,4 @@ export function NotebookList({
       )}
     </div>
   )
-}
+})

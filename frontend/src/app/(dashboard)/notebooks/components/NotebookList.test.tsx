@@ -36,10 +36,10 @@ describe('NotebookList', () => {
     viewState.viewMode = 'list'
   })
 
-  it('shows a loading spinner while loading', () => {
+  it('announces loading while displaying skeletons', () => {
     render(<NotebookList notebooks={notebooks} isLoading title="Active Notebooks" />)
 
-    expect(screen.getByTestId('loading-spinner')).toBeInTheDocument()
+    expect(screen.getByRole('status', { name: 'common.loading' })).toBeInTheDocument()
   })
 
   it('shows the empty state with the provided title, description and action', () => {
@@ -97,6 +97,6 @@ describe('NotebookList', () => {
     render(<NotebookList notebooks={notebooks} isLoading={false} title="Active Notebooks" />)
 
     expect(screen.getByRole('heading', { name: /Active Notebooks/ })).toBeInTheDocument()
-    expect(screen.getByText('(2)')).toBeInTheDocument()
+    expect(screen.getByText('2')).toBeInTheDocument()
   })
 })

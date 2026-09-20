@@ -14,16 +14,16 @@ export function PageHeader({ title, description, actions, className }: PageHeade
   return (
     <header
       className={cn(
-        'mb-5 flex flex-wrap items-end justify-between gap-x-4 gap-y-3 sm:mb-6',
+        'mb-6 flex shrink-0 flex-wrap items-end justify-between gap-x-6 gap-y-4 sm:mb-8',
         className
       )}
     >
-      <div className="min-w-0">
-        <h1 className="text-xl font-semibold leading-tight tracking-tight sm:text-2xl">
+      <div className="min-w-0 max-w-3xl">
+        <h1 className="break-words text-2xl font-semibold leading-tight tracking-tight sm:text-3xl">
           {title}
         </h1>
         {description ? (
-          <p className="mt-1 text-sm leading-6 text-muted-foreground">{description}</p>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{description}</p>
         ) : null}
       </div>
       {actions ? (

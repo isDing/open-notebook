@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import { NavigationLink as Link } from '@/components/common/NavigationLink'
 import { useRouter } from 'next/navigation'
 import { NotebookResponse } from '@/lib/types/api'
 import { Button } from '@/components/ui/button'
@@ -54,7 +54,7 @@ export function NotebookRow({ notebook }: NotebookRowProps) {
           the accessible primary action (a real link) for keyboard/screen-reader
           users — avoiding nested interactive (button-in-button) semantics. */}
       <div
-        className="group flex items-center gap-3 rounded-lg border bg-card px-4 py-3 card-hover"
+        className="notebook-item notebook-item-row group flex items-center gap-3 rounded-lg border bg-card px-4 py-4 card-hover"
         onClick={handleRowClick}
         style={{ cursor: 'pointer' }}
       >
@@ -149,12 +149,12 @@ export function NotebookRow({ notebook }: NotebookRowProps) {
         </DropdownMenu>
       </div>
 
-      <NotebookDeleteDialog
+      {showDeleteDialog && <NotebookDeleteDialog
         open={showDeleteDialog}
         onOpenChange={setShowDeleteDialog}
         notebookId={notebook.id}
         notebookName={notebook.name}
-      />
+      />}
     </>
   )
 }
