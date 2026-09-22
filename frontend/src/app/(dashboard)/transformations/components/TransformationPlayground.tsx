@@ -16,6 +16,7 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
+import { MermaidDiagram, extractCodeString } from '@/components/ui/mermaid-diagram'
 
 interface TransformationPlaygroundProps {
   transformations: Transformation[] | undefined
@@ -130,6 +131,13 @@ export function TransformationPlayground({ transformations, selectedTransformati
                         remarkPlugins={[remarkGfm, remarkMath]}
                         rehypePlugins={[rehypeKatex]}
                         components={{
+                          code: ({ children, className }) => {
+                            const match = /language-(\w+)/.exec(className || '')
+                            if (match?.[1]?.toLowerCase() === 'mermaid') {
+                              return <MermaidDiagram code={extractCodeString(children).trim()} />
+                            }
+                            return <code className={className}>{children}</code>
+                          },
                           table: ({ children }) => (
                             <div className="my-4 overflow-x-auto">
                               <table className="min-w-full border-collapse border border-border">{children}</table>

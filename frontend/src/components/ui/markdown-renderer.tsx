@@ -41,6 +41,8 @@ import yaml from 'react-syntax-highlighter/dist/esm/languages/prism/yaml'
 import type {ExtraProps} from 'react-markdown'
 import type {ComponentProps, ElementType} from 'react'
 
+import { MermaidDiagram, extractCodeString } from './mermaid-diagram'
+
 const LANGUAGES = {
   bash, c, cpp, csharp, css, diff, docker, go, java, javascript, json, jsx,
   kotlin, markdown, markup, php, python, r, ruby, rust, sql, swift, tsx,
@@ -87,6 +89,9 @@ export function MarkdownRenderer({ children, components = {}}: { children: React
             td: ({ children }) => <td className="border border-border px-3 py-2">{children}</td>,
             code: ({ children, className }) => {
               const match = /language-(\w+)/.exec(className || '')
+              if (match?.[1]?.toLowerCase() === 'mermaid') {
+                return <MermaidDiagram code={extractCodeString(children).trim()} />
+              }
               const isBlock = match || String(children).includes('\n')
               return isBlock ? (
                 <SyntaxHighlighter

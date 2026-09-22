@@ -12,8 +12,19 @@ import {
   type ReferenceType,
 } from '@/lib/utils/source-references'
 import { useNoteReferenceLink } from '@/lib/hooks/use-note-reference-link'
+import { MermaidDiagram, extractCodeString } from './mermaid-diagram'
 
 const ignoreReference = () => {}
+
+// Fenced ```mermaid blocks render as diagrams in the preview; everything
+// else keeps the library's default code rendering (Prism highlighting,
+// copy button are injected at the rehype level and survive this override).
+const MermaidCode = ({ className, children }: { className?: string; children?: React.ReactNode }) => {
+  if (className && /language-mermaid/i.test(className)) {
+    return <MermaidDiagram code={extractCodeString(children).trim()} />
+  }
+  return <code className={className}>{children}</code>
+}
 
 const MarkdownPreview = dynamic(() => import('@uiw/react-markdown-preview'), { ssr: false })
 
@@ -57,6 +68,7 @@ const SANITIZE_SCHEMA = {
 export const PREVIEW_OPTIONS = {
   remarkPlugins: [remarkMath] as PluggableList,
   rehypePlugins: [[rehypeSanitize, SANITIZE_SCHEMA], rehypeKatex] as PluggableList,
+  components: { code: MermaidCode },
 }
 
 export interface MarkdownEditorProps {
@@ -95,7 +107,7 @@ export const MarkdownEditor = forwardRef<HTMLDivElement, MarkdownEditorProps>(
               <MarkdownPreview
                 {...PREVIEW_OPTIONS}
                 source={convertReferencesToCompactMarkdown(source, t('common.references'))}
-                components={{ a: ReferenceLink }}
+                components={{ a: ReferenceLink, code: MermaidCode }}
               />
             ),
           } : undefined}

@@ -5,6 +5,17 @@ import MarkdownPreview from '@uiw/react-markdown-preview'
 
 import { MarkdownEditor, PREVIEW_OPTIONS } from './markdown-editor'
 
+// MermaidDiagram loads the (DOM-only, heavy) mermaid package lazily; mock it
+// so tests neither execute the real renderer nor need its jsdom support.
+vi.mock('mermaid', () => ({
+  default: {
+    initialize: vi.fn(),
+    render: vi.fn(async (_id: string, text: string) => ({
+      svg: `<svg data-testid="mermaid-svg">${text}</svg>`,
+    })),
+  },
+}))
+
 vi.mock('@/lib/hooks/use-media-query', () => ({ useIsDesktop: () => true }))
 
 vi.mock('@/lib/hooks/use-notes', () => ({
@@ -62,9 +73,8 @@ describe('MarkdownEditor note references', () => {
 function renderPreview(source: string) {
   return render(
     <MarkdownPreview
+      {...PREVIEW_OPTIONS}
       source={source}
-      remarkPlugins={PREVIEW_OPTIONS.remarkPlugins}
-      rehypePlugins={PREVIEW_OPTIONS.rehypePlugins}
     />
   )
 }
@@ -120,6 +130,17 @@ describe('MarkdownEditor preview sanitization', () => {
     expect(button?.getAttribute('data-code')).toContain('const a = 1;')
     expect(button?.querySelector('svg.octicon-copy')).not.toBeNull()
     expect(button?.querySelector('svg.octicon-check')).not.toBeNull()
+  })
+
+  it('renders mermaid fenced blocks as diagrams, keeping the copy button', async () => {
+    const { container } = renderPreview('```mermaid\ngraph TD\nA --> B\n```')
+    const svg = await screen.findByTestId('mermaid-svg')
+    expect(svg.textContent).toContain('A --> B')
+    // The mermaid code override replaces only the <code> element; the copy
+    // button the library injects into <pre> must survive.
+    const button = container.querySelector('pre div.copied')
+    expect(button).not.toBeNull()
+    expect(button?.getAttribute('data-code')).toContain('graph TD')
   })
 
   it('still renders GFM tables, task lists, and safe links', () => {
